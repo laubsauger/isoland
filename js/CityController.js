@@ -44,7 +44,7 @@ var sideColorDict = ['#001C9D', '#B75B00', '#FF2424', '#FFFF91']; //water, grass
 var tileImg       = new Array();
 
 
-var mapData, unitSize, mapDimension, mapData, mapType, movedDir;
+var mapData, unitSize, mapDimension, mapType, movedDir;
 
 var ymouse;
 var xmouse;
