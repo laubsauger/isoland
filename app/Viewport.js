@@ -8,7 +8,11 @@
  */
 var Viewport = function(map, edgeLength, offsetX, offsetY) {
     if (edgeLength <= 0) {
-        throw new InvalidArgumentException(edgeLength, 'Viewport', 'create');
+        throw new InvalidArgumentException(edgeLength, 'Viewport', '');
+    }
+
+    if (map instanceof Map === false) {
+        throw new InvalidArgumentException(map, 'Viewport', '');
     }
 
     this.edgeLength = edgeLength;
@@ -21,23 +25,23 @@ var Viewport = function(map, edgeLength, offsetX, offsetY) {
     };
 
     if (this.offset.x + edgeLength > map.edgeLength || this.offset.y + edgeLength > map.edgeLength) {
-        throw new InvalidArgumentException([this.offset.x, this.offset.y], 'Viewport', 'create');
+        throw new InvalidArgumentException([this.offset.x, this.offset.y], 'Viewport', '');
     }
 
-    this.create(map.tiles);
+    this.create(map);
 };
 
 Viewport.prototype = {
     /**
      * grabs a portion of the map array
-     * @param {Array} mapTiles
+     * @param {Object} map
      */
-    create: function(mapTiles) {
+    create: function(map) {
         for (var x=0; x<this.edgeLength; x++) {
             this.tiles[x] = [];
 
             for (var y=0; y<this.edgeLength; y++) {
-                this.tiles[x][y] = mapTiles[x + this.offset.x][y + this.offset.y];
+                this.tiles[x][y] = map.getTileAt(x + this.offset.x, y + this.offset.y);
             }
         }
     },

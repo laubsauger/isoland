@@ -23,7 +23,7 @@ Map.prototype = {
             }
         }
     },
-    getTileAt: function(x,y) {
+    getTileAt: function(x, y) {
         return this.tiles[x][y];
     }
 };
