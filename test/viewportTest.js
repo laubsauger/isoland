@@ -4,7 +4,7 @@ describe('Viewport', function() {
 
     beforeEach(function() {
         map = new Map(10);
-        viewport = new Viewport(map.tiles, 5);
+        viewport = new Viewport(map, 5);
     });
 
     describe('initialization', function() {
@@ -14,16 +14,11 @@ describe('Viewport', function() {
             expect(viewport.tiles.length * viewport.edgeLength).toEqual(25);
         });
 
-        it('returns the tile at the provided coordinates', function() {
-            var tile = new Tile(2,2);
-
-            expect(viewport.getTileAt(2,2)).toEqual(tile);
-        });
     });
 
     describe('rotation', function() {
         it('rotates the array of tiles in view clockwise', function() {
-            var rotatingViewport = new Viewport(map.tiles, 3);
+            var rotatingViewport = new Viewport(map, 3);
 
             var oldTopRightTile = rotatingViewport.getTileAt(0,2),
                 oldBottomLeftTile = rotatingViewport.getTileAt(2,0);
@@ -41,7 +36,7 @@ describe('Viewport', function() {
         });
 
         it('rotates the array of tiles in view counterclockwise', function() {
-            var rotatingViewport = new Viewport(map.tiles, 3);
+            var rotatingViewport = new Viewport(map, 3);
 
             var oldTopRightTile = rotatingViewport.getTileAt(0,2),
                 oldBottomLeftTile = rotatingViewport.getTileAt(2,0);
@@ -59,33 +54,59 @@ describe('Viewport', function() {
         });
 
         it('modifies the viewport orientation when rotating the array of tiles in view', function() {
-            viewport.create(map.tiles, 3);
+            var rotatingViewport = new Viewport(map, 3);
 
-            viewport.rotateClockwise();
-            expect(viewport.getOrientation()).toEqual(90);
+            rotatingViewport.rotateClockwise();
+            expect(rotatingViewport.getOrientation()).toEqual(90);
 
-            viewport.rotateClockwise();
-            expect(viewport.getOrientation()).toEqual(180);
+            rotatingViewport.rotateClockwise();
+            expect(rotatingViewport.getOrientation()).toEqual(180);
 
-            viewport.rotateClockwise();
-            expect(viewport.getOrientation()).toEqual(270);
-
-            // stepping over or on 360deg, so we expect a reset to 0
-            viewport.rotateClockwise();
-            expect(viewport.getOrientation()).toEqual(0);
-
-            viewport.rotateCounterClockwise();
-            expect(viewport.getOrientation()).toEqual(-90);
-
-            viewport.rotateCounterClockwise();
-            expect(viewport.getOrientation()).toEqual(-180);
-
-            viewport.rotateCounterClockwise();
-            expect(viewport.getOrientation()).toEqual(-270);
+            rotatingViewport.rotateClockwise();
+            expect(rotatingViewport.getOrientation()).toEqual(270);
 
             // stepping over or on 360deg, so we expect a reset to 0
-            viewport.rotateCounterClockwise();
-            expect(viewport.getOrientation()).toEqual(0);
+            rotatingViewport.rotateClockwise();
+            expect(rotatingViewport.getOrientation()).toEqual(0);
+
+            rotatingViewport.rotateCounterClockwise();
+            expect(rotatingViewport.getOrientation()).toEqual(-90);
+
+            rotatingViewport.rotateCounterClockwise();
+            expect(rotatingViewport.getOrientation()).toEqual(-180);
+
+            rotatingViewport.rotateCounterClockwise();
+            expect(rotatingViewport.getOrientation()).toEqual(-270);
+
+            // stepping over or on 360deg, so we expect a reset to 0
+            rotatingViewport.rotateCounterClockwise();
+            expect(rotatingViewport.getOrientation()).toEqual(0);
+        });
+    });
+
+    describe('movement', function() {
+        it('returns the expected tile at the provided coordinates when not passing position', function() {
+            var smallMap = new Map(4),
+                viewport = new Viewport(map, 3);
+
+            expect(viewport.getTileAt(2,2)).toEqual(smallMap.getTileAt(2,2));
+        });
+
+        it('returns the expected tiles when creating the viewport with passed position', function() {
+            var smallMap = new Map(4),
+                expectedTilePosition = {x: 2, y: 2},
+                expectedTile = smallMap.getTileAt(expectedTilePosition.x, expectedTilePosition.y),
+                viewportOffset = {x: 2, y: 2},
+                viewport = new Viewport(map, 2, viewportOffset.x, viewportOffset.y);
+
+            expect(viewport.getTileAt(0,0)).toEqual(expectedTile);
+        });
+
+        it('throws exception when trying to create a viewport that does not completely fit on the map', function() {
+            var smallMap = new Map(4),
+                viewportOffset = {x: 20, y: 0};
+
+            expect(function() { new Viewport(smallMap, 2, viewportOffset.x, viewportOffset.y); }).toThrow(new InvalidArgumentException([20,0], "Viewport", "create"));
         });
     });
 });
