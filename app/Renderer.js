@@ -25,7 +25,7 @@ Renderer.prototype = {
         if (useIsoCoords === true) {
             canvasPosition = from2DtoIso(x * this.tileWidth/2, y * this.tileHeight);
 
-            this.context.fillStyle = "#FF0000";
+            this.context.fillStyle = "#7777FF";
             this.context.beginPath();
                 this.context.moveTo(canvasPosition.x + this.offset, (canvasPosition.y+this.tileHeight/2) + this.offset);
                 this.context.lineTo((canvasPosition.x + this.tileWidth/2) + this.offset, canvasPosition.y + this.offset);
@@ -36,14 +36,22 @@ Renderer.prototype = {
             this.context.stroke();
 
             this.context.fillStyle = "#000000";
-            this.context.fillText(x + "," + y, canvasPosition.x + this.offset + this.tileWidth/3, canvasPosition.y + this.offset + ((this.tileHeight / 2)));
+            this.context.fillText(x + "," + y, canvasPosition.x + this.offset + this.tileWidth/3, canvasPosition.y + this.offset + ((this.tileHeight / 1.7)));
         } else {
             canvasPosition = {x: x * this.tileWidth, y: y * this.tileHeight};
-            this.context.fillStyle = "#FF0000";
-            this.context.fillRect(canvasPosition.x + this.offset, canvasPosition.y + this.offset, this.tileWidth, this.tileHeight);
+
+            this.context.fillStyle = "#7777FF";
+            this.context.beginPath();
+                this.context.moveTo(canvasPosition.x + this.offset, (canvasPosition.y+this.tileHeight) + this.offset);
+                this.context.lineTo((canvasPosition.x) + this.offset, canvasPosition.y + this.offset);
+                this.context.lineTo(canvasPosition.x+this.tileWidth + this.offset, canvasPosition.y + this.offset);
+                this.context.lineTo(canvasPosition.x+this.tileWidth  + this.offset, canvasPosition.y+this.tileHeight + this.offset);
+                this.context.lineTo(canvasPosition.x + this.offset, (canvasPosition.y+this.tileHeight) + this.offset);
+                this.context.fill();
+            this.context.stroke();
 
             this.context.fillStyle = "#000000";
-            this.context.fillText(x + "," + y, canvasPosition.x + this.offset, (parseInt(canvasPosition.y) + this.offset) + (this.tileHeight / 2));
+            this.context.fillText(x + "," + y, canvasPosition.x + this.offset + (this.tileWidth / 4), (parseInt(canvasPosition.y) + this.offset) + (this.tileHeight / 2));
         }
     }
 };
