@@ -11,7 +11,6 @@ var Renderer = function($canvas) {
 
 Renderer.prototype = {
     /**
-     *
      * @param {Int} tileWidth
      * @param {Int} tileHeight
      */
@@ -25,7 +24,6 @@ Renderer.prototype = {
         };
     },
     /**
-     *
      * @param {Viewport} viewport
      * @param {Bool} useIsoCoords
      */
@@ -38,7 +36,7 @@ Renderer.prototype = {
         }
     },
     /**
-     *
+     * handles tile drawing using different draw modes
      * @param pos
      * @param {Tile} tile
      * @param {Bool} useIsoCoords
@@ -50,6 +48,12 @@ Renderer.prototype = {
             this._draw2DTile(pos);
         }
     },
+    /**
+     * draws a tile in iso mode
+     * @param pos
+     * @param tile
+     * @private
+     */
     _drawIsoTile: function(pos, tile) {
         var canvasPosition = from2DtoIso(pos.x * this.tileWidth/2, pos.y * this.tileHeight);
 
@@ -67,6 +71,12 @@ Renderer.prototype = {
             this._drawTileLabel(pos.x + "," + pos.y, "#000000", textPosition);
         }
     },
+    /**
+     * draws the tile frame for each height level at the given position - iso only
+     * @param pos
+     * @param level
+     * @private
+     */
     _drawTileFrame: function(pos, level) {
         this.context.fillStyle = "#00FF00";
 
@@ -84,6 +94,12 @@ Renderer.prototype = {
             this.context.stroke();
         this.context.closePath();
     },
+    /**
+     * draws top tile at the given position and level
+     * @param pos
+     * @param level
+     * @private
+     */
     _drawTileTopIso: function(pos, level) {
         this.context.fillStyle = "#7777FF";
 
@@ -100,6 +116,11 @@ Renderer.prototype = {
             this.context.fill();
         this.context.stroke();
     },
+    /**
+     * draws a 2d tile at the given position
+     * @param pos
+     * @private
+     */
     _draw2DTile: function(pos) {
         var canvasPosition = {x: pos.x * this.tileWidth, y: pos.y * this.tileHeight};
         this._drawTileTop2D(canvasPosition);
@@ -113,6 +134,11 @@ Renderer.prototype = {
             this._drawTileLabel(pos.x + "," + pos.y, "#000000", textPosition);
         }
     },
+    /**
+     * draws the 2d top tile for a given position
+     * @param pos
+     * @private
+     */
     _drawTileTop2D: function(pos) {
         this.context.fillStyle = "#7777FF";
         this.context.beginPath();
@@ -124,6 +150,13 @@ Renderer.prototype = {
             this.context.fill();
         this.context.stroke();
     },
+    /**
+     * draws a text label at the given position
+     * @param text
+     * @param color
+     * @param pos
+     * @private
+     */
     _drawTileLabel: function(text, color, pos) {
         this.context.font="10px Consolas";
         this.context.fillStyle = color;

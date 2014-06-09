@@ -28,15 +28,16 @@ var Viewport = function(map, edgeLength, offsetX, offsetY) {
         throw new InvalidArgumentException([this.offset.x, this.offset.y], 'Viewport', '');
     }
 
-    this.create(map);
+    this._create(map);
 };
 
 Viewport.prototype = {
     /**
      * grabs a portion of the map array
      * @param {Object} map
+     * @private
      */
-    create: function(map) {
+    _create: function(map) {
         for (var x=0; x<this.edgeLength; x++) {
             this.tiles[x] = [];
 

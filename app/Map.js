@@ -12,14 +12,15 @@ var Map = function(edgeLength, tileMap) {
     this.edgeLength = edgeLength;
     this.tileMap = tileMap || [[]];
 
-    this.create();
+    this._create();
 };
 
 Map.prototype = {
     /**
      * creates a 2d array of tiles, optionally based on passed tileMap
+     * @private
      */
-    create: function() {
+    _create: function() {
         for (var x=0; x<this.edgeLength; x++) {
             this.tiles[x] = [];
 
@@ -32,6 +33,12 @@ Map.prototype = {
             }
         }
     },
+    /**
+     *
+     * @param x
+     * @param y
+     * @returns {Tile}
+     */
     getTileAt: function(x, y) {
         return this.tiles[x][y];
     }
