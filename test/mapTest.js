@@ -12,7 +12,7 @@ describe('Map', function() {
         });
 
         it('returns the tile at the provided coordinates', function() {
-            var tile = new Tile(2,2);
+            var tile = new Tile(2, 2, 0);
 
             expect(map.getTileAt(2,2)).toEqual(tile);
         });
