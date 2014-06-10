@@ -5,7 +5,6 @@ var Game = function() {
 Game.prototype = {
     run: function() {
         var presetMap = [[
-
             {
                 x: 1,
                 y: 0,
@@ -14,12 +13,12 @@ Game.prototype = {
             {
                 x: 2,
                 y: 0,
-                level: 1
+                level: 2
             },
             {
                 x: 3,
                 y: 0,
-                level: 2
+                level: 3
             }
         ]];
 

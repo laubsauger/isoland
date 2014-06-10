@@ -11,8 +11,8 @@ var Renderer = function($canvas) {
 
 Renderer.prototype = {
     /**
-     * @param {Int} tileWidth
-     * @param {Int} tileHeight
+     * @param {Number} tileWidth
+     * @param {Number} tileHeight
      */
     configure: function(tileWidth, tileHeight) {
         this.tileWidth = tileWidth || 20;
@@ -25,9 +25,11 @@ Renderer.prototype = {
     },
     /**
      * @param {Viewport} viewport
-     * @param {Bool} useIsoCoords
+     * @param {Boolean} useIsoCoords
      */
     execute: function(viewport, useIsoCoords) {
+        this.context.translate(0.5, 0.5);
+
         for (var x=0; x<viewport.edgeLength; x++) {
             for (var y=0; y<viewport.edgeLength; y++) {
                 var pos = {x: x, y: y};
@@ -39,7 +41,7 @@ Renderer.prototype = {
      * handles tile drawing using different draw modes
      * @param pos
      * @param {Tile} tile
-     * @param {Bool} useIsoCoords
+     * @param {Boolean} useIsoCoords
      */
     _drawTile: function(pos, tile, useIsoCoords) {
         if (useIsoCoords === true) {
@@ -51,7 +53,7 @@ Renderer.prototype = {
     /**
      * draws a tile in iso mode
      * @param pos
-     * @param tile
+     * @param {Tile} tile
      * @private
      */
     _drawIsoTile: function(pos, tile) {
@@ -72,24 +74,44 @@ Renderer.prototype = {
         }
     },
     /**
-     * draws the tile frame for each height level at the given position - iso only
+     * draws the tile frame for each height level at the given position - based on isometric coordinates
      * @param pos
      * @param level
      * @private
      */
     _drawTileFrame: function(pos, level) {
-        this.context.fillStyle = "#00FF00";
+        var tileHeightLevelOffset = (pos.y - (this.tileHeight/2 * (level-1))) + this.offset,
+            offsetPos = {
+                x: (pos.x + this.tileWidth/2) + this.offset,
+                y: (pos.y + this.tileHeight/2) + this.offset
+            },
+            fullOffsetPos = {
+                x: pos.x + this.tileWidth + this.offset,
+                y: pos.y + this.tileHeight + this.offset
+            };
 
-        var tileHeightLevelOffset = (this.tileHeight/2 * (level-1));
-        //draw tile framing according to height/level
+
+        // right side
+        this.context.fillStyle = "#00FF00";
+        this.context.strokeStyle = '#888';
         this.context.beginPath();
-            this.context.moveTo(pos.x + this.offset, pos.y - tileHeightLevelOffset + this.offset);
-            this.context.lineTo(pos.x + this.offset, (pos.y + this.tileHeight/2) + this.offset);
-            this.context.lineTo((pos.x + this.tileWidth/2) + this.offset, pos.y + this.tileHeight + this.offset);
-            this.context.lineTo(pos.x + this.tileWidth + this.offset, (pos.y + this.tileHeight/2) + this.offset);
-            this.context.lineTo(pos.x + this.tileWidth + this.offset, pos.y - tileHeightLevelOffset + this.offset);
-            this.context.moveTo((pos.x + this.tileWidth/2) + this.offset, pos.y - tileHeightLevelOffset + this.offset);
-            this.context.lineTo((pos.x + this.tileWidth/2) + this.offset, pos.y + this.tileHeight + this.offset);
+            this.context.moveTo(offsetPos.x, fullOffsetPos.y);
+            this.context.lineTo(fullOffsetPos.x, offsetPos.y);
+            this.context.lineTo(fullOffsetPos.x, tileHeightLevelOffset);
+            this.context.lineTo(offsetPos.x, tileHeightLevelOffset + this.tileHeight/2);
+            this.context.fill();
+            this.context.stroke();
+        this.context.closePath();
+
+        // left side
+        this.context.lineWidth = 1;
+        this.context.fillStyle = "#00AA00";
+        this.context.strokeStyle = '#888';
+        this.context.beginPath();
+            this.context.moveTo(pos.x + this.offset, tileHeightLevelOffset);
+            this.context.lineTo(pos.x + this.offset, offsetPos.y);
+            this.context.lineTo(offsetPos.x, fullOffsetPos.y);
+            this.context.lineTo(offsetPos.x, tileHeightLevelOffset + this.tileHeight/2);
             this.context.fill();
             this.context.stroke();
         this.context.closePath();
@@ -101,18 +123,28 @@ Renderer.prototype = {
      * @private
      */
     _drawTileTopIso: function(pos, level) {
-        this.context.fillStyle = "#7777FF";
-
         if(level > 0) {
             pos.y -= (this.tileHeight/2*level);
         }
 
+        var offsetPos = {
+                x: (pos.x + this.tileWidth/2) + this.offset,
+                y: (pos.y + this.tileHeight/2) + this.offset
+            },
+            fullOffsetPos = {
+                x: pos.x + this.tileWidth + this.offset,
+                y: pos.y + this.tileHeight + this.offset
+            };
+
+        this.context.lineWidth = .5;
+        this.context.fillStyle = "#7777FF";
+        this.context.strokeStyle = '#000';
         this.context.beginPath();
-            this.context.moveTo(pos.x + this.offset, (pos.y+this.tileHeight/2) + this.offset);
-            this.context.lineTo((pos.x + this.tileWidth/2) + this.offset, pos.y + this.offset);
-            this.context.lineTo(pos.x+this.tileWidth + this.offset, (pos.y+this.tileHeight/2) + this.offset);
-            this.context.lineTo((pos.x+this.tileWidth/2) + this.offset, pos.y+this.tileHeight + this.offset);
-            this.context.lineTo(pos.x + this.offset, (pos.y+this.tileHeight/2) + this.offset);
+            this.context.moveTo(pos.x + this.offset, offsetPos.y);
+            this.context.lineTo(offsetPos.x, pos.y + this.offset);
+            this.context.lineTo(fullOffsetPos.x, offsetPos.y);
+            this.context.lineTo(offsetPos.x, fullOffsetPos.y);
+            this.context.lineTo(pos.x + this.offset, offsetPos.y);
             this.context.fill();
         this.context.stroke();
     },
@@ -140,7 +172,9 @@ Renderer.prototype = {
      * @private
      */
     _drawTileTop2D: function(pos) {
+        this.context.lineWidth = 1;
         this.context.fillStyle = "#7777FF";
+        this.context.strokeStyle = '#000';
         this.context.beginPath();
             this.context.moveTo(pos.x + this.offset, (pos.y+this.tileHeight) + this.offset);
             this.context.lineTo(pos.x + this.offset, pos.y + this.offset);
