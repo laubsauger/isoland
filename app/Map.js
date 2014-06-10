@@ -34,7 +34,6 @@ Map.prototype = {
         }
     },
     /**
-     *
      * @param x
      * @param y
      * @returns {Tile}

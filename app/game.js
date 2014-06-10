@@ -26,12 +26,19 @@ Game.prototype = {
         var map = new Map(10, presetMap),
             viewport = new Viewport(map, 4),
             renderer = new Renderer(document.querySelector('#world')),
-            rendererIso = new Renderer(document.querySelector('#worldIso'));
+            rendererIso = new Renderer(document.querySelector('#worldIso')),
+            render2dConfig = {
+                tileWidth: 32,
+                tileHeight: 32,
+                renderMode: "2d"
+            },
+            renderIsoConfig = {
+                tileWidth: 48,
+                tileHeight: 48,
+                renderMode: "iso"
+            };
 
-        renderer.configure(32, 32);
-        renderer.execute(viewport, false);
-
-        rendererIso.configure(48, 24);
-        rendererIso.execute(viewport, true);
+        renderer.configure(render2dConfig).execute(viewport);
+        rendererIso.configure(renderIsoConfig).execute(viewport);
     }
 };

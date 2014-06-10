@@ -11,29 +11,38 @@ var Renderer = function($canvas) {
 
 Renderer.prototype = {
     /**
-     * @param {Number} tileWidth
-     * @param {Number} tileHeight
+     * @param {Object} config
      */
-    configure: function(tileWidth, tileHeight) {
-        this.tileWidth = tileWidth || 20;
-        this.tileHeight = tileHeight || 20;
-        this.offset = 150;
-
+    configure: function(config) {
         this.config = {
-            drawTileLabels: true
+            drawTileLabels: config.drawTileLabels || true,
+            tileWidth: config.tileWidth || 30,
+            tileHeight: config.tileHeight || 30,
+            offset: config.offset || 150,
+            renderMode: config.renderMode || "iso"
         };
+
+        this.tileWidth = this.config.tileWidth;
+        this.tileHeight = this.config.tileHeight;
+
+        if (this.config.renderMode === "iso") {
+            this.tileHeight = this.tileHeight/2;
+        }
+
+        this.offset = this.config.offset;
+
+        return this;
     },
     /**
      * @param {Viewport} viewport
-     * @param {Boolean} useIsoCoords
      */
-    execute: function(viewport, useIsoCoords) {
+    execute: function(viewport) {
         this.context.translate(0.5, 0.5);
 
         for (var x=0; x<viewport.edgeLength; x++) {
             for (var y=0; y<viewport.edgeLength; y++) {
                 var pos = {x: x, y: y};
-                this._drawTile(pos, viewport.getTileAt(x, y), useIsoCoords);
+                this._drawTile(pos, viewport.getTileAt(x, y));
             }
         }
     },
@@ -41,12 +50,11 @@ Renderer.prototype = {
      * handles tile drawing using different draw modes
      * @param pos
      * @param {Tile} tile
-     * @param {Boolean} useIsoCoords
      */
-    _drawTile: function(pos, tile, useIsoCoords) {
-        if (useIsoCoords === true) {
+    _drawTile: function(pos, tile) {
+        if (this.config.renderMode === "iso") {
             this._drawIsoTile(pos, tile);
-        } else {
+        } else if (this.config.renderMode === "2d") {
             this._draw2DTile(pos);
         }
     },
@@ -90,7 +98,7 @@ Renderer.prototype = {
                 y: pos.y + this.tileHeight + this.offset
             };
 
-
+        this.context.lineWidth = 1;
         // right side
         this.context.fillStyle = "#00FF00";
         this.context.strokeStyle = '#888';
@@ -104,7 +112,6 @@ Renderer.prototype = {
         this.context.closePath();
 
         // left side
-        this.context.lineWidth = 1;
         this.context.fillStyle = "#00AA00";
         this.context.strokeStyle = '#888';
         this.context.beginPath();
