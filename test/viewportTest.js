@@ -4,7 +4,7 @@ describe('Viewport', function() {
 
     beforeEach(function() {
         map = new Map(10);
-        viewport = new Viewport(map, 5);
+        viewport = new Viewport(5, map);
     });
 
     describe('initialization', function() {
@@ -18,7 +18,7 @@ describe('Viewport', function() {
 
     describe('rotation', function() {
         it('rotates the array of tiles in view clockwise', function() {
-            var rotatingViewport = new Viewport(map, 3);
+            var rotatingViewport = new Viewport(3, map);
 
             var oldTopRightTile = rotatingViewport.getTileAt(0,2),
                 oldBottomLeftTile = rotatingViewport.getTileAt(2,0);
@@ -36,7 +36,7 @@ describe('Viewport', function() {
         });
 
         it('rotates the array of tiles in view counterclockwise', function() {
-            var rotatingViewport = new Viewport(map, 3);
+            var rotatingViewport = new Viewport(3, map);
 
             var oldTopRightTile = rotatingViewport.getTileAt(0,2),
                 oldBottomLeftTile = rotatingViewport.getTileAt(2,0);
@@ -54,7 +54,7 @@ describe('Viewport', function() {
         });
 
         it('modifies the viewport orientation when rotating the array of tiles in view', function() {
-            var rotatingViewport = new Viewport(map, 3);
+            var rotatingViewport = new Viewport(3, map);
 
             rotatingViewport.rotateClockwise();
             expect(rotatingViewport.getOrientation()).toEqual(90);
@@ -87,7 +87,7 @@ describe('Viewport', function() {
     describe('movement', function() {
         it('returns the expected tile at the provided coordinates when not passing position', function() {
             var smallMap = new Map(4),
-                viewport = new Viewport(map, 3);
+                viewport = new Viewport(3, map);
 
             expect(viewport.getTileAt(2,2)).toEqual(smallMap.getTileAt(2,2));
         });
@@ -97,7 +97,7 @@ describe('Viewport', function() {
                 expectedTilePosition = {x: 2, y: 2},
                 expectedTile = smallMap.getTileAt(expectedTilePosition.x, expectedTilePosition.y),
                 viewportOffset = {x: 2, y: 2},
-                viewport = new Viewport(map, 2, viewportOffset.x, viewportOffset.y);
+                viewport = new Viewport(2, map, viewportOffset.x, viewportOffset.y);
 
             expect(viewport.getTileAt(0,0)).toEqual(expectedTile);
         });
@@ -107,7 +107,7 @@ describe('Viewport', function() {
                 viewportOffset = {x: 20, y: 0};
 
             //noinspection JSValidateTypes
-            expect(function() { new Viewport(smallMap, 2, viewportOffset.x, viewportOffset.y); }).toThrow(new InvalidArgumentException([viewportOffset.x, viewportOffset.y], "Viewport", "construct", "this.offset.x/y"));
+            expect(function() { new Viewport(2, smallMap, viewportOffset.x, viewportOffset.y); }).toThrow(new InvalidArgumentException([viewportOffset.x, viewportOffset.y], "Viewport", "construct", "this.offset.x/y"));
         });
     });
 });

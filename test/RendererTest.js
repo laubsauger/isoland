@@ -1,10 +1,58 @@
 describe('Renderer', function() {
     var viewport,
-        map;
+        map,
+        canvasMock = {
+            getContext: function() {}
+        },
+        contextMock = {
+            translate: function() {},
+            beginPath: function() {},
+            moveTo: function() {},
+            lineTo: function() {},
+            fill: function() {},
+            stroke: function() {},
+            closePath: function() {},
+            fillText: function() {}
+        };
 
     beforeEach(function() {
-        map = new Map(10);
-        viewport = new Viewport(map, 5);
+        var presetMap = [[
+            {
+                x: 0,
+                y: 0,
+                level: 1
+            },
+            {
+                x: 0,
+                y: 1,
+                level: 2
+            },
+            {
+                x: 0,
+                y: 2,
+                level: 3
+            },
+        ],[
+            {
+                x: 1,
+                y: 0,
+                level: 1
+            }
+        ],[
+            {
+                x: 2,
+                y: 0,
+                level: 2
+            }
+        ],[
+            {
+                x: 3,
+                y: 0,
+                level: 3
+            }
+        ]];
+        map = new Map(10, presetMap);
+        viewport = new Viewport(5, map);
     });
 
     describe('configuration', function() {
@@ -43,25 +91,29 @@ describe('Renderer', function() {
     });
 
     describe('execution', function() {
-        it('draws viewport to canvas', function() {
+        it('draws viewport (iso) to canvas', function() {
             var rendererConfig = {
                     tileWidth: 20,
                     tileHeight: 20,
                     renderMode: "iso",
                     offset: 0
-                },
-                canvasMock = {
-                    getContext: function() {}
-                },
-                contextMock = {
-                    translate: function() {},
-                    beginPath: function() {},
-                    moveTo: function() {},
-                    lineTo: function() {},
-                    fill: function() {},
-                    stroke: function() {},
-                    closePath: function() {},
-                    fillText: function() {}
+                };
+
+            canvasMock.getContext = jasmine.createSpy("getContext() spy").andReturn(contextMock);
+
+            var renderer = new Renderer(canvasMock, rendererConfig);
+
+            expect(canvasMock.getContext).toHaveBeenCalled();
+
+            renderer.execute(viewport);
+        });
+
+        it('draws viewport (iso) to canvas', function() {
+            var rendererConfig = {
+                    tileWidth: 20,
+                    tileHeight: 20,
+                    renderMode: "2d",
+                    offset: 0
                 };
 
             canvasMock.getContext = jasmine.createSpy("getContext() spy").andReturn(contextMock);

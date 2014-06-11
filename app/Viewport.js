@@ -6,7 +6,7 @@
  * @param {Integer} [offsetY] -optional
  * @constructor
  */
-var Viewport = function(map, edgeLength, offsetX, offsetY) {
+var Viewport = function(edgeLength, map, offsetX, offsetY) {
     if (edgeLength <= 0) {
         throw new InvalidArgumentException(edgeLength, 'Viewport', 'construct', 'edgeLength');
     }

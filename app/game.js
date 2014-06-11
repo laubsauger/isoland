@@ -57,8 +57,8 @@ Game.prototype = {
 
         this.worldTileMap = new Map(this.config.worldSize, this.presetMap);
 
-        this.worldViewport = new Viewport(this.worldTileMap, this.config.worldViewportSize);
-        this.mapViewport = new Viewport(this.worldTileMap, this.config.worldSize);
+        this.worldViewport = new Viewport(this.config.worldViewportSize, this.worldTileMap);
+        this.mapViewport = new Viewport(this.config.worldSize, this.worldTileMap);
 
         return this;
     },
