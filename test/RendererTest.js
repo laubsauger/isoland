@@ -9,7 +9,7 @@ describe('Renderer', function() {
 
     describe('configuration', function() {
         it('sets up the renderer', function() {
-            var renderer = new Renderer({getContext: function(){}});
+//            var renderer = new Renderer({getContext: function(){}});
         });
     });
 });

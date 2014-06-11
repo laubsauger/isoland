@@ -1,26 +1,27 @@
 /**
  *
  * @param {Object} $canvas DomElement
+ * @param {Object} config
  * @constructor
  */
-var Renderer = function($canvas) {
+var Renderer = function($canvas, config) {
     this.context = $canvas.getContext("2d");
     this.width = $canvas.width;
     this.height = $canvas.height;
+
+    this.configure(config);
 };
 
 Renderer.prototype = {
-    /**
-     * @param {Object} config
-     */
     configure: function(config) {
         this.config = {
             drawTileLabels: config.drawTileLabels || true,
-            tileWidth: config.tileWidth || 30,
-            tileHeight: config.tileHeight || 30,
-            offset: config.offset || 150,
-            renderMode: config.renderMode || "iso"
+            tileWidth: config.tileWidth,
+            tileHeight: config.tileHeight,
+            offset: config.offset,
+            renderMode: config.renderMode
         };
+        console.log(this.config);
 
         this.tileWidth = this.config.tileWidth;
         this.tileHeight = this.config.tileHeight;
@@ -41,8 +42,7 @@ Renderer.prototype = {
 
         for (var x=0; x<viewport.edgeLength; x++) {
             for (var y=0; y<viewport.edgeLength; y++) {
-                var pos = {x: x, y: y};
-                this._drawTile(pos, viewport.getTileAt(x, y));
+                this._drawTile({x: x, y: y}, viewport.getTileAt(x, y));
             }
         }
     },
@@ -70,6 +70,7 @@ Renderer.prototype = {
         if (tile.level > 0) {
             this._drawTileFrame(canvasPosition, tile.level);
         }
+
         this._drawTileTopIso(canvasPosition, tile.level);
 
         if (this.config.drawTileLabels) {
@@ -101,7 +102,7 @@ Renderer.prototype = {
         this.context.lineWidth = 1;
         // right side
         this.context.fillStyle = "#00FF00";
-        this.context.strokeStyle = '#888';
+        this.context.strokeStyle = '#000';
         this.context.beginPath();
             this.context.moveTo(offsetPos.x, fullOffsetPos.y);
             this.context.lineTo(fullOffsetPos.x, offsetPos.y);
@@ -113,12 +114,13 @@ Renderer.prototype = {
 
         // left side
         this.context.fillStyle = "#00AA00";
-        this.context.strokeStyle = '#888';
+        this.context.strokeStyle = '#000';
         this.context.beginPath();
             this.context.moveTo(pos.x + this.offset, tileHeightLevelOffset);
             this.context.lineTo(pos.x + this.offset, offsetPos.y);
             this.context.lineTo(offsetPos.x, fullOffsetPos.y);
             this.context.lineTo(offsetPos.x, tileHeightLevelOffset + this.tileHeight/2);
+            this.context.lineTo(pos.x + this.offset, tileHeightLevelOffset);
             this.context.fill();
             this.context.stroke();
         this.context.closePath();
@@ -153,7 +155,8 @@ Renderer.prototype = {
             this.context.lineTo(offsetPos.x, fullOffsetPos.y);
             this.context.lineTo(pos.x + this.offset, offsetPos.y);
             this.context.fill();
-        this.context.stroke();
+            this.context.stroke();
+        this.context.closePath();
     },
     /**
      * draws a 2d tile at the given position
@@ -189,7 +192,8 @@ Renderer.prototype = {
             this.context.lineTo(pos.x+this.tileWidth  + this.offset, pos.y+this.tileHeight + this.offset);
             this.context.lineTo(pos.x + this.offset, (pos.y+this.tileHeight) + this.offset);
             this.context.fill();
-        this.context.stroke();
+            this.context.stroke();
+        this.context.closePath();
     },
     /**
      * draws a text label at the given position

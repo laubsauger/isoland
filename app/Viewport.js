@@ -21,7 +21,7 @@ var Viewport = function(map, edgeLength, offsetX, offsetY) {
 
     this.offset = {
         x: offsetX || 0,
-        y: offsetY || 0
+        y: offsetY || 0.
     };
 
     if (this.offset.x + edgeLength > map.edgeLength || this.offset.y + edgeLength > map.edgeLength) {

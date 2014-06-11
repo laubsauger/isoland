@@ -16,5 +16,13 @@ describe('Map', function() {
 
             expect(map.getTileAt(2,2)).toEqual(tile);
         });
+
+        it('throws exception when passed edgeLength is out of range', function() {
+            var nonIntegerLength = "a",
+                negativeLength = -15;
+
+            expect(function() { new Map(nonIntegerLength); }).toThrow(new InvalidArgumentException(nonIntegerLength, 'Map', 'create'));
+            expect(function() { new Map(negativeLength); }).toThrow(new InvalidArgumentException(negativeLength, 'Map', 'create'));
+        });
     });
 });

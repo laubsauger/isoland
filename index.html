@@ -4,8 +4,11 @@
     <title>isoland</title>
 </head>
 <body>
-    <canvas id="world" width="400" height="400" style="border:1px solid #ccc;background-color: #000;"></canvas>
-    <canvas id="worldIso" width="400" height="400" style="border:1px solid #ccc;background-color: #000;"></canvas>
+    <div >
+        <canvas id="world" style="background-color: #000;"></canvas>
+        <canvas id="worldIso" style="background-color: #000;"></canvas>
+    </div>
+
 
 
     <script src="lib/arrayRotate.js"></script>
@@ -16,13 +19,15 @@
     <script src="app/Tile.js"></script>
     <script src="app/Viewport.js"></script>
     <script src="app/Renderer.js"></script>
+    <script src="app/InputHandler.js"></script>
+    <script src="app/UI.js"></script>
     <script src="app/Game.js"></script>
-    <!--<script src="vendor/jquery-2.1.1.min.js"></script>-->
+    <script src="vendor/jquery-2.1.1.min.js"></script>
 
     <script>
         var gameRunner = new Game();
 
-        gameRunner.run();
+        gameRunner.setup().run();
     </script>
 </body>
 </html>

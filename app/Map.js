@@ -1,12 +1,12 @@
 /**
  * Holds tile data
- * @param {Integer} edgeLength
+ * @param {Number} edgeLength
  * @param {Array} [tileMap]
  * @constructor
  */
 var Map = function(edgeLength, tileMap) {
     this.tiles = [];
-    if(edgeLength <= 0) {
+    if(typeof edgeLength !== "number" || edgeLength <= 0) {
         throw new InvalidArgumentException(edgeLength, 'Map', 'create');
     }
     this.edgeLength = edgeLength;
