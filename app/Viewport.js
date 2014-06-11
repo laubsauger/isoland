@@ -8,11 +8,15 @@
  */
 var Viewport = function(map, edgeLength, offsetX, offsetY) {
     if (edgeLength <= 0) {
-        throw new InvalidArgumentException(edgeLength, 'Viewport', '');
+        throw new InvalidArgumentException(edgeLength, 'Viewport', 'construct', 'edgeLength');
     }
 
     if (map instanceof Map === false) {
-        throw new InvalidArgumentException(map, 'Viewport', '');
+        throw new InvalidArgumentException(map, 'Viewport', 'construct', 'map');
+    }
+
+    if (offsetX && typeof offsetX !== "number" || offsetY && typeof offsetY !== "number") {
+        throw new InvalidArgumentException([offsetX, offsetY], 'Viewport', 'construct', 'offsetX/offsetY');
     }
 
     this.edgeLength = edgeLength;
@@ -20,12 +24,12 @@ var Viewport = function(map, edgeLength, offsetX, offsetY) {
     this.tiles = [];
 
     this.offset = {
-        x: offsetX,
-        y: offsetY
+        x: offsetX || 0,
+        y: offsetY || 0
     };
 
     if (this.offset.x + edgeLength > map.edgeLength || this.offset.y + edgeLength > map.edgeLength) {
-        throw new InvalidArgumentException([this.offset.x, this.offset.y], 'Viewport', '');
+        throw new InvalidArgumentException([this.offset.x, this.offset.y], 'Viewport', 'construct', 'this.offset.x/y');
     }
 
     this._create(map);

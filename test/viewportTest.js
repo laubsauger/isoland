@@ -107,7 +107,7 @@ describe('Viewport', function() {
                 viewportOffset = {x: 20, y: 0};
 
             //noinspection JSValidateTypes
-            expect(function() { new Viewport(smallMap, 2, viewportOffset.x, viewportOffset.y); }).toThrow(new InvalidArgumentException([viewportOffset.x, viewportOffset.y], "Viewport", ""));
+            expect(function() { new Viewport(smallMap, 2, viewportOffset.x, viewportOffset.y); }).toThrow(new InvalidArgumentException([viewportOffset.x, viewportOffset.y], "Viewport", "construct", "this.offset.x/y"));
         });
     });
 });

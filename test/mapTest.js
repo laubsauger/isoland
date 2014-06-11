@@ -19,10 +19,12 @@ describe('Map', function() {
 
         it('throws exception when passed edgeLength is out of range', function() {
             var nonIntegerLength = "a",
-                negativeLength = -15;
+                negativeLength = -15,
+                zero = 0;
 
             expect(function() { new Map(nonIntegerLength); }).toThrow(new InvalidArgumentException(nonIntegerLength, 'Map', 'create'));
             expect(function() { new Map(negativeLength); }).toThrow(new InvalidArgumentException(negativeLength, 'Map', 'create'));
+            expect(function() { new Map(zero); }).toThrow(new InvalidArgumentException(zero, 'Map', 'create'));
         });
     });
 });

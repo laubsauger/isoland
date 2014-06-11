@@ -8,6 +8,7 @@ var Renderer = function($canvas, config) {
     this.context = $canvas.getContext("2d");
     this.width = $canvas.width;
     this.height = $canvas.height;
+    this.supportedRenderModes = ["iso", "2d"];
 
     this.configure(config);
 };
@@ -21,7 +22,10 @@ Renderer.prototype = {
             offset: config.offset,
             renderMode: config.renderMode
         };
-        console.log(this.config);
+
+        if (this.supportedRenderModes.indexOf(this.config.renderMode) === -1) {
+            throw new InvalidArgumentException(this.config.renderMode, 'Renderer', 'configure', 'config.rendermode');
+        }
 
         this.tileWidth = this.config.tileWidth;
         this.tileHeight = this.config.tileHeight;
