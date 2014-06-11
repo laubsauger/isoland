@@ -20,8 +20,8 @@ var Viewport = function(map, edgeLength, offsetX, offsetY) {
     this.tiles = [];
 
     this.offset = {
-        x: offsetX || 0,
-        y: offsetY || 0.
+        x: offsetX,
+        y: offsetY
     };
 
     if (this.offset.x + edgeLength > map.edgeLength || this.offset.y + edgeLength > map.edgeLength) {

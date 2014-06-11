@@ -8,7 +8,7 @@ var Game = function() {
         worldViewportSize: 4,
         worldTileSize: 48,
         mapTileSize: 32
-    }
+    };
 
     this.worldCanvas = this.config.worldCanvas;
     this.mapCanvas = this.config.mapCanvas;
@@ -93,26 +93,7 @@ Game.prototype = {
             // 3. apply changes
             // 4. redraw
         //<< game loop
-
         this.worldRenderer.execute(this.worldViewport);
         this.mapRenderer.execute(this.mapViewport);
-//        var map = new Map(10, presetMap),
-//            viewport = new Viewport(map, 4),
-//            renderer = new Renderer(document.querySelector('#world')),
-//            rendererIso = new Renderer(document.querySelector('#worldIso')),
-//            render2dConfig = {
-//                tileWidth: 32,
-//                tileHeight: 32,
-//                renderMode: "2d"
-//            },
-//            renderIsoConfig = {
-//                tileWidth: 48,
-//                tileHeight: 48,
-//                renderMode: "iso"
-//            },
-//            input = new InputHandler(rendererIso);
-
-//        renderer.configure(render2dConfig).execute(viewport);
-//        rendererIso.configure(renderIsoConfig).execute(viewport);
     }
 };
