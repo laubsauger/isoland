@@ -9,8 +9,6 @@
         <canvas id="worldIso" style="background-color: #000;"></canvas>
     </div>
 
-
-
     <script src="lib/arrayRotate.js"></script>
     <script src="lib/coordinates.js"></script>
 
@@ -23,11 +21,22 @@
     <script src="app/UI.js"></script>
     <script src="app/Game.js"></script>
     <script src="vendor/jquery-2.1.1.min.js"></script>
+    <script src="vendor/dat.gui.min.js"></script>
+
 
     <script>
-        var gameRunner = new Game();
 
-        gameRunner.setup().run();
+
+        window.onload = function() {
+            var gui = new dat.GUI();
+            var gameRunner = new Game().setup();
+
+            gameRunner.run();
+
+            gui.add(gameRunner, 'mapZoomLevel');
+            gui.add(gameRunner, 'setup');
+            gui.add(gameRunner, 'run');
+        };
     </script>
 </body>
 </html>
