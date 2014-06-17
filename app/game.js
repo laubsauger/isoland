@@ -7,8 +7,11 @@ var Game = function() {
         worldSize: 10,
         worldViewportSize: 4,
         worldTileSize: 48,
-        mapTileSize: 32
+        mapTileSize: 32,
+        mapZoomLevel: 2
     };
+
+    this.mapZoomLevel = this.config.mapZoomLevel;
 
     this.worldCanvas = this.config.worldCanvas;
     this.mapCanvas = this.config.mapCanvas;
@@ -34,7 +37,7 @@ Game.prototype = {
                 x: 0,
                 y: 2,
                 level: 3
-            },
+            }
         ],[
             {
                 x: 1,
@@ -62,6 +65,16 @@ Game.prototype = {
 
         return this;
     },
+    run: function() {
+        //>> game loop
+        // 1. register viewport and game state changes
+        // 2. do stuff
+        // 3. apply changes
+        // 4. redraw
+        //<< game loop
+        this.worldRenderer.execute(this.worldViewport);
+        this.mapRenderer.execute(this.mapViewport);
+    },
     createWorldRenderer: function() {
         var worldRendererConfig = {
             tileWidth: this.config.worldTileSize,
@@ -79,21 +92,12 @@ Game.prototype = {
             tileWidth: this.config.mapTileSize,
             tileHeight: this.config.mapTileSize,
             renderMode: "2d",
-            offset: 20
+            offset: 20,
+            zoomLevel: this.mapZoomLevel
         };
 
         this.mapCanvas.width = this.mapCanvas.height = this.config.mapCanvasSize;
 
         return new Renderer(this.mapCanvas, mapRendererConfig);
-    },
-    run: function() {
-        //>> game loop
-            // 1. register viewport and game state changes
-            // 2. do stuff
-            // 3. apply changes
-            // 4. redraw
-        //<< game loop
-        this.worldRenderer.execute(this.worldViewport);
-        this.mapRenderer.execute(this.mapViewport);
     }
 };

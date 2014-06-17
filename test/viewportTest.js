@@ -3,15 +3,15 @@ describe('Viewport', function() {
         map;
 
     beforeEach(function() {
-        map = new Map(10);
-        viewport = new Viewport(5, map);
+        map = new Map(8);
+        viewport = new Viewport(4, map);
     });
 
     describe('initialization', function() {
         it('creates an 2d-array with the provided dimensions containing Tiles', function() {
             expect(viewport.tiles[0][0] instanceof Tile).toBeTruthy();
-            expect(viewport.tiles.length).toEqual(5);
-            expect(viewport.tiles.length * viewport.edgeLength).toEqual(25);
+            expect(viewport.tiles.length).toEqual(4);
+            expect(viewport.tiles.length * viewport.edgeLength).toEqual(16);
         });
 
     });

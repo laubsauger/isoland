@@ -2,9 +2,12 @@ describe('Renderer', function() {
     var viewport,
         map,
         canvasMock = {
-            getContext: function() {}
+            getContext: function() {
+                return {translate: function() {}};
+            }
         },
         contextMock = {
+            clearRect: function() {},
             translate: function() {},
             beginPath: function() {},
             moveTo: function() {},
@@ -53,6 +56,8 @@ describe('Renderer', function() {
         ]];
         map = new Map(10, presetMap);
         viewport = new Viewport(5, map);
+
+        canvasMock.getContext = jasmine.createSpy("getContext() spy").andReturn(contextMock);
     });
 
     describe('configuration', function() {
@@ -64,7 +69,9 @@ describe('Renderer', function() {
                 offset: 0
             };
 
-            var renderer = new Renderer({getContext: function(){}}, rendererConfig);
+            var renderer = new Renderer(canvasMock, rendererConfig);
+
+            expect(canvasMock.getContext).toHaveBeenCalled();
         });
 
         it('sets up an iso renderer', function() {
@@ -75,7 +82,8 @@ describe('Renderer', function() {
                 offset: 0
             };
 
-            var renderer = new Renderer({getContext: function(){}}, rendererConfig);
+            var renderer = new Renderer(canvasMock, rendererConfig);
+            expect(canvasMock.getContext).toHaveBeenCalled();
         });
 
         it('throws exception when passing unsupported renderMode', function() {
@@ -86,7 +94,8 @@ describe('Renderer', function() {
                 offset: 0
             };
 
-            expect(function() { new Renderer({getContext: function(){}}, rendererConfig)}).toThrow(new InvalidArgumentException(rendererConfig.renderMode, 'Renderer', 'configure', 'config.rendermode'));
+            expect(function() { new Renderer(canvasMock, rendererConfig)}).toThrow(new InvalidArgumentException(rendererConfig.renderMode, 'Renderer', 'configure', 'config.rendermode'));
+            expect(canvasMock.getContext).toHaveBeenCalled();
         });
     });
 
@@ -98,8 +107,6 @@ describe('Renderer', function() {
                     renderMode: "iso",
                     offset: 0
                 };
-
-            canvasMock.getContext = jasmine.createSpy("getContext() spy").andReturn(contextMock);
 
             var renderer = new Renderer(canvasMock, rendererConfig);
 

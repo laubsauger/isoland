@@ -10,17 +10,24 @@ var Renderer = function($canvas, config) {
     this.height = $canvas.height;
     this.supportedRenderModes = ["iso", "2d"];
 
+    this.context.translate(0.5, 0.5);
+
     this.configure(config);
 };
 
 Renderer.prototype = {
+    /**
+     * @param {Object} config
+     * @returns {Renderer}
+     */
     configure: function(config) {
         this.config = {
             drawTileLabels: config.drawTileLabels || true,
             tileWidth: config.tileWidth,
             tileHeight: config.tileHeight,
             offset: config.offset,
-            renderMode: config.renderMode
+            renderMode: config.renderMode,
+            zoomLevel: config.zoomLevel
         };
 
         if (this.supportedRenderModes.indexOf(this.config.renderMode) === -1) {
@@ -42,8 +49,7 @@ Renderer.prototype = {
      * @param {Viewport} viewport
      */
     execute: function(viewport) {
-        this.context.translate(0.5, 0.5);
-
+        this.context.clearRect(0, 0, this.height, this.width);
         for (var x=0; x<viewport.edgeLength; x++) {
             for (var y=0; y<viewport.edgeLength; y++) {
                 this._drawTile({x: x, y: y}, viewport.getTileAt(x, y));
@@ -75,7 +81,7 @@ Renderer.prototype = {
             this._drawTileFrame(canvasPosition, tile.level);
         }
 
-        this._drawTileTopIso(canvasPosition, tile.level);
+        this._drawIsoTileTop(canvasPosition, tile.level);
 
         if (this.config.drawTileLabels) {
             var textPosition = {
@@ -85,6 +91,39 @@ Renderer.prototype = {
 
             this._drawTileLabel(pos.x + "," + pos.y, "#000000", textPosition);
         }
+    },
+    /**
+     * draws top tile at the given position and level
+     * @param pos
+     * @param level
+     * @private
+     */
+    _drawIsoTileTop: function (pos, level) {
+        if(level > 0) {
+            pos.y -= (this.tileHeight/2*level);
+        }
+
+        var offsetPos = {
+                x: (pos.x + this.tileWidth/2) + this.offset,
+                y: (pos.y + this.tileHeight/2) + this.offset
+            },
+            fullOffsetPos = {
+                x: pos.x + this.tileWidth + this.offset,
+                y: pos.y + this.tileHeight + this.offset
+            };
+
+        this.context.lineWidth = .5;
+        this.context.fillStyle = "#7777FF";
+        this.context.strokeStyle = '#000';
+        this.context.beginPath();
+        this.context.moveTo(pos.x + this.offset, offsetPos.y);
+        this.context.lineTo(offsetPos.x, pos.y + this.offset);
+        this.context.lineTo(fullOffsetPos.x, offsetPos.y);
+        this.context.lineTo(offsetPos.x, fullOffsetPos.y);
+        this.context.lineTo(pos.x + this.offset, offsetPos.y);
+        this.context.fill();
+        this.context.stroke();
+        this.context.closePath();
     },
     /**
      * draws the tile frame for each height level at the given position - based on isometric coordinates
@@ -130,51 +169,21 @@ Renderer.prototype = {
         this.context.closePath();
     },
     /**
-     * draws top tile at the given position and level
-     * @param pos
-     * @param level
-     * @private
-     */
-    _drawTileTopIso: function(pos, level) {
-        if(level > 0) {
-            pos.y -= (this.tileHeight/2*level);
-        }
-
-        var offsetPos = {
-                x: (pos.x + this.tileWidth/2) + this.offset,
-                y: (pos.y + this.tileHeight/2) + this.offset
-            },
-            fullOffsetPos = {
-                x: pos.x + this.tileWidth + this.offset,
-                y: pos.y + this.tileHeight + this.offset
-            };
-
-        this.context.lineWidth = .5;
-        this.context.fillStyle = "#7777FF";
-        this.context.strokeStyle = '#000';
-        this.context.beginPath();
-            this.context.moveTo(pos.x + this.offset, offsetPos.y);
-            this.context.lineTo(offsetPos.x, pos.y + this.offset);
-            this.context.lineTo(fullOffsetPos.x, offsetPos.y);
-            this.context.lineTo(offsetPos.x, fullOffsetPos.y);
-            this.context.lineTo(pos.x + this.offset, offsetPos.y);
-            this.context.fill();
-            this.context.stroke();
-        this.context.closePath();
-    },
-    /**
      * draws a 2d tile at the given position
-     * @param pos
+     * @param {Object} pos
      * @private
      */
     _draw2DTile: function(pos) {
-        var canvasPosition = {x: pos.x * this.tileWidth, y: pos.y * this.tileHeight};
-        this._drawTileTop2D(canvasPosition);
+        var width = this.tileWidth / this.config.zoomLevel;
+        var height = this.tileHeight / this.config.zoomLevel;
+
+        var canvasPosition = {x: pos.x * width, y: pos.y * height};
+        this._draw2DTileTop(canvasPosition, width, height);
 
         if (this.config.drawTileLabels) {
             var textPosition = {
-                x: canvasPosition.x + this.offset + (this.tileWidth / 4),
-                y: (parseInt(canvasPosition.y) + this.offset) + (this.tileHeight / 2)
+                x: canvasPosition.x + this.offset + (height / 4),
+                y: (parseInt(canvasPosition.y) + this.offset) + (height / 2)
             };
 
             this._drawTileLabel(pos.x + "," + pos.y, "#000000", textPosition);
@@ -182,28 +191,30 @@ Renderer.prototype = {
     },
     /**
      * draws the 2d top tile for a given position
-     * @param pos
+     * @param {Object} pos
+     * @param {Number} width
+     * @param {Number} height
      * @private
      */
-    _drawTileTop2D: function(pos) {
+    _draw2DTileTop: function(pos, width, height) {
         this.context.lineWidth = 1;
         this.context.fillStyle = "#7777FF";
         this.context.strokeStyle = '#000';
         this.context.beginPath();
-            this.context.moveTo(pos.x + this.offset, (pos.y+this.tileHeight) + this.offset);
+            this.context.moveTo(pos.x + this.offset, (pos.y+height) + this.offset);
             this.context.lineTo(pos.x + this.offset, pos.y + this.offset);
-            this.context.lineTo(pos.x+this.tileWidth + this.offset, pos.y + this.offset);
-            this.context.lineTo(pos.x+this.tileWidth  + this.offset, pos.y+this.tileHeight + this.offset);
-            this.context.lineTo(pos.x + this.offset, (pos.y+this.tileHeight) + this.offset);
+            this.context.lineTo(pos.x+width + this.offset, pos.y + this.offset);
+            this.context.lineTo(pos.x+width  + this.offset, pos.y+height + this.offset);
+            this.context.lineTo(pos.x + this.offset, (pos.y+height) + this.offset);
             this.context.fill();
             this.context.stroke();
         this.context.closePath();
     },
     /**
      * draws a text label at the given position
-     * @param text
-     * @param color
-     * @param pos
+     * @param {String} text
+     * @param {String} color
+     * @param {Object} pos
      * @private
      */
     _drawTileLabel: function(text, color, pos) {
