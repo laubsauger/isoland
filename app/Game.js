@@ -1,3 +1,18 @@
+function convertMouseCoordsToTileCoords(e){
+    var x = e.pageX;
+    var y = e.pageY;
+
+    var yMouse = (2*(y-canvas.offsetTop-mapYOffset)-x+canvas.offsetLeft+mapXOffset)/2;
+    var xMouse = x+yMouse-mapXOffset-(tileW+2)-canvas.offsetLeft;
+
+    xMouse = xMouse + tileH/2;
+    // ymouse = ymouse - tileH/2;
+
+    yMouse = Math.round(yMouse/tileH);
+    xMouse = Math.round(xMouse/tileH);
+    // console.log('mouseX',xmouse,'mouseY', ymouse);
+}
+
 var Game = function() {
     this.config = {
         worldCanvas: document.querySelector('#worldIso'),
@@ -66,6 +81,15 @@ Game.prototype = {
 
         this.worldViewport = new Viewport(this.config.worldViewportSize, this.worldTileMap);
         this.mapViewport = new Viewport(this.config.worldSize, this.worldTileMap);
+
+        this.config.inputMap = {
+            highlightTileOnMouseOver: {
+                domElement: this.config.worldCanvas,
+                event: "mousemove"
+            }
+        };
+
+        this.inputHandler = new InputHandler();
 
         return this;
     },

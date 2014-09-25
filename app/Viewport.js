@@ -1,9 +1,9 @@
 /**
  * Contains the handling of the currently visible part of the map
  * @param {Object} map
- * @param {Integer} edgeLength
- * @param {Integer} [offsetX] -optional
- * @param {Integer} [offsetY] -optional
+ * @param {Number} edgeLength
+ * @param {Number} [offsetX] -optional
+ * @param {Number} [offsetY] -optional
  * @constructor
  */
 var Viewport = function(edgeLength, map, offsetX, offsetY) {
