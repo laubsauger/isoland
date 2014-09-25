@@ -75,7 +75,7 @@ Renderer.prototype = {
      * @private
      */
     _drawIsoTile: function(pos, tile) {
-        var canvasPosition = from2DtoIso(pos.x * this.tileWidth/2, pos.y * this.tileHeight);
+        var canvasPosition = from2DtoIso(pos.x, pos.y, this.tileHeight, this.tileWidth);
 
         if (tile.level > 0) {
             this._drawTileFrame(canvasPosition, tile.level);
