@@ -1,8 +1,8 @@
 /**
  * Tile object
- * @param {Integer} x
- * @param {Integer} y
- * @param {Integer} level
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} level
  * @constructor
  */
 var Tile = function(x, y, level) {
