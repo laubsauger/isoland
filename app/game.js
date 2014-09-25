@@ -74,7 +74,7 @@ Game.prototype = {
      */
     run: function() {
         //>> game loop
-        // 1. register viewport and game state changes
+        // 1. register viewport and game state changes .
         // 2. do stuff
         // 3. apply changes
         // 4. redraw
