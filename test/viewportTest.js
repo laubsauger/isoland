@@ -85,14 +85,14 @@ describe('Viewport', function() {
     });
 
     describe('movement', function() {
-        it('returns the expected tile at the provided coordinates when not passing position', function() {
+        it('returns the expected tile at the provided coordinates when not passing offset position (= viewport created at the top left)', function() {
             var smallMap = new Map(4),
                 viewport = new Viewport(3, map);
 
             expect(viewport.getTileAt(2,2)).toEqual(smallMap.getTileAt(2,2));
         });
 
-        it('returns the expected tiles when creating the viewport with passed position', function() {
+        it('returns the expected tiles when creating the viewport with passed offset position (= viewport was moved)', function() {
             var smallMap = new Map(4),
                 expectedTilePosition = {x: 2, y: 2},
                 expectedTile = smallMap.getTileAt(expectedTilePosition.x, expectedTilePosition.y),
@@ -102,7 +102,7 @@ describe('Viewport', function() {
             expect(viewport.getTileAt(0,0)).toEqual(expectedTile);
         });
 
-        it('throws exception when trying to create a viewport that does not completely fit on the map', function() {
+        it('throws exception when trying to create a viewport with offsets that are out of bounds (= moved too far, no map left to render)', function() {
             var smallMap = new Map(4),
                 viewportOffset = {x: 20, y: 0};
 

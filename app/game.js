@@ -18,6 +18,10 @@ var Game = function() {
 };
 
 Game.prototype = {
+    /**
+     * Initialize required game object
+     * @returns {Game}
+     */
     setup: function() {
         this.worldRenderer = this.createWorldRenderer();
         this.mapRenderer = this.createMapRenderer();
@@ -65,6 +69,9 @@ Game.prototype = {
 
         return this;
     },
+    /**
+     * run the game loop
+     */
     run: function() {
         //>> game loop
         // 1. register viewport and game state changes
@@ -75,6 +82,10 @@ Game.prototype = {
         this.worldRenderer.execute(this.worldViewport);
         this.mapRenderer.execute(this.mapViewport);
     },
+    /**
+     * Create World renderer
+     * @returns {Renderer}
+     */
     createWorldRenderer: function() {
         var worldRendererConfig = {
             tileWidth: this.config.worldTileSize,
@@ -87,6 +98,10 @@ Game.prototype = {
 
         return new Renderer(this.worldCanvas, worldRendererConfig);
     },
+    /**
+     * Create Overview Map renderer
+     * @returns {Renderer}
+     */
     createMapRenderer: function() {
         var mapRendererConfig = {
             tileWidth: this.config.mapTileSize,
