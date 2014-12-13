@@ -1,10 +1,12 @@
 var InputHandler = function(config) {
     this.yMouse = 0;
     this.xMouse = 0;
-
+    this.selectedTile = false;
     this.config = config;
 
     this.setup();
+
+    return this;
 };
 
 InputHandler.prototype = {
@@ -22,6 +24,7 @@ InputHandler.prototype = {
      */
     register: function(element, event, fn) {
         element.params = {
+            instance: this,
             canvasOffsetTop: 150,
             canvasOffsetLeft: 150,
             tileWidth: this.config.worldTileSize,
@@ -30,7 +33,7 @@ InputHandler.prototype = {
             canvasSize: this.config.worldCanvasSize
         };
 
-        element.addEventListener(event, $.throttle(250, fn), false);
+        element.addEventListener(event, $.throttle(60, fn), false);
     },
     /**
      * Converts current mouse coordinates to absolute 2D tile grid position / array indices
@@ -41,12 +44,12 @@ InputHandler.prototype = {
         var yMouse = e.offsetY - e.target.params.canvasOffsetTop;
         var xMouse = e.offsetX - e.target.params.canvasOffsetLeft;
 
-        this.selectedTile = {
-            x: Math.abs(Math.round(xMouse / e.target.params.tileWidth + yMouse / (e.target.params.tileHeight/2))-1),
-            y: Math.abs(Math.round(yMouse / (e.target.params.tileHeight/2) - xMouse / e.target.params.tileWidth))
+        e.target.params.instance.selectedTile = {
+            x: Math.round(xMouse / e.target.params.tileWidth + yMouse / (e.target.params.tileHeight/2))-1,
+            y: Math.round(yMouse / (e.target.params.tileHeight/2) - xMouse / e.target.params.tileWidth)
         };
 
         //console.log('viewportX', xMouse, 'viewportY', yMouse);
-        console.log('tileX', this.selectedTile.x, 'tileY', this.selectedTile.y);
+        console.log(e.target.params.instance.selectedTile);
     }
 };
