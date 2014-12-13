@@ -100,7 +100,7 @@ describe('Renderer', function() {
     });
 
     describe('execution', function() {
-        it('draws viewport (renderMode: iso) to canvas', function() {
+        it('iso: draws viewport to canvas', function() {
             var rendererConfig = {
                     tileWidth: 20,
                     tileHeight: 20,
@@ -115,7 +115,7 @@ describe('Renderer', function() {
             renderer.execute(viewport);
         });
 
-        it('draws viewport (renderMode: 2D) to canvas', function() {
+        it('2d: draws viewport to canvas', function() {
             var rendererConfig = {
                     tileWidth: 20,
                     tileHeight: 20,
@@ -132,7 +132,7 @@ describe('Renderer', function() {
             renderer.execute(viewport);
         });
 
-        it('draws viewport (renderMode: test) to canvas', function() {
+        it('test: draws viewport to canvas', function() {
             var rendererConfig = {
                 tileWidth: 20,
                 tileHeight: 20,
@@ -147,6 +147,80 @@ describe('Renderer', function() {
             expect(canvasMock.getContext).toHaveBeenCalled();
 
             renderer.execute(viewport);
+        });
+
+        it('iso: returns default top fill style when tile is not focused', function() {
+            var rendererConfig = {
+                tileWidth: 20,
+                tileHeight: 20,
+                renderMode: "iso",
+                offset: 0
+            };
+            var renderer = new Renderer(canvasMock, rendererConfig);
+
+            renderer._getTileTopFillStyle = jasmine.createSpy("_getTileTopFillStyle() spy").andReturn('#bbb');
+            renderer.execute(viewport);
+
+            expect(renderer._getTileTopFillStyle).toHaveBeenCalledWith(false);
+        });
+
+        it('iso: returns highlight top fill style when tile is focused', function() {
+            var rendererConfig = {
+                tileWidth: 20,
+                tileHeight: 20,
+                renderMode: "iso",
+                offset: 0
+            };
+            var renderer = new Renderer(canvasMock, rendererConfig);
+
+            viewport = new Viewport(2, new Map(2));
+            var tile = new Tile(0,0,1);
+            tile.hasFocus = true;
+
+            renderer._getTileTopFillStyle = jasmine.createSpy("_getTileTopFillStyle() spy");
+            viewport.getTileAt = jasmine.createSpy("getTileAt() spy").andReturn(tile);
+
+            renderer.execute(viewport);
+
+            expect(viewport.getTileAt).toHaveBeenCalledWith(0, 1);
+            expect(renderer._getTileTopFillStyle).toHaveBeenCalledWith(true);
+        });
+
+        it('2d: returns default top fill style when tile is not focused', function() {
+            var rendererConfig = {
+                tileWidth: 20,
+                tileHeight: 20,
+                renderMode: "2d",
+                offset: 0
+            };
+            var renderer = new Renderer(canvasMock, rendererConfig);
+
+            renderer._getTileTopFillStyle = jasmine.createSpy("_getTileTopFillStyle() spy").andReturn('#bbb');
+            renderer.execute(viewport);
+
+            expect(renderer._getTileTopFillStyle).toHaveBeenCalledWith(false);
+        });
+
+        it('2d: returns highlight top fill style when tile is focused', function() {
+            var rendererConfig = {
+                tileWidth: 20,
+                tileHeight: 20,
+                renderMode: "2d",
+                offset: 0
+            };
+            var renderer = new Renderer(canvasMock, rendererConfig);
+
+            viewport = new Viewport(2, new Map(2));
+            var tile = new Tile(0,0,1);
+            tile.hasFocus = true;
+
+            renderer._getTileTopFillStyle = jasmine.createSpy("_getTileTopFillStyle() spy");
+            viewport.getTileAt = jasmine.createSpy("getTileAt() spy").andReturn(tile);
+
+            renderer.execute(viewport);
+
+            expect(viewport.getTileAt).toHaveBeenCalledWith(0, 1);
+            expect(renderer._getTileTopFillStyle).toHaveBeenCalledWith(true);
         });
     });
 });
