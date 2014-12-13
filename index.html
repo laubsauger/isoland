@@ -7,6 +7,7 @@
     <div >
         <canvas id="map" style="background-color: #000;"></canvas>
         <canvas id="world" style="background-color: #000;"></canvas>
+        <canvas id="test" style="background-color: #000;"></canvas>
     </div>
 
     <script src="lib/arrayRotate.js"></script>
@@ -27,13 +28,13 @@
     <script>
         window.onload = function() {
             var gui = new dat.GUI();
-            var gameRunner = new Game().setup();
+            var game = new Game().setup();
 
-            gameRunner.run();
+            game.run();
 
-            gui.add(gameRunner, 'mapZoomLevel');
-            gui.add(gameRunner, 'setup');
-            gui.add(gameRunner, 'run');
+            gui.add(game, 'mapZoomLevel');
+            gui.add(game, 'setup');
+            gui.add(game, 'run');
         };
     </script>
 </body>
