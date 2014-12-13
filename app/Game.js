@@ -4,9 +4,9 @@ var Game = function() {
         mapCanvas: document.querySelector('#map'),
         worldCanvasSize: 400,
         mapCanvasSize: 400,
-        worldSize: 10,
+        worldSize: 4,
         worldViewportSize: 4,
-        worldTileSize: 48,
+        worldTileSize: 96,
         mapTileSize: 32,
         mapZoomLevel: 2
     };
@@ -26,48 +26,50 @@ Game.prototype = {
         this.worldRenderer = this.createWorldRenderer();
         this.mapRenderer = this.createMapRenderer();
 
-        this.presetMap = [[
-            {
-                x: 0,
-                y: 0,
-                level: 1
-            },
-            {
-                x: 0,
-                y: 1,
-                level: 2
-            },
-            {
-                x: 0,
-                y: 2,
-                level: 3
-            }
-        ],[
-            {
-                x: 1,
-                y: 0,
-                level: 1
-            }
-        ],[
-            {
-                x: 2,
-                y: 0,
-                level: 2
-            }
-        ],[
-            {
-                x: 3,
-                y: 0,
-                level: 3
-            }
-        ]];
+        this.presetMap = [
+            //[
+            //    {
+            //        x: 0,
+            //        y: 0,
+            //        level: 1
+            //    },
+            //    {
+            //        x: 0,
+            //        y: 1,
+            //        level: 2
+            //    },
+            //    {
+            //        x: 0,
+            //        y: 2,
+            //        level: 3
+            //    }
+            //],[
+            //    {
+            //        x: 1,
+            //        y: 0,
+            //        level: 1
+            //    }
+            //],[
+            //    {
+            //        x: 2,
+            //        y: 0,
+            //        level: 2
+            //    }
+            //],[
+            //    {
+            //        x: 3,
+            //        y: 0,
+            //        level: 3
+            //    }
+            //]
+        ];
 
         this.worldTileMap = new Map(this.config.worldSize, this.presetMap);
 
         this.worldViewport = new Viewport(this.config.worldViewportSize, this.worldTileMap);
         this.mapViewport = new Viewport(this.config.worldSize, this.worldTileMap);
 
-        //this.inputHandler = new InputHandler();
+        this.inputHandler = new InputHandler(this.config);
 
         return this;
     },

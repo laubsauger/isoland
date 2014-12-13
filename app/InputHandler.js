@@ -1,6 +1,8 @@
-var InputHandler = function() {
+var InputHandler = function(config) {
     this.yMouse = 0;
     this.xMouse = 0;
+
+    this.config = config;
 
     this.setup();
 };
@@ -13,27 +15,24 @@ InputHandler.prototype = {
         element.params = {
             canvasOffsetTop: 150,
             canvasOffsetLeft: 150,
-            mapOffsetY: 150,
-            mapOffsetX: 150,
-            tileWidth: 48,
-            tileHeight: 48
+            tileWidth: this.config.worldTileSize,
+            tileHeight: this.config.worldTileSize,
+            worldSize: this.config.worldSize,
+            canvasSize: this.config.worldCanvasSize
         };
 
-        element.addEventListener(event, fn, false);
+        element.addEventListener(event, $.throttle(250, fn), false);
     },
     _mouseCoordsToTileCoords: function(e) {
-        var x = e.pageX;
-        var y = e.pageY;
+        var yMouse = e.offsetY - e.target.params.canvasOffsetTop;
+        var xMouse = e.offsetX - e.target.params.canvasOffsetLeft;
 
-        //todo: replace with call to new lib/coordinates functions?
-        var yMouse = (2 * (y - e.target.params.canvasOffsetTop - e.target.params.mapOffsetY) -  + e.target.params.canvasOffsetLeft + e.target.params.mapOffsetX) / 2;
-        var xMouse = x + yMouse - e.target.params.mapOffsetX - (e.target.params.tileWidth + 2) - e.target.params.canvasOffsetLeft;
+        this.selectedTile = {
+            x: Math.abs(Math.round(xMouse / e.target.params.tileWidth + yMouse / (e.target.params.tileHeight/2))-1),
+            y: Math.abs(Math.round(yMouse / (e.target.params.tileHeight/2) - xMouse / e.target.params.tileWidth))
+        };
 
-        xMouse = xMouse + e.target.params.tileHeight / 2;
-        // ymouse = ymouse - tileH/2;
-
-        this.yMouse = Math.round(yMouse / e.target.params.tileWidth);
-        this.xMouse = Math.round(xMouse / e.target.params.tileHeight);
-        console.log('mouseX', this.xMouse, 'mouseY', this.yMouse);
+        //console.log('viewportX', xMouse, 'viewportY', yMouse);
+        console.log('tileX', this.selectedTile.x, 'tileY', this.selectedTile.y);
     }
 };
