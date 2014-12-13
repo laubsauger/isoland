@@ -100,7 +100,7 @@ describe('Renderer', function() {
     });
 
     describe('execution', function() {
-        it('draws viewport (iso) to canvas', function() {
+        it('draws viewport (renderMode: iso) to canvas', function() {
             var rendererConfig = {
                     tileWidth: 20,
                     tileHeight: 20,
@@ -115,7 +115,7 @@ describe('Renderer', function() {
             renderer.execute(viewport);
         });
 
-        it('draws viewport (iso) to canvas', function() {
+        it('draws viewport (renderMode: 2D) to canvas', function() {
             var rendererConfig = {
                     tileWidth: 20,
                     tileHeight: 20,
