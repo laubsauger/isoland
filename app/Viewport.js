@@ -50,9 +50,18 @@ Viewport.prototype = {
             }
         }
     },
+    /**
+     * Get Tile object by its 2D grid coords/array indices
+     * @param x
+     * @param y
+     * @returns {*}
+     */
     getTileAt: function(x,y) {
         return this.tiles[x][y];
     },
+    /**
+     * Performs clockwise arrayRotate on the tile array
+     */
     rotateClockwise: function() {
         if ((this.orientation + 90) >= 360) {
             this.orientation = 0;
@@ -62,6 +71,9 @@ Viewport.prototype = {
 
         this.tiles = arrayRotate('r', this.tiles);
     },
+    /**
+     * Performs counter clockwise arrayRotate on the tile array
+     */
     rotateCounterClockwise: function() {
         if ((this.orientation - 90) <= -360) {
             this.orientation = 0;
@@ -71,6 +83,10 @@ Viewport.prototype = {
 
         this.tiles = arrayRotate('l', this.tiles);
     },
+    /**
+     * Return current Viewport orientation
+     * @returns {number}
+     */
     getOrientation: function() {
         return this.orientation;
     }
