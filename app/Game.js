@@ -9,7 +9,7 @@ var Game = function() {
         worldSize: 4,
         worldViewportSize: 4,
         worldTileSize: 96,
-        mapTileSize: 32,
+        mapTileSize: 64,
         testTileSize: 48,
         mapZoomLevel: 2
     };
@@ -73,6 +73,7 @@ Game.prototype = {
 
         this.worldViewport = new Viewport(this.config.worldViewportSize, this.worldTileMap);
         this.mapViewport = new Viewport(this.config.worldSize, this.worldTileMap);
+
         this.testViewport = new Viewport(4, new Map(4));
 
         this.inputHandler = new InputHandler(this.config);
@@ -91,8 +92,35 @@ Game.prototype = {
         // 3. apply changes
         // 4. redraw
         //<< game loop
-        this.worldRenderer.execute(this.worldViewport);
-        this.mapRenderer.execute(this.mapViewport);
+
+        var self = this,
+            canvasContainer = $('body:first-child')[0];
+
+        (function animationLoop(){
+            var focusedTile = false;
+            //console.log('rendering');
+
+            if (self.inputHandler.selectedTile) {
+                focusedTile = self.worldViewport.getTileAt(self.inputHandler.selectedTile.x, self.inputHandler.selectedTile.y);
+
+                if (focusedTile instanceof Tile) {
+                    //noinspection JSPrimitiveTypeWrapperUsage
+                    focusedTile.hasFocus = true;
+                }
+            }
+
+            self.worldRenderer.execute(self.worldViewport);
+            self.mapRenderer.execute(self.mapViewport);
+
+            // clean up
+            if (focusedTile instanceof Tile) {
+                //noinspection JSPrimitiveTypeWrapperUsage
+                focusedTile.hasFocus = false;
+            }
+
+            // loop
+            requestAnimationFrame(animationLoop, canvasContainer);
+        })();
     },
     /**
      * Create World renderer
