@@ -14,6 +14,29 @@ describe('Viewport', function() {
             expect(viewport.tiles.length * viewport.edgeLength).toEqual(16);
         });
 
+        it('throws exception when trying to create a viewport with edgelength <= 0', function() {
+            var smallMap = new Map(4),
+                viewportOffset = {x: 20, y: 0};
+
+            //noinspection JSValidateTypes
+            expect(function() { new Viewport(0, smallMap, viewportOffset.x, viewportOffset.y); }).toThrow(new InvalidArgumentException(0, 'Viewport', 'construct', 'edgeLength'));
+        });
+
+        it('throws exception when trying to create a viewport while not passing a Map object', function() {
+            var smallMap = new Array(4),
+                viewportOffset = {x: 20, y: 0};
+
+            //noinspection JSValidateTypes
+            expect(function() { new Viewport(2, smallMap, viewportOffset.x, viewportOffset.y); }).toThrow(new InvalidArgumentException(smallMap, 'Viewport', 'construct', 'map'));
+        });
+
+        it('throws exception when trying to create a viewport with non-numeric offsets', function() {
+            var smallMap = new Map(4),
+                viewportOffset = {x: "0,1", y: "ab"};
+
+            //noinspection JSValidateTypes
+            expect(function() { new Viewport(2, smallMap, viewportOffset.x, viewportOffset.y); }).toThrow(new InvalidArgumentException([viewportOffset.x, viewportOffset.y], 'Viewport', 'construct', 'offsetX/offsetY'));
+        });
     });
 
     describe('rotation', function() {

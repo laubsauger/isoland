@@ -34,7 +34,7 @@ describe('Renderer', function() {
                 x: 0,
                 y: 2,
                 level: 3
-            },
+            }
         ],[
             {
                 x: 1,
@@ -122,6 +122,23 @@ describe('Renderer', function() {
                     renderMode: "2d",
                     offset: 0
                 };
+
+            canvasMock.getContext = jasmine.createSpy("getContext() spy").andReturn(contextMock);
+
+            var renderer = new Renderer(canvasMock, rendererConfig);
+
+            expect(canvasMock.getContext).toHaveBeenCalled();
+
+            renderer.execute(viewport);
+        });
+
+        it('draws viewport (renderMode: test) to canvas', function() {
+            var rendererConfig = {
+                tileWidth: 20,
+                tileHeight: 20,
+                renderMode: "test",
+                offset: 0
+            };
 
             canvasMock.getContext = jasmine.createSpy("getContext() spy").andReturn(contextMock);
 

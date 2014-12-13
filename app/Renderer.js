@@ -62,10 +62,11 @@ Renderer.prototype = {
             }
         }
     },
+    /**
+     * Draw Test Tiles in a horizontal line
+     * @private
+     */
     _drawTestTiles: function() {
-        //foreach tile variant
-        // draw variant one a horizontal line
-        // (0,3) (1,2) (2,1) (3,0)
         this._drawIsoTile({x: 0, y: 3}, new Tile(0,3,0));
         this._drawIsoTile({x: 1, y: 2}, new Tile(1,2,1));
         this._drawIsoTile({x: 2, y: 1}, new Tile(2,1,2));
