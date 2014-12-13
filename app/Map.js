@@ -25,6 +25,7 @@ Map.prototype = {
             this.tiles[x] = [];
 
             for (var y=0; y<this.edgeLength; y++) {
+                // create a level 0 tile if there is no data at the provided map indices
                 if (typeof this.tileMap[x] !== "undefined" && typeof this.tileMap[x][y] !== "undefined") {
                     this.tiles[x][y] = this.tileMap[x][y];
                 } else {
@@ -34,6 +35,7 @@ Map.prototype = {
         }
     },
     /**
+     * Returns tile object at the provided map indices
      * @param x
      * @param y
      * @returns {Tile}

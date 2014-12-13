@@ -9,4 +9,5 @@ var Tile = function(x, y, level) {
     this.x = x;
     this.y = y;
     this.level = level;
+    this.hasFocus = false;
 };

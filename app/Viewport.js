@@ -54,10 +54,10 @@ Viewport.prototype = {
      * Get Tile object by its 2D grid coords/array indices
      * @param x
      * @param y
-     * @returns {*}
+     * @returns {Tile}
      */
     getTileAt: function(x,y) {
-        return this.tiles[x][y];
+        return (this.tiles[x] && this.tiles[x][y]) ? this.tiles[x][y] : null;
     },
     /**
      * Performs clockwise arrayRotate on the tile array
