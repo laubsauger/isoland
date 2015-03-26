@@ -164,7 +164,7 @@ Game.prototype = {
     /**
      * Create Test renderer
      * draws every possible tile combination (types and levels) in a straight line
-     * @todo Extract functionality to create the offscreen renderer which replaces the JIT drawing for renderers of every type (except this one) <- massive performance boost!
+     * @todo Extract this functionality to create an offscreen renderer which replaces the JIT drawing for renderers of every type (except this one) <- massive performance boost!
      * @returns {Renderer}
      */
     createTestRenderer: function() {

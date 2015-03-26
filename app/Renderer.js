@@ -95,6 +95,8 @@ Renderer.prototype = {
     _drawIsoTile: function(pos, tile) {
         var canvasPosition = fromGridToIso(pos.x, pos.y, this.tileHeight, this.tileWidth);
 
+        // Draw frame for tiles above sea level only
+        // @todo: Make this configurable (allow tiles below sea level to be rendered with frame according to their (negative) height)
         if (tile.level > 0) {
             this._drawTileFrame(canvasPosition, tile.level);
         }
