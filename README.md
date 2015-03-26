@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/laubsauger/isoland.svg?branch=master)](https://travis-ci.org/laubsauger/isoland)
 # isoland
 canvas based isometric engine
 
