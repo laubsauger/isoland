@@ -6,12 +6,12 @@ canvas based isometric engine
 ### Done
 - basic rendering
     - iso renderer
-    - zoomable minimap 2d renderer
+    - zoomable minimap (2d renderer)
     
 - basic input processing
     - mouse hover
 
-### TODO
+### Todo
 - offscreen prerendering for all tile variations
 - user modifiable terrain (see legacy code)
 - pregenerate terrain with perlin noise (see legacy code)

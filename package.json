@@ -16,7 +16,7 @@
     "phantomjs": "^1.9.16"
   },
   "scripts": {
-    "test": "karma start"
+    "test": "./node_modules/.bin/karma start --configFile=./karma.conf.js"
   },
   "repository": {
     "type": "git",
