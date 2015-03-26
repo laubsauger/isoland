@@ -31,7 +31,7 @@ Renderer.prototype = {
         };
 
         if (this.supportedRenderModes.indexOf(this.config.renderMode) === -1) {
-            throw new InvalidArgumentException(this.config.renderMode, 'Renderer', 'configure', 'config.rendermode');
+            throw new InvalidArgumentException("Unknown render mode: " + this.config.renderMode);
         }
 
         this.tileWidth = this.config.tileWidth;

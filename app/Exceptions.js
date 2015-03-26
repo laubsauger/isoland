@@ -1,7 +1,6 @@
-function InvalidArgumentException(value, object, method, param) {
-    this.value = value;
-    this.message = " - provided for " + object + '.' + method + ' : ' + (param||"-");
-    this.toString = function() {
-        return 'InvalidArgumentException: ' + this.value + this.message
+function InvalidArgumentException(message) {
+    return {
+        name: "InvalidArgumentException",
+        message: message || "invalid argument passed"
     };
 }
