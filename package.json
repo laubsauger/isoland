@@ -10,13 +10,14 @@
   "devDependencies": {
     "jasmine-core": "^2.2.0",
     "karma": "^0.12.31",
+    "karma-cli": "0.0.4",
     "karma-coverage": "^0.2.7",
     "karma-jasmine": "^0.3.5",
     "karma-phantomjs-launcher": "^0.1.4",
     "phantomjs": "^1.9.16"
   },
   "scripts": {
-    "test": "karma start --configFile=karma.conf.js"
+    "test": "/node_modules/.bin/karma start --configFile=./karma.conf.js"
   },
   "repository": {
     "type": "git",
