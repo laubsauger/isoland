@@ -1,4 +1,37 @@
 {
   "name": "isoland",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "description": "isoland\r =======",
+  "main": "karma.conf.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "jasmine-core": "^2.2.0",
+    "karma": "^0.12.31",
+    "karma-coverage": "^0.2.7",
+    "karma-jasmine": "^0.3.5",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "phantomjs": "^1.9.16"
+  },
+  "scripts": {
+    "test": "karma start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/laubsauger/isoland.git"
+  },
+  "keywords": [
+    "isometric",
+    "game",
+    "engine",
+    "canvas"
+  ],
+  "author": "laubsauger",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/laubsauger/isoland/issues"
+  },
+  "homepage": "https://github.com/laubsauger/isoland"
 }

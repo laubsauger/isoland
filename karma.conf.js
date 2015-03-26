@@ -18,6 +18,6 @@ module.exports = function(config) {
         autoWatch: false,
         browsers: ['PhantomJS'],
         captureTimeout: 60000,
-        singleRun: false
+        singleRun: true
     });
 };
