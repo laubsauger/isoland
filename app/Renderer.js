@@ -74,11 +74,16 @@ Renderer.prototype = {
         this._drawIsoTile({x: 1, y: 2}, new Tile(1,2,1));
         this._drawIsoTile({x: 2, y: 1}, new Tile(2,1,2));
         this._drawIsoTile({x: 3, y: 0}, new Tile(3,0,3));
+
+        this._drawIsoTile({x: 4, y: -1}, new Tile(0,3,0, new TileElevateParam(1,1,0,0)));
+        this._drawIsoTile({x: 5, y: -2}, new Tile(1,2,1));
+        this._drawIsoTile({x: 6, y: -3}, new Tile(2,1,2));
+        this._drawIsoTile({x: 7, y: -4}, new Tile(3,0,3));
     },
     /**
      * handles tile drawing using different draw modes
      * @param pos
-     * @param tile
+     * @param {Tile} tile
      */
     _drawTile: function(pos, tile) {
         if (this.config.renderMode === "iso") {
@@ -98,10 +103,10 @@ Renderer.prototype = {
         // Draw frame for tiles above sea level only
         // @todo: Make this configurable (allow tiles below sea level to be rendered with frame according to their (negative) height)
         if (tile.level > 0) {
-            this._drawTileFrame(canvasPosition, tile.level);
+            this._drawTileSides(canvasPosition, tile.level);
         }
 
-        this._drawIsoTileTop(canvasPosition, tile.level, tile.hasFocus);
+        this._drawIsoTileTop(canvasPosition, tile);
 
         if (this.config.drawTileLabels) {
             var textPosition = {
@@ -115,12 +120,13 @@ Renderer.prototype = {
     /**
      * draws top tile at the given position and level
      * @param pos
-     * @param level
-     * @param {boolean} tileHasFocus
+     * @param {Tile} tile
      */
-    _drawIsoTileTop: function (pos, level, tileHasFocus) {
-        if(level > 0) {
-            pos.y -= (this.tileHeight/2*level);
+    _drawIsoTileTop: function (pos, tile) {
+        // adjust height according to level
+        // @todo: allow negative values
+        if(tile.level > 0) {
+            pos.y -= (this.tileHeight/2*tile.level);
         }
 
         var offsetPos = {
@@ -132,17 +138,51 @@ Renderer.prototype = {
                 y: pos.y + this.tileHeight + this.offset.top
             };
 
+        var tileVertices = {
+            top: {
+                x: offsetPos.x,
+                y: pos.y + this.offset.top
+            },
+            right: {
+                x: fullOffsetPos.x,
+                y:  offsetPos.y
+            },
+            bottom: {
+                x: offsetPos.x,
+                y: fullOffsetPos.y
+            },
+            left: {
+                x: pos.x + this.offset.left,
+                y: offsetPos.y
+            }
+        };
+
+        // pull corners/vertices up
+        if(tile.elevate.top) {
+            tileVertices.top.y -= this.tileHeight/2;
+        }
+        if(tile.elevate.right) {
+            tileVertices.right.y -= this.tileHeight/2;
+        }
+        if(tile.elevate.bottom) {
+            tileVertices.bottom.y -= this.tileHeight/2;
+        }
+        if(tile.elevate.left) {
+            tileVertices.left.y -= this.tileHeight/2;
+        }
+
         this.context.lineWidth = .5;
 
-        this.context.fillStyle = this._getTileTopFillStyle(tileHasFocus);
+        this.context.fillStyle = this._getTileTopFillStyle(tile.hasFocus);
 
         this.context.strokeStyle = "#000";
         this.context.beginPath();
-            this.context.moveTo(pos.x + this.offset.left, offsetPos.y);
-            this.context.lineTo(offsetPos.x, pos.y + this.offset.top);
-            this.context.lineTo(fullOffsetPos.x, offsetPos.y);
-            this.context.lineTo(offsetPos.x, fullOffsetPos.y);
-            this.context.lineTo(pos.x + this.offset.left, offsetPos.y);
+            this.context.moveTo(tileVertices.left.x, tileVertices.left.y); // links
+            this.context.lineTo(tileVertices.top.x, tileVertices.top.y);  // oben
+            this.context.lineTo(tileVertices.right.x, tileVertices.right.y);          // rechts
+            this.context.lineTo(tileVertices.bottom.x, tileVertices.bottom.y);          // unten
+            //this.context.lineTo(pos.x + this.offset.left, offsetPos.y); //???
+
         this.context.fill();
         this.context.stroke();
         this.context.closePath();
@@ -163,9 +203,10 @@ Renderer.prototype = {
      * @param pos
      * @param {int} level
      */
-    _drawTileFrame: function(pos, level) {
-        var tileHeightLevelOffset = (pos.y - (this.tileHeight/2 * (level-1))) + this.offset.top,
-            offsetPos = {
+    _drawTileSides: function(pos, level) {
+        var tileHeightLevelOffset = (pos.y - (this.tileHeight/2 * (level-1))) + this.offset.top;
+
+        var offsetPos = {
                 x: (pos.x + this.tileWidth/2) + this.offset.left,
                 y: (pos.y + this.tileHeight/2) + this.offset.top
             },
