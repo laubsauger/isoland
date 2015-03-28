@@ -144,11 +144,16 @@ describe('Renderer', function() {
                 offset: 0
             };
 
-            var renderer = new Renderer(canvasStub, rendererConfig);
+            var colorLuminanceStub = {calculate: function() {}};
+            spyOn(colorLuminanceStub, 'calculate');
+
+            var renderer = new Renderer(canvasStub, rendererConfig, colorLuminanceStub);
 
             expect(canvasStub.getContext).toHaveBeenCalled();
 
             renderer.execute(viewport);
+
+            expect(colorLuminanceStub.calculate).toHaveBeenCalled();
         });
 
         it('iso: returns default top fill style when tile is not focused', function() {
