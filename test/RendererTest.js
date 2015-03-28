@@ -164,7 +164,7 @@ describe('Renderer', function() {
 
             renderer.execute(viewport);
 
-            expect(renderer._getTileTopFillStyle).toHaveBeenCalledWith(false);
+            expect(renderer._getTileTopFillStyle).toHaveBeenCalled();
         });
 
         it('iso: returns highlight top fill style when tile is focused', function() {
@@ -186,7 +186,7 @@ describe('Renderer', function() {
             renderer.execute(viewport);
 
             expect(viewport.getTileAt).toHaveBeenCalledWith(0, 1);
-            expect(renderer._getTileTopFillStyle).toHaveBeenCalledWith(true);
+            expect(renderer._getTileTopFillStyle).toHaveBeenCalled();
         });
 
         it('2d: returns default top fill style when tile is not focused', function() {
@@ -202,7 +202,7 @@ describe('Renderer', function() {
 
             renderer.execute(viewport);
 
-            expect(renderer._getTileTopFillStyle).toHaveBeenCalledWith(false);
+            expect(renderer._getTileTopFillStyle).toHaveBeenCalled();
         });
 
         it('2d: returns highlight top fill style when tile is focused', function() {
@@ -224,7 +224,7 @@ describe('Renderer', function() {
             renderer.execute(viewport);
 
             expect(viewport.getTileAt).toHaveBeenCalledWith(0, 1);
-            expect(renderer._getTileTopFillStyle).toHaveBeenCalledWith(true);
+            expect(renderer._getTileTopFillStyle).toHaveBeenCalled();
         });
     });
 });

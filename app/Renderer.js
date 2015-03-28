@@ -2,13 +2,16 @@
  *
  * @param {Object} $canvas DomElement
  * @param {Object} config
+ * @param {ColorLuminance} colorLuminance
  * @constructor
  */
-var Renderer = function($canvas, config) {
+var Renderer = function($canvas, config, colorLuminance) {
     this.context = $canvas.getContext("2d");
     this.width = $canvas.width;
     this.height = $canvas.height;
     this.supportedRenderModes = ["iso", "2d", "test"];
+
+    this.colorLuminance = colorLuminance;
 
     this.context.translate(0.5, 0.5);
 
@@ -27,7 +30,11 @@ Renderer.prototype = {
             tileHeight: config.tileHeight,
             offset: config.offset,
             renderMode: config.renderMode,
-            zoomLevel: config.zoomLevel
+            zoomLevel: config.zoomLevel,
+            tileColors: {
+                fillTopBase: '#7777FF',
+                lightenByLevelMultiplier: 0.1
+            }
         };
 
         if (this.supportedRenderModes.indexOf(this.config.renderMode) === -1) {
@@ -70,15 +77,30 @@ Renderer.prototype = {
      * Draw Test Tiles in a horizontal line
      */
     _drawTestTiles: function() {
-        this._drawIsoTile({x: 0, y: 3}, new Tile(0,3,0));
-        this._drawIsoTile({x: 1, y: 2}, new Tile(1,2,1));
-        this._drawIsoTile({x: 2, y: 1}, new Tile(2,1,2));
-        this._drawIsoTile({x: 3, y: 0}, new Tile(3,0,3));
+        this._drawIsoTile({x: 0, y: 3}, new Tile(0,0,0));
+        this._drawIsoTile({x: 1, y: 2}, new Tile(0,0,1));
+        this._drawIsoTile({x: 2, y: 1}, new Tile(0,0,2));
+        this._drawIsoTile({x: 3, y: 0}, new Tile(0,0,3));
+        this._drawIsoTile({x: 4, y: -1}, new Tile(0,0,4));
 
-        this._drawIsoTile({x: 4, y: -1}, new Tile(0,3,0, new TileElevateParam(1,1,0,0)));
-        this._drawIsoTile({x: 5, y: -2}, new Tile(1,2,1));
-        this._drawIsoTile({x: 6, y: -3}, new Tile(2,1,2));
-        this._drawIsoTile({x: 7, y: -4}, new Tile(3,0,3));
+        // One raised tile surrounded by tiles one level deeper
+        // -- sloped
+        // 0 0 0
+        // 0 1 0
+        // 0 0 0
+        this._drawIsoTile({x: 4, y: -5}, new Tile(0,0,0, new TileElevateParam(0,0,1,0)));
+        this._drawIsoTile({x: 4, y: -4}, new Tile(0,0,0, new TileElevateParam(0,1,1,0)));
+        this._drawIsoTile({x: 4, y: -3}, new Tile(0,0,0, new TileElevateParam(0,1,0,0)));
+        this._drawIsoTile({x: 5, y: -5}, new Tile(0,0,0, new TileElevateParam(0,0,1,1)));
+
+        this._drawIsoTile({x: 5, y: -4}, new Tile(0,0,1, new TileElevateParam(0,0,0,0))); // raised, influences all tiles around to line up
+
+        this._drawIsoTile({x: 5, y: -3}, new Tile(0,0,0, new TileElevateParam(1,1,0,0)));
+        this._drawIsoTile({x: 6, y: -5}, new Tile(0,0,0, new TileElevateParam(0,0,0,1)));
+        this._drawIsoTile({x: 6, y: -4}, new Tile(0,0,0, new TileElevateParam(1,0,0,1)));
+        this._drawIsoTile({x: 6, y: -3}, new Tile(0,0,0, new TileElevateParam(1,0,0,0)));
+
+
     },
     /**
      * handles tile drawing using different draw modes
@@ -103,7 +125,7 @@ Renderer.prototype = {
         // Draw frame for tiles above sea level only
         // @todo: Make this configurable (allow tiles below sea level to be rendered with frame according to their (negative) height)
         if (tile.level > 0) {
-            this._drawTileSides(canvasPosition, tile.level);
+            this._drawTileSides(canvasPosition, tile);
         }
 
         this._drawIsoTileTop(canvasPosition, tile);
@@ -158,30 +180,29 @@ Renderer.prototype = {
         };
 
         // pull corners/vertices up
-        if(tile.elevate.top) {
+        if(tile.elevate.top !== 0) {
             tileVertices.top.y -= this.tileHeight/2;
         }
-        if(tile.elevate.right) {
+        if(tile.elevate.right !== 0) {
             tileVertices.right.y -= this.tileHeight/2;
         }
-        if(tile.elevate.bottom) {
+        if(tile.elevate.bottom !== 0) {
             tileVertices.bottom.y -= this.tileHeight/2;
         }
-        if(tile.elevate.left) {
+        if(tile.elevate.left !== 0) {
             tileVertices.left.y -= this.tileHeight/2;
         }
 
         this.context.lineWidth = .5;
 
-        this.context.fillStyle = this._getTileTopFillStyle(tile.hasFocus);
+        this.context.fillStyle = this._getTileTopFillStyle(tile);
 
         this.context.strokeStyle = "#000";
         this.context.beginPath();
-            this.context.moveTo(tileVertices.left.x, tileVertices.left.y); // links
-            this.context.lineTo(tileVertices.top.x, tileVertices.top.y);  // oben
-            this.context.lineTo(tileVertices.right.x, tileVertices.right.y);          // rechts
-            this.context.lineTo(tileVertices.bottom.x, tileVertices.bottom.y);          // unten
-            //this.context.lineTo(pos.x + this.offset.left, offsetPos.y); //???
+            this.context.moveTo(tileVertices.left.x, tileVertices.left.y);
+            this.context.lineTo(tileVertices.top.x, tileVertices.top.y);
+            this.context.lineTo(tileVertices.right.x, tileVertices.right.y);
+            this.context.lineTo(tileVertices.bottom.x, tileVertices.bottom.y);
 
         this.context.fill();
         this.context.stroke();
@@ -189,23 +210,39 @@ Renderer.prototype = {
     },
     /**
      * Returns fill style depending on tile state
-     * @param {boolean} tileHasFocus
+     * @param {Tile} tile
      */
-    _getTileTopFillStyle: function(tileHasFocus) {
-        if (tileHasFocus) {
+    _getTileTopFillStyle: function(tile) {
+        if (tile.hasFocus) {
             return "#ff9802";
         }
 
-        return "#7777FF";
+        return this._getTileTopFillColor(tile);
+    },
+    /**
+     * Calculates color based on tile level
+     * @param {Tile} tile
+     * @returns {string}
+     * @private
+     */
+    _getTileTopFillColor: function(tile) {
+        if (tile.level > 0) {
+            return this.colorLuminance.calculate(this.config.tileColors.fillTopBase, this.config.tileColors.lightenByLevelMultiplier * tile.level);
+        }
+
+        return this.config.tileColors.fillTopBase;
     },
     /**
      * draws the tile frame for each height level at the given position - based on isometric coordinates
+     * @todo add a config option to switch between sloped and non-sloped terrain -> sloped doesn't need tile sides IN MOST SITUATIONS (e.g. tiles should always have 'meat' underneath them near to the edge of the map) because all tiles fit seamlessly anyway
+     * @todo >>> exception: if the viewport will stay like it is (cutoff at the edges) this should stay to give a sense of 'thickness' to the terrain
      * @param pos
-     * @param {int} level
+     * @param {Tile} tile
      */
-    _drawTileSides: function(pos, level) {
-        var tileHeightLevelOffset = (pos.y - (this.tileHeight/2 * (level-1))) + this.offset.top;
+    _drawTileSides: function(pos, tile) {
+        var tileHeightLevelOffset = (pos.y - (this.tileHeight/2 * (tile.level-1))) + this.offset.top;
 
+        // @todo: extract base position calculations to calling function so we don't do them twice (top drawing + sides drawing) see _drawIsoTileTop
         var offsetPos = {
                 x: (pos.x + this.tileWidth/2) + this.offset.left,
                 y: (pos.y + this.tileHeight/2) + this.offset.top
@@ -215,6 +252,7 @@ Renderer.prototype = {
                 y: pos.y + this.tileHeight + this.offset.top
             };
 
+        // @todo: clear the haze with the magic of a vertices object as in _drawIsoTileTop @ 174 ff -- and see TODO above :D
         this.context.lineWidth = 1;
         // right side
         this.context.fillStyle = "#00FF00";
@@ -252,7 +290,7 @@ Renderer.prototype = {
         var height = this.tileHeight / this.config.zoomLevel;
 
         var canvasPosition = {x: pos.x * width, y: pos.y * height};
-        this._draw2DTileTop(canvasPosition, width, height, tile.hasFocus);
+        this._draw2DTileTop(canvasPosition, width, height, tile);
 
         if (this.config.drawTileLabels) {
             var textPosition = {
@@ -268,12 +306,12 @@ Renderer.prototype = {
      * @param {Object} pos
      * @param {Number} width
      * @param {Number} height
-     * @param {boolean} tileHasFocus
+     * @param {Tile} tile
      * @private
      */
-    _draw2DTileTop: function(pos, width, height, tileHasFocus) {
+    _draw2DTileTop: function(pos, width, height, tile) {
         this.context.lineWidth = 1;
-        this.context.fillStyle = this._getTileTopFillStyle(tileHasFocus);
+        this.context.fillStyle = this._getTileTopFillStyle(tile);
         this.context.strokeStyle = '#000';
         this.context.beginPath();
             this.context.moveTo(pos.x + this.offset.left, (pos.y+height) + this.offset.top);

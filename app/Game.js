@@ -138,7 +138,7 @@ Game.prototype = {
 
         this.worldCanvas.width = this.worldCanvas.height = this.config.worldCanvasSize;
 
-        return new Renderer(this.worldCanvas, rendererConfig);
+        return new Renderer(this.worldCanvas, rendererConfig, new ColorLuminance);
     },
     /**
      * Create Overview Map renderer
@@ -158,7 +158,7 @@ Game.prototype = {
 
         this.mapCanvas.width = this.mapCanvas.height = this.config.mapCanvasSize;
 
-        return new Renderer(this.mapCanvas, rendererConfig);
+        return new Renderer(this.mapCanvas, rendererConfig, new ColorLuminance);
     },
     /**
      * Create Test renderer
@@ -180,6 +180,6 @@ Game.prototype = {
         this.testCanvas.width = this.config.testCanvasSize*2;
         this.testCanvas.height = this.config.testCanvasSize/2;
 
-        return new Renderer(this.testCanvas, rendererConfig);
+        return new Renderer(this.testCanvas, rendererConfig, new ColorLuminance);
     }
 };

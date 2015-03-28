@@ -16,10 +16,10 @@ var Tile = function(x, y, level, elevateParam) {
 
 /**
  * TileElevateParam object
- * @param top
- * @param right
- * @param bottom
- * @param left
+ * @param {int} top
+ * @param {int} right
+ * @param {int} bottom
+ * @param {int} left
  * @constructor
  */
 var TileElevateParam = function(top, right, bottom, left) {
