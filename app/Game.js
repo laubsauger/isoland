@@ -93,8 +93,7 @@ Game.prototype = {
         // 4. redraw
         //<< game loop
 
-        var self = this,
-            canvasContainer = $('body:first-child')[0];
+        var self = this;
 
         (function animationLoop(){
             var focusedTile = false;
@@ -119,7 +118,7 @@ Game.prototype = {
             }
 
             // loop
-            requestAnimationFrame(animationLoop, canvasContainer);
+            requestAnimationFrame(animationLoop);
         })();
     },
     /**
@@ -164,7 +163,7 @@ Game.prototype = {
     /**
      * Create Test renderer
      * draws every possible tile combination (types and levels) in a straight line
-     * @todo Extract this functionality to create an offscreen renderer which replaces the JIT drawing for renderers of every type (except this one) <- massive performance boost!
+     * @todo Extract & extend functionality (see also Renderer._drawTestTiles) to create an offscreen renderer which replaces the JIT drawing for renderers of every type (except this one) <- massive performance boost!
      * @returns {Renderer}
      */
     createTestRenderer: function() {

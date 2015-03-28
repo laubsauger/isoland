@@ -52,6 +52,7 @@ Viewport.prototype = {
     },
     /**
      * Get Tile object by its 2D grid coords/array indices
+     * @todo: add function getTileAtGridIndex({x: x,y: y}) that takes a position object - which every tile object should use instead of this.x this.y
      * @param x
      * @param y
      * @returns {Tile}
@@ -72,7 +73,7 @@ Viewport.prototype = {
         this.tiles = arrayRotate('r', this.tiles);
     },
     /**
-     * Performs counter clockwise arrayRotate on the tile array
+     * Performs counterclockwise arrayRotate on the tile array
      */
     rotateCounterClockwise: function() {
         if ((this.orientation - 90) <= -360) {

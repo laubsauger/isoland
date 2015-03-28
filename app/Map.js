@@ -36,6 +36,7 @@ Map.prototype = {
     },
     /**
      * Returns tile object at the provided map indices
+     * @todo: add function getTileAtGridIndex({x: x,y: y}) that takes a position object - which every tile object should use instead of this.x this.y
      * @param x
      * @param y
      * @returns {Tile}

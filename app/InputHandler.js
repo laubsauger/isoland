@@ -33,7 +33,7 @@ InputHandler.prototype = {
             canvasSize: this.config.worldCanvasSize
         };
 
-        element.addEventListener(event, $.throttle(60, fn), false);
+        element.addEventListener(event, $.throttle(16, fn), false);
     },
     /**
      * Converts current mouse coordinates to absolute 2D tile grid position / array indices
@@ -50,6 +50,6 @@ InputHandler.prototype = {
         };
 
         //console.log('viewportX', xMouse, 'viewportY', yMouse);
-        console.log(e.target.params.instance.selectedTile);
+        //console.log(e.target.params.instance.selectedTile);
     }
 };

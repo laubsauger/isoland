@@ -17,15 +17,6 @@ canvas based isometric engine
 - user modifiable terrain (see legacy code)
 - pregenerate terrain with perlin noise (see legacy code)
 
-
-## Test environment
-- node.js
-  - phantomjs
-  - karma
-    - karma-jasmine
-    - karma-phantomjs-launcher
-    - karma-coverage
-  
 ### Setup test environment
     npm install
 
