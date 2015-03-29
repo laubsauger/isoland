@@ -389,6 +389,7 @@ Renderer.prototype = {
      * @param tileTopVertices
      * @param tileHeightLevelOffset
      * @returns {TileSideVertices}
+     * @todo slope/elevation stuff
      * @private
      */
     _getTileRightSideVertices: function(tileTopVertices, tileHeightLevelOffset) {
@@ -403,6 +404,7 @@ Renderer.prototype = {
      * @param tileTopVertices
      * @param tileHeightLevelOffset
      * @returns {TileSideVertices}
+     * @todo slope/elevation stuff
      * @private
      */
     _getTileLeftSideVertices: function(tileTopVertices, tileHeightLevelOffset) {
