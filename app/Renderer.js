@@ -32,7 +32,9 @@ Renderer.prototype = {
             renderMode: config.renderMode,
             zoomLevel: config.zoomLevel,
             tileColors: {
-                fillTopBase: '#6b6be6',
+                fillTopBase: '#5f5fcc',
+                fillLeftBase: '#00AA00',
+                fillRightBase: '#00FF00',
                 lightenByLevelMultiplier: 0.2
             }
         };
@@ -81,63 +83,33 @@ Renderer.prototype = {
      * @todo add json file loader
      */
     _drawTestTiles: function() {
-        // Levels
-        // -- flat
-        this._drawIsoTile({x: 0, y: 3}, new Tile(0,0,0));
-        this._drawIsoTile({x: 1, y: 2}, new Tile(0,0,1));
-        this._drawIsoTile({x: 2, y: 1}, new Tile(0,0,2));
-        this._drawIsoTile({x: 3, y: 0}, new Tile(0,0,3));
-        this._drawIsoTile({x: 4, y: -1}, new Tile(0,0,4));
+        var maxLevel = 8,
+            tileElevateParamCollection = [
+                new TileElevateParam(0, 0, 0, 0),
+                new TileElevateParam(0, 0, 0, 1),
+                new TileElevateParam(0, 0, 1, 0),
+                new TileElevateParam(0, 0, 1, 1),
+                new TileElevateParam(0, 1, 0, 0),
+                new TileElevateParam(0, 1, 0, 1),
+                new TileElevateParam(0, 1, 1, 0),
+                new TileElevateParam(0, 1, 1, 1),
+                new TileElevateParam(1, 0, 0, 0),
+                new TileElevateParam(1, 0, 0, 1),
+                new TileElevateParam(1, 0, 1, 0),
+                new TileElevateParam(1, 0, 1, 1),
+                new TileElevateParam(1, 1, 0, 0),
+                new TileElevateParam(1, 1, 0, 1),
+                new TileElevateParam(1, 1, 1, 0)
+            ],
+            startOffset = new Pos(-5, -1);
 
-        // Patterns
-            // One raised tile surrounded by tiles one level deeper
-            // -- sloped
-            // 0 0 0
-            // 0 1 0
-            // 0 0 0
-                this._drawIsoTile({x: 4, y: -5}, new Tile(0,0,1, new TileElevateParam(0, 0, 1, 0)));
-                this._drawIsoTile({x: 4, y: -4}, new Tile(0,0,1, new TileElevateParam(0, 1, 1, 0)));
-                this._drawIsoTile({x: 4, y: -3}, new Tile(0,0,1, new TileElevateParam(0, 1, 0, 0)));
-                this._drawIsoTile({x: 5, y: -5}, new Tile(0,0,1, new TileElevateParam(0, 0, 1, 1)));
-
-                // raised, influences all tiles around to line up
-                this._drawIsoTile({x: 5, y: -4}, new Tile(0,0,2, new TileElevateParam(0, 0, 0, 0)));
-
-                this._drawIsoTile({x: 5, y: -3}, new Tile(0,0,1, new TileElevateParam(1, 1, 0, 0)));
-                this._drawIsoTile({x: 6, y: -5}, new Tile(0,0,1, new TileElevateParam(0, 0, 0, 1)));
-                this._drawIsoTile({x: 6, y: -4}, new Tile(0,0,1, new TileElevateParam(1, 0, 0, 1)));
-                this._drawIsoTile({x: 6, y: -3}, new Tile(0,0,1, new TileElevateParam(1, 0, 0, 0)));
-
-            // One lowered tile surrounded by tiles one level higher
-            // -- sloped
-            // 1 1 1
-            // 1 0 1
-            // 1 1 1
-                this._drawIsoTile({x: 7, y: -5}, new Tile(0,0,1, new TileElevateParam( 0, 0,-1, 0)));
-                this._drawIsoTile({x: 7, y: -4}, new Tile(0,0,1, new TileElevateParam( 0,-1,-1, 0)));
-                this._drawIsoTile({x: 7, y: -3}, new Tile(0,0,1, new TileElevateParam( 0,-1, 0, 0)));
-                this._drawIsoTile({x: 8, y: -5}, new Tile(0,0,1, new TileElevateParam( 0, 0,-1,-1)));
-
-                // lowered, influences all tiles around to line up
-                this._drawIsoTile({x: 8, y: -4}, new Tile(0,0,0, new TileElevateParam( 0, 0, 0, 0)));
-
-                this._drawIsoTile({x: 8, y: -3}, new Tile(0,0,1, new TileElevateParam(-1,-1, 0, 0)));
-                this._drawIsoTile({x: 9, y: -5}, new Tile(0,0,1, new TileElevateParam( 0, 0,-1,-1)));
-                this._drawIsoTile({x: 9, y: -4}, new Tile(0,0,0, new TileElevateParam( 0, 0, 0, 0)));
-                this._drawIsoTile({x: 9, y: -3}, new Tile(0,0,1, new TileElevateParam(-1,-1, 0, 0)));
-
-                this._drawIsoTile({x: 10, y: -5}, new Tile(0,0,1, new TileElevateParam( 0, 0,-1,-1)));
-                this._drawIsoTile({x: 10, y: -4}, new Tile(0,0,0, new TileElevateParam( 0, 0, 0, 0)));
-                this._drawIsoTile({x: 10, y: -3}, new Tile(0,0,1, new TileElevateParam(-1,-1, 0, 0)));
-                this._drawIsoTile({x: 11, y: -5}, new Tile(0,0,1, new TileElevateParam( 0, 0,-1,-1)));
-
-                // lowered, influences all tiles around to line up
-                this._drawIsoTile({x: 11, y: -4}, new Tile(0,0,0, new TileElevateParam( 0, 0, 0, 0)));
-
-                this._drawIsoTile({x: 11, y: -3}, new Tile(0,0,1, new TileElevateParam(-1,-1, 0, 0)));
-                this._drawIsoTile({x: 12, y: -5}, new Tile(0,0,1, new TileElevateParam( 0, 0, 0,-1)));
-                this._drawIsoTile({x: 12, y: -4}, new Tile(0,0,1, new TileElevateParam(-1, 0, 0,-1)));
-                this._drawIsoTile({x: 12, y: -3}, new Tile(0,0,1, new TileElevateParam(-1, 0, 0, 0)));
+        for(var i=0; i < tileElevateParamCollection.length; i++) {
+            for(var x=0; x < maxLevel; x++) {
+                console.log(startOffset, tileElevateParamCollection[i]);
+                this._drawIsoTile(startOffset, new Tile(startOffset.x++, startOffset.y--, x, tileElevateParamCollection[i]));
+            }
+            startOffset.y += maxLevel*2;
+        }
     },
     /**
      * handles tile drawing using different draw modes
@@ -153,7 +125,7 @@ Renderer.prototype = {
     },
     /**
      * draws a tile in iso mode
-     * @param pos
+     * @param {Pos} pos
      * @param {Tile} tile
      */
     _drawIsoTile: function(pos, tile) {
@@ -169,11 +141,11 @@ Renderer.prototype = {
 
         if (this.config.drawTileLabels) {
             var textPosition = new Pos(
-                canvasPosition.x + this.offset.left + this.tileWidth/3,
+                canvasPosition.x + this.offset.left + this.tileWidth/4,
                 canvasPosition.y + this.offset.top + ((this.tileHeight / 1.7))
             );
 
-            //this._drawTileLabel(pos.x + "," + pos.y, "#000000", textPosition);
+            this._drawTileLabel(pos.x + "," + pos.y, "#000000", textPosition);
         }
     },
     /**
@@ -265,8 +237,6 @@ Renderer.prototype = {
     },
     /**
      * draws the tile frame for each height level at the given position - based on isometric coordinates
-     * @todo add a config option to switch between sloped and non-sloped terrain -> sloped doesn't need tile sides IN MOST SITUATIONS (e.g. tiles should always have 'meat' underneath them near to the edge of the map) because all tiles fit seamlessly anyway
-     * @todo >>> exception: if the viewport will stay like it is (cutoff at the edges) this should stay to give a sense of 'thickness' to the terrain
      * @param pos
      * @param {Tile} tile
      */
@@ -281,7 +251,7 @@ Renderer.prototype = {
         this.context.lineWidth = 1;
 
         // right side
-        this.context.fillStyle = "#00FF00";
+        this.context.fillStyle = this.config.tileColors.fillRightBase;
         this.context.strokeStyle = '#000';
         this.context.beginPath();
             this.context.moveTo(tileRightSideVertices.bottomLeft.x, tileRightSideVertices.bottomLeft.y);
@@ -293,7 +263,7 @@ Renderer.prototype = {
         this.context.closePath();
 
         // left side
-        this.context.fillStyle = "#00AA00";
+        this.context.fillStyle = this.config.tileColors.fillLeftBase;
         this.context.strokeStyle = '#000';
         this.context.beginPath();
             this.context.moveTo(tileLeftSideVertices.topLeft.x, tileLeftSideVertices.topLeft.y);

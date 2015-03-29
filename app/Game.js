@@ -4,8 +4,8 @@ var Game = function() {
         mapCanvas: document.querySelector('#map'),
         testCanvas: document.querySelector('#test'),
         worldCanvasSize: 400,
-        mapCanvasSize: 400,
-        testCanvasSize: 400,
+        mapCanvasSize: 200,
+        testCanvasSize: 1600,
         worldSize: 4,
         worldViewportSize: 4,
         worldTileSize: 96,
@@ -172,13 +172,13 @@ Game.prototype = {
             tileHeight: this.config.testTileSize,
             renderMode: "test",
             offset: {
-                top: 150,
-                left: 75
+                top: 175,
+                left: 65
             }
         };
 
-        this.testCanvas.width = this.config.testCanvasSize*2;
-        this.testCanvas.height = this.config.testCanvasSize;
+        this.testCanvas.width = this.config.testCanvasSize/3.5;
+        this.testCanvas.height = this.config.testCanvasSize*2;
 
         return new Renderer(this.testCanvas, rendererConfig, new ColorLuminance);
     }
