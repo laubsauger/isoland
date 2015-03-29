@@ -32,7 +32,7 @@ Renderer.prototype = {
             renderMode: config.renderMode,
             zoomLevel: config.zoomLevel,
             tileColors: {
-                fillTopBase: '#7777FF',
+                fillTopBase: '#6b6be6',
                 lightenByLevelMultiplier: 0.2
             }
         };
@@ -47,6 +47,8 @@ Renderer.prototype = {
         if (this.config.renderMode === "iso" || this.config.renderMode === "test") {
             this.tileHeight = this.tileHeight/2;
         }
+
+        this.tileHeightHalf = this.tileHeight/2;
 
         this.offset = this.config.offset;
 
@@ -79,47 +81,63 @@ Renderer.prototype = {
      * @todo add json file loader
      */
     _drawTestTiles: function() {
+        // Levels
+        // -- flat
         this._drawIsoTile({x: 0, y: 3}, new Tile(0,0,0));
         this._drawIsoTile({x: 1, y: 2}, new Tile(0,0,1));
         this._drawIsoTile({x: 2, y: 1}, new Tile(0,0,2));
         this._drawIsoTile({x: 3, y: 0}, new Tile(0,0,3));
         this._drawIsoTile({x: 4, y: -1}, new Tile(0,0,4));
 
-        // One raised tile surrounded by tiles one level deeper
-        // -- sloped
-        // 0 0 0
-        // 0 1 0
-        // 0 0 0
-            this._drawIsoTile({x: 4, y: -5}, new Tile(0,0,1, new TileElevateParam(0,0,1,0)));
-            this._drawIsoTile({x: 4, y: -4}, new Tile(0,0,1, new TileElevateParam(0,1,1,0)));
-            this._drawIsoTile({x: 4, y: -3}, new Tile(0,0,1, new TileElevateParam(0,1,0,0)));
-            this._drawIsoTile({x: 5, y: -5}, new Tile(0,0,1, new TileElevateParam(0,0,1,1)));
+        // Patterns
+            // One raised tile surrounded by tiles one level deeper
+            // -- sloped
+            // 0 0 0
+            // 0 1 0
+            // 0 0 0
+                this._drawIsoTile({x: 4, y: -5}, new Tile(0,0,1, new TileElevateParam(0, 0, 1, 0)));
+                this._drawIsoTile({x: 4, y: -4}, new Tile(0,0,1, new TileElevateParam(0, 1, 1, 0)));
+                this._drawIsoTile({x: 4, y: -3}, new Tile(0,0,1, new TileElevateParam(0, 1, 0, 0)));
+                this._drawIsoTile({x: 5, y: -5}, new Tile(0,0,1, new TileElevateParam(0, 0, 1, 1)));
 
-            // raised, influences all tiles around to line up
-            this._drawIsoTile({x: 5, y: -4}, new Tile(0,0,2, new TileElevateParam(0,0,0,0)));
+                // raised, influences all tiles around to line up
+                this._drawIsoTile({x: 5, y: -4}, new Tile(0,0,2, new TileElevateParam(0, 0, 0, 0)));
 
-            this._drawIsoTile({x: 5, y: -3}, new Tile(0,0,1, new TileElevateParam(1,1,0,0)));
-            this._drawIsoTile({x: 6, y: -5}, new Tile(0,0,1, new TileElevateParam(0,0,0,1)));
-            this._drawIsoTile({x: 6, y: -4}, new Tile(0,0,1, new TileElevateParam(1,0,0,1)));
-            this._drawIsoTile({x: 6, y: -3}, new Tile(0,0,1, new TileElevateParam(1,0,0,0)));
+                this._drawIsoTile({x: 5, y: -3}, new Tile(0,0,1, new TileElevateParam(1, 1, 0, 0)));
+                this._drawIsoTile({x: 6, y: -5}, new Tile(0,0,1, new TileElevateParam(0, 0, 0, 1)));
+                this._drawIsoTile({x: 6, y: -4}, new Tile(0,0,1, new TileElevateParam(1, 0, 0, 1)));
+                this._drawIsoTile({x: 6, y: -3}, new Tile(0,0,1, new TileElevateParam(1, 0, 0, 0)));
 
-        // One lowered tile surrounded by tiles one level higher
-        // -- sloped
-        // 1 1 1
-        // 1 0 1
-        // 1 1 1
-            this._drawIsoTile({x: 7, y: -5}, new Tile(0,0,1, new TileElevateParam(0,0,-1,0)));
-            this._drawIsoTile({x: 7, y: -4}, new Tile(0,0,1, new TileElevateParam(0,-1,-1,0)));
-            this._drawIsoTile({x: 7, y: -3}, new Tile(0,0,1, new TileElevateParam(0,-1,0,0)));
-            this._drawIsoTile({x: 8, y: -5}, new Tile(0,0,1, new TileElevateParam(0,0,-1,-1)));
+            // One lowered tile surrounded by tiles one level higher
+            // -- sloped
+            // 1 1 1
+            // 1 0 1
+            // 1 1 1
+                this._drawIsoTile({x: 7, y: -5}, new Tile(0,0,1, new TileElevateParam( 0, 0,-1, 0)));
+                this._drawIsoTile({x: 7, y: -4}, new Tile(0,0,1, new TileElevateParam( 0,-1,-1, 0)));
+                this._drawIsoTile({x: 7, y: -3}, new Tile(0,0,1, new TileElevateParam( 0,-1, 0, 0)));
+                this._drawIsoTile({x: 8, y: -5}, new Tile(0,0,1, new TileElevateParam( 0, 0,-1,-1)));
 
-            // lowered, influences all tiles around to line up
-            this._drawIsoTile({x: 8, y: -4}, new Tile(0,0,0, new TileElevateParam(0,0,0,0)));
+                // lowered, influences all tiles around to line up
+                this._drawIsoTile({x: 8, y: -4}, new Tile(0,0,0, new TileElevateParam( 0, 0, 0, 0)));
 
-            this._drawIsoTile({x: 8, y: -3}, new Tile(0,0,1, new TileElevateParam(-1,-1,0,0)));
-            this._drawIsoTile({x: 9, y: -5}, new Tile(0,0,1, new TileElevateParam(0,0,0,-1)));
-            this._drawIsoTile({x: 9, y: -4}, new Tile(0,0,1, new TileElevateParam(-1,0,0,-1)));
-            this._drawIsoTile({x: 9, y: -3}, new Tile(0,0,1, new TileElevateParam(-1,0,0,0)));
+                this._drawIsoTile({x: 8, y: -3}, new Tile(0,0,1, new TileElevateParam(-1,-1, 0, 0)));
+                this._drawIsoTile({x: 9, y: -5}, new Tile(0,0,1, new TileElevateParam( 0, 0,-1,-1)));
+                this._drawIsoTile({x: 9, y: -4}, new Tile(0,0,0, new TileElevateParam( 0, 0, 0, 0)));
+                this._drawIsoTile({x: 9, y: -3}, new Tile(0,0,1, new TileElevateParam(-1,-1, 0, 0)));
+
+                this._drawIsoTile({x: 10, y: -5}, new Tile(0,0,1, new TileElevateParam( 0, 0,-1,-1)));
+                this._drawIsoTile({x: 10, y: -4}, new Tile(0,0,0, new TileElevateParam( 0, 0, 0, 0)));
+                this._drawIsoTile({x: 10, y: -3}, new Tile(0,0,1, new TileElevateParam(-1,-1, 0, 0)));
+                this._drawIsoTile({x: 11, y: -5}, new Tile(0,0,1, new TileElevateParam( 0, 0,-1,-1)));
+
+                // lowered, influences all tiles around to line up
+                this._drawIsoTile({x: 11, y: -4}, new Tile(0,0,0, new TileElevateParam( 0, 0, 0, 0)));
+
+                this._drawIsoTile({x: 11, y: -3}, new Tile(0,0,1, new TileElevateParam(-1,-1, 0, 0)));
+                this._drawIsoTile({x: 12, y: -5}, new Tile(0,0,1, new TileElevateParam( 0, 0, 0,-1)));
+                this._drawIsoTile({x: 12, y: -4}, new Tile(0,0,1, new TileElevateParam(-1, 0, 0,-1)));
+                this._drawIsoTile({x: 12, y: -3}, new Tile(0,0,1, new TileElevateParam(-1, 0, 0, 0)));
     },
     /**
      * handles tile drawing using different draw modes
@@ -155,7 +173,7 @@ Renderer.prototype = {
                 canvasPosition.y + this.offset.top + ((this.tileHeight / 1.7))
             );
 
-            this._drawTileLabel(pos.x + "," + pos.y, "#000000", textPosition);
+            //this._drawTileLabel(pos.x + "," + pos.y, "#000000", textPosition);
         }
     },
     /**
@@ -167,7 +185,7 @@ Renderer.prototype = {
         // adjust height according to level
         // @todo: allow negative values
         if(tile.level > 0) {
-            pos.y -= (this.tileHeight/2*tile.level);
+            pos.y -= ((this.tileHeight/2)*tile.level);
         }
 
         var tileTopVertices = this._getTileTopVertices(pos, tile);
@@ -211,7 +229,7 @@ Renderer.prototype = {
 
         //if (tile.elevate.top !== 0 && tile.elevate.right !== 0) {
         //    gradientStart = {
-        //        x: tileVertices.left.x+this.tileHeight/2,
+        //        x: tileVertices.left.x+this.tileHeightHalf,
         //        y: tileVertices.left.y
         //    };
         //
@@ -222,7 +240,7 @@ Renderer.prototype = {
         //}
 
         //if (tile.elevate.top !== 0 && tile.elevate.left !== 0) {
-        //    linearGradient1 = this.context.createLinearGradient(tileVertices.left.x+this.tileHeight/2, tileVertices.left.y, tileVertices.top.x, tileVertices.top.y);
+        //    linearGradient1 = this.context.createLinearGradient(tileVertices.left.x+this.tileHeightHalf, tileVertices.left.y, tileVertices.top.x, tileVertices.top.y);
         //}
 
         if (gradientStart !== false && gradientStop !== false) {
@@ -253,11 +271,12 @@ Renderer.prototype = {
      * @param {Tile} tile
      */
     _drawTileSides: function(pos, tile) {
-        var tileHeightLevelOffset = (pos.y - (this.tileHeight/2 * (tile.level-1))) + this.offset.top;
+        var tileHeightLevelOffset = (pos.y - (this.tileHeightHalf * (tile.level-1))) + this.offset.top;
 
+        // @todo: call tileTopVertices only once and make the return value accessable by _drawTileSides and _drawTileTop
         var tileTopVertices = this._getTileTopVertices(pos, tile),
-            tileRightSideVertices = this._getTileRightSideVertices(tileTopVertices, tileHeightLevelOffset),
-            tileLeftSideVertices = this._getTileLeftSideVertices(tileTopVertices, tileHeightLevelOffset);
+            tileRightSideVertices = this._getTileRightSideVertices(tileTopVertices, tileHeightLevelOffset, tile),
+            tileLeftSideVertices = this._getTileLeftSideVertices(tileTopVertices, tileHeightLevelOffset, tile);
 
         this.context.lineWidth = 1;
 
@@ -373,7 +392,7 @@ Renderer.prototype = {
      * @private
      */
     _getTileTopVertices: function(pos, tile) {
-        var offsetPos = new Pos((pos.x + this.tileWidth/2) + this.offset.left, (pos.y + this.tileHeight/2) + this.offset.top),
+        var offsetPos = new Pos((pos.x + this.tileWidth/2) + this.offset.left, (pos.y + this.tileHeightHalf) + this.offset.top),
             fullOffsetPos = new Pos(pos.x + this.tileWidth + this.offset.left, pos.y + this.tileHeight + this.offset.top);
 
         var tileVertices = new TileTopVertices(
@@ -383,37 +402,41 @@ Renderer.prototype = {
             new Pos(pos.x + this.offset.left, offsetPos.y)
         );
 
-        return this._adjustVertexPositionByTileElevationSetting(tileVertices, tile.elevate);
+        return this._getTileVerticesModifiedByTileElevationParam(tileVertices, tile.elevate);
     },
     /**
      * @param tileTopVertices
      * @param tileHeightLevelOffset
-     * @returns {TileSideVertices}
-     * @todo slope/elevation stuff
+     * @param {Tile} tile
+     * @returns {TileRightSideVertices}
      * @private
      */
-    _getTileRightSideVertices: function(tileTopVertices, tileHeightLevelOffset) {
-        return new TileSideVertices(
-            new Pos(tileTopVertices.top.x, tileHeightLevelOffset + this.tileHeight/2),
+    _getTileRightSideVertices: function(tileTopVertices, tileHeightLevelOffset, tile) {
+        var tileVertices = new TileRightSideVertices(
+            new Pos(tileTopVertices.top.x, tileHeightLevelOffset + this.tileHeightHalf),
             new Pos(tileTopVertices.right.x, tileHeightLevelOffset),
             new Pos(tileTopVertices.right.x,  tileTopVertices.right.y),
             new Pos(tileTopVertices.bottom.x, tileTopVertices.bottom.y)
         );
+
+        return this._getTileVerticesModifiedByTileElevationParam(tileVertices, tile.elevate);
     },
     /**
      * @param tileTopVertices
      * @param tileHeightLevelOffset
-     * @returns {TileSideVertices}
-     * @todo slope/elevation stuff
+     * @param {Tile} tile
+     * @returns {TileLeftSideVertices}
      * @private
      */
-    _getTileLeftSideVertices: function(tileTopVertices, tileHeightLevelOffset) {
-        return new TileSideVertices(
+    _getTileLeftSideVertices: function(tileTopVertices, tileHeightLevelOffset, tile) {
+        var tileVertices = new TileLeftSideVertices(
             new Pos(tileTopVertices.left.x, tileHeightLevelOffset),
-            new Pos(tileTopVertices.top.x, tileHeightLevelOffset + this.tileHeight/2),
+            new Pos(tileTopVertices.top.x, tileHeightLevelOffset + this.tileHeightHalf),
             new Pos(tileTopVertices.bottom.x, tileTopVertices.bottom.y),
             new Pos(tileTopVertices.left.x, tileTopVertices.left.y)
         );
+
+        return this._getTileVerticesModifiedByTileElevationParam(tileVertices, tile.elevate);
     },
     /**
      * Lowers or raises each vertex depending on the tiles current elevateParam
@@ -421,30 +444,84 @@ Renderer.prototype = {
      * @param {TileElevateParam} elevateParam
      * @private
      */
-    _adjustVertexPositionByTileElevationSetting: function(tileVertices, elevateParam) {
+    _getTileVerticesModifiedByTileElevationParam: function(tileVertices, elevateParam) {
         // pull corners/vertices up or down if necessary
         if(elevateParam.top > 0) {
-            tileVertices.top.y -= this.tileHeight/2;
+            if (tileVertices instanceof TileTopVertices) {
+                tileVertices.top.y -= this.tileHeightHalf;
+            }
         } else if(elevateParam.top < 0) {
-            tileVertices.top.y += this.tileHeight/2;
+            if (tileVertices instanceof TileTopVertices) {
+                tileVertices.top.y += this.tileHeightHalf;
+            }
         }
 
         if(elevateParam.right > 0) {
-            tileVertices.right.y -= this.tileHeight/2;
+            if (tileVertices instanceof TileTopVertices) {
+                tileVertices.right.y -= this.tileHeightHalf;
+            }
+
+            if (tileVertices instanceof TileRightSideVertices) {
+                tileVertices.topRight.y -= this.tileHeightHalf;
+                tileVertices.bottomRight.y += this.tileHeightHalf;
+            }
         } else if(elevateParam.right < 0) {
-            tileVertices.right.y += this.tileHeight/2;
+            if (tileVertices instanceof TileTopVertices) {
+                tileVertices.right.y += this.tileHeightHalf;
+            }
+
+            if (tileVertices instanceof TileRightSideVertices) {
+                tileVertices.topRight.y += this.tileHeightHalf;
+            }
         }
 
         if(elevateParam.bottom > 0) {
-            tileVertices.bottom.y -= this.tileHeight/2;
+            if (tileVertices instanceof TileTopVertices) {
+                tileVertices.bottom.y -= this.tileHeightHalf;
+            }
+
+            if (tileVertices instanceof TileRightSideVertices) {
+                tileVertices.topLeft.y -= this.tileHeightHalf;
+                tileVertices.bottomLeft.y += this.tileHeightHalf;
+            }
+
+            if (tileVertices instanceof TileLeftSideVertices) {
+                tileVertices.topRight.y -= this.tileHeightHalf;
+                tileVertices.bottomRight.y += this.tileHeightHalf;
+            }
         } else if(elevateParam.bottom < 0) {
-            tileVertices.bottom.y += this.tileHeight/2;
+            if (tileVertices instanceof TileTopVertices) {
+                tileVertices.bottom.y += this.tileHeightHalf;
+            }
+
+            if (tileVertices instanceof TileRightSideVertices) {
+                tileVertices.topLeft.y += this.tileHeightHalf;
+                tileVertices.bottomRight.y += this.tileHeightHalf;
+            }
+
+            if (tileVertices instanceof TileLeftSideVertices) {
+                tileVertices.topRight.y += this.tileHeightHalf;
+                tileVertices.bottomLeft.y += this.tileHeightHalf;
+            }
         }
 
         if(elevateParam.left > 0) {
-            tileVertices.left.y -= this.tileHeight/2;
+            if (tileVertices instanceof TileTopVertices) {
+                tileVertices.left.y -= this.tileHeightHalf;
+            }
+
+            if (tileVertices instanceof TileLeftSideVertices) {
+                tileVertices.topLeft.y -= this.tileHeightHalf;
+                tileVertices.bottomLeft.y += this.tileHeightHalf;
+            }
         } else if(elevateParam.left < 0) {
-            tileVertices.left.y += this.tileHeight/2;
+            if (tileVertices instanceof TileTopVertices) {
+                tileVertices.left.y += this.tileHeightHalf;
+            }
+
+            if (tileVertices instanceof TileLeftSideVertices) {
+                tileVertices.topLeft.y += this.tileHeightHalf;
+            }
         }
 
         return tileVertices;
