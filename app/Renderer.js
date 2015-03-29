@@ -53,6 +53,7 @@ Renderer.prototype = {
         return this;
     },
     /**
+     * Iterates over all tiles in viewport and draws them to canvas
      * @param {Viewport} viewport
      */
     execute: function(viewport) {
@@ -169,7 +170,7 @@ Renderer.prototype = {
             pos.y -= (this.tileHeight/2*tile.level);
         }
 
-        var tileVertices = this._getTileVertices(pos, tile);
+        var tileTopVertices = this._getTileTopVertices(pos, tile);
 
         var gradient;
 
@@ -235,10 +236,10 @@ Renderer.prototype = {
 
         this.context.strokeStyle = "#000";
         this.context.beginPath();
-            this.context.moveTo(tileVertices.left.x, tileVertices.left.y);
-            this.context.lineTo(tileVertices.top.x, tileVertices.top.y);
-            this.context.lineTo(tileVertices.right.x, tileVertices.right.y);
-            this.context.lineTo(tileVertices.bottom.x, tileVertices.bottom.y);
+            this.context.moveTo(tileTopVertices.left.x, tileTopVertices.left.y);
+            this.context.lineTo(tileTopVertices.top.x, tileTopVertices.top.y);
+            this.context.lineTo(tileTopVertices.right.x, tileTopVertices.right.y);
+            this.context.lineTo(tileTopVertices.bottom.x, tileTopVertices.bottom.y);
 
         this.context.fill();
         this.context.stroke();
@@ -254,26 +255,19 @@ Renderer.prototype = {
     _drawTileSides: function(pos, tile) {
         var tileHeightLevelOffset = (pos.y - (this.tileHeight/2 * (tile.level-1))) + this.offset.top;
 
-        // @todo: extract base position calculations to calling function so we don't do them twice (top drawing + sides drawing) see _drawIsoTileTop
-        var offsetPos = {
-                x: (pos.x + this.tileWidth/2) + this.offset.left,
-                y: (pos.y + this.tileHeight/2) + this.offset.top
-            },
-            fullOffsetPos = {
-                x: pos.x + this.tileWidth + this.offset.left,
-                y: pos.y + this.tileHeight + this.offset.top
-            };
+        var tileTopVertices = this._getTileTopVertices(pos, tile),
+            tileRightSideVertices = this._getTileRightSideVertices(tileTopVertices, tileHeightLevelOffset);
 
-        // @todo: clear the haze with the magic of a vertices object as in _drawIsoTileTop @ 174 ff -- and see TODO above :D
         this.context.lineWidth = 1;
+
         // right side
         this.context.fillStyle = "#00FF00";
         this.context.strokeStyle = '#000';
         this.context.beginPath();
-            this.context.moveTo(offsetPos.x, fullOffsetPos.y);
-            this.context.lineTo(fullOffsetPos.x, offsetPos.y);
-            this.context.lineTo(fullOffsetPos.x, tileHeightLevelOffset);
-            this.context.lineTo(offsetPos.x, tileHeightLevelOffset + this.tileHeight/2);
+            this.context.moveTo(tileRightSideVertices.bottomLeft.x, tileRightSideVertices.bottomLeft.y);
+            this.context.lineTo(tileRightSideVertices.bottomRight.x, tileRightSideVertices.bottomRight.y);
+            this.context.lineTo(tileRightSideVertices.topRight.x, tileRightSideVertices.topRight.y);
+            this.context.lineTo(tileRightSideVertices.topLeft.x, tileRightSideVertices.topLeft.y);
             this.context.fill();
             this.context.stroke();
         this.context.closePath();
@@ -282,11 +276,11 @@ Renderer.prototype = {
         this.context.fillStyle = "#00AA00";
         this.context.strokeStyle = '#000';
         this.context.beginPath();
-            this.context.moveTo(pos.x + this.offset.left, tileHeightLevelOffset);
-            this.context.lineTo(pos.x + this.offset.left, offsetPos.y);
-            this.context.lineTo(offsetPos.x, fullOffsetPos.y);
-            this.context.lineTo(offsetPos.x, tileHeightLevelOffset + this.tileHeight/2);
-            this.context.lineTo(pos.x + this.offset.left, tileHeightLevelOffset);
+            this.context.moveTo(tileTopVertices.left.x, tileHeightLevelOffset);
+            this.context.lineTo(tileTopVertices.left.x, tileTopVertices.left.y);
+            this.context.lineTo(tileTopVertices.bottom.x, tileTopVertices.bottom.y);
+            this.context.lineTo(tileTopVertices.top.x, tileHeightLevelOffset + this.tileHeight/2);
+            this.context.lineTo(tileTopVertices.left.x, tileHeightLevelOffset);
             this.context.fill();
             this.context.stroke();
         this.context.closePath();
@@ -377,11 +371,11 @@ Renderer.prototype = {
      * @parameter {Pos} pos
      * @private
      */
-    _getTileVertices: function(pos, tile) {
+    _getTileTopVertices: function(pos, tile) {
         var offsetPos = new Pos((pos.x + this.tileWidth/2) + this.offset.left, (pos.y + this.tileHeight/2) + this.offset.top),
             fullOffsetPos = new Pos(pos.x + this.tileWidth + this.offset.left, pos.y + this.tileHeight + this.offset.top);
 
-        var tileVertices = new TileVertices(
+        var tileVertices = new TileTopVertices(
             new Pos(offsetPos.x, pos.y + this.offset.top),
             new Pos(fullOffsetPos.x, offsetPos.y),
             new Pos(offsetPos.x, fullOffsetPos.y),
@@ -423,5 +417,19 @@ Renderer.prototype = {
         }
 
         return tileVertices;
+    },
+    /**
+     * @param tileTopVertices
+     * @param tileHeightLevelOffset
+     * @returns {TileSideVertices}
+     * @private
+     */
+    _getTileRightSideVertices: function(tileTopVertices, tileHeightLevelOffset) {
+        return new TileSideVertices(
+            new Pos(tileTopVertices.top.x, tileHeightLevelOffset + this.tileHeight/2),
+            new Pos(tileTopVertices.right.x, tileHeightLevelOffset),
+            new Pos(tileTopVertices.right.x,  tileTopVertices.right.y),
+            new Pos(tileTopVertices.bottom.x, tileTopVertices.bottom.y)
+        );
     }
 };

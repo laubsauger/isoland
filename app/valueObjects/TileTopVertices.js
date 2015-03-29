@@ -6,7 +6,7 @@
  * @param {Pos} leftVertexPos
  * @constructor
  */
-var TileVertices = function(topVertexPos, rightVertexPos, bottomVertexPos, leftVertexPos) {
+var TileTopVertices = function(topVertexPos, rightVertexPos, bottomVertexPos, leftVertexPos) {
     this.top = topVertexPos;
     this.right = rightVertexPos;
     this.bottom = bottomVertexPos;
