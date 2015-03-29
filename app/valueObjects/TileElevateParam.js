@@ -1,5 +1,5 @@
 /**
- * TileElevateParam object
+ * TileElevateParam VO
  * @param {int} top
  * @param {int} right
  * @param {int} bottom

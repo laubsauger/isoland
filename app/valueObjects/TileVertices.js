@@ -1,5 +1,5 @@
 /**
- *
+ * TileVertices VO
  * @param {Pos} topVertexPos
  * @param {Pos} rightVertexPos
  * @param {Pos} bottomVertexPos

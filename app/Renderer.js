@@ -138,7 +138,7 @@ Renderer.prototype = {
      * @param {Tile} tile
      */
     _drawIsoTile: function(pos, tile) {
-        var canvasPosition = fromGridToIso(pos.x, pos.y, this.tileHeight, this.tileWidth);
+        var canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth);
 
         // Draw frame for tiles above sea level only
         // @todo: Make this configurable (allow tiles below sea level to be rendered with frame according to their (negative) height)
@@ -149,10 +149,10 @@ Renderer.prototype = {
         this._drawIsoTileTop(canvasPosition, tile);
 
         if (this.config.drawTileLabels) {
-            var textPosition = {
-                x: canvasPosition.x + this.offset.left + this.tileWidth/3,
-                y: canvasPosition.y + this.offset.top + ((this.tileHeight / 1.7))
-            };
+            var textPosition = new Pos(
+                canvasPosition.x + this.offset.left + this.tileWidth/3,
+                canvasPosition.y + this.offset.top + ((this.tileHeight / 1.7))
+            );
 
             this._drawTileLabel(pos.x + "," + pos.y, "#000000", textPosition);
         }

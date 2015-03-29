@@ -1,5 +1,5 @@
 /**
- * Tile object
+ * Tile VO
  * @param {Number} x
  * @param {Number} y
  * @param {Number} level

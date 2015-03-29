@@ -1,5 +1,5 @@
 /**
- * Position Coordinates
+ * Position Coordinates VO
  * @param x
  * @param y
  * @constructor
