@@ -2,6 +2,30 @@
 <html>
 <head>
     <title>isoland</title>
+    <style>
+        /* deco */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            min-height: 100%;
+        }
+
+        body {
+            margin: 70px;
+            font: normal 12px "Helvetica Neue", Helvetica, sans-serif;
+            user-select: none;
+            color: #fff;
+            background: rgb(150, 150, 150);
+            background: -moz-radial-gradient(center, ellipse cover, rgba(94, 153, 204, 1) 0%, rgba(69, 69,69, 1) 100%);
+            background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(94, 153, 204, 1)), color-stop(100%, rgba(69, 69, 69, 1)));
+            background: -webkit-radial-gradient(center, ellipse cover, rgba(94, 153, 204, 1) 0%, rgba(69, 69, 69, 1) 100%);
+            background: radial-gradient(ellipse at center, rgba(150, 150, 150, 1) 0%, rgba(69, 69, 69, 1) 100%);
+        }
+    </style>
 </head>
 <body>
     <div >
@@ -10,18 +34,28 @@
         <canvas id="test" style="background-color: #000;"></canvas>
     </div>
 
+    <!-- Libs / Helper -->
     <script src="lib/arrayRotate.js"></script>
     <script src="lib/coordinates.js"></script>
     <script src="lib/colorLuminance.js"></script>
 
     <script src="app/Exceptions.js"></script>
+
+    <!-- VOs -->
+    <script src="app/valueObjects/Pos.js"></script>
+    <script src="app/valueObjects/TileVertices.js"></script>
+    <script src="app/valueObjects/TileElevateParam.js"></script>
+    <script src="app/valueObjects/Tile.js"></script>
+
+    <!-- Juicy bits -->
     <script src="app/Map.js"></script>
-    <script src="app/Tile.js"></script>
     <script src="app/Viewport.js"></script>
     <script src="app/Renderer.js"></script>
     <script src="app/InputHandler.js"></script>
     <script src="app/UI.js"></script>
     <script src="app/Game.js"></script>
+
+    <!-- Third party -->
     <script src="vendor/jquery-2.1.1.min.js"></script>
     <script src="vendor/jquery.ba-throttle-debounce.min.js"></script>
     <script src="vendor/dat.gui.min.js"></script>

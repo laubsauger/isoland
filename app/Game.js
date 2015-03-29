@@ -5,7 +5,7 @@ var Game = function() {
         testCanvas: document.querySelector('#test'),
         worldCanvasSize: 400,
         mapCanvasSize: 400,
-        testCanvasSize: 200,
+        testCanvasSize: 400,
         worldSize: 4,
         worldViewportSize: 4,
         worldTileSize: 96,
@@ -172,13 +172,13 @@ Game.prototype = {
             tileHeight: this.config.testTileSize,
             renderMode: "test",
             offset: {
-                top: 30,
-                left: 74
+                top: 150,
+                left: 75
             }
         };
 
         this.testCanvas.width = this.config.testCanvasSize*2;
-        this.testCanvas.height = this.config.testCanvasSize/2;
+        this.testCanvas.height = this.config.testCanvasSize;
 
         return new Renderer(this.testCanvas, rendererConfig, new ColorLuminance);
     }

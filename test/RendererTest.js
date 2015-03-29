@@ -1,7 +1,6 @@
 describe('Renderer', function() {
     var viewport,
         map,
-        canvasSpy,
         canvasStub = {
             getContext: function() {
                 return {translate: function() {}};

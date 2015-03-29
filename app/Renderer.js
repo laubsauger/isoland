@@ -33,7 +33,7 @@ Renderer.prototype = {
             zoomLevel: config.zoomLevel,
             tileColors: {
                 fillTopBase: '#7777FF',
-                lightenByLevelMultiplier: 0.1
+                lightenByLevelMultiplier: 0.2
             }
         };
 
@@ -75,6 +75,7 @@ Renderer.prototype = {
     },
     /**
      * Draw Test Tiles in a horizontal line
+     * @todo add json file loader
      */
     _drawTestTiles: function() {
         this._drawIsoTile({x: 0, y: 3}, new Tile(0,0,0));
@@ -88,19 +89,36 @@ Renderer.prototype = {
         // 0 0 0
         // 0 1 0
         // 0 0 0
-        this._drawIsoTile({x: 4, y: -5}, new Tile(0,0,0, new TileElevateParam(0,0,1,0)));
-        this._drawIsoTile({x: 4, y: -4}, new Tile(0,0,0, new TileElevateParam(0,1,1,0)));
-        this._drawIsoTile({x: 4, y: -3}, new Tile(0,0,0, new TileElevateParam(0,1,0,0)));
-        this._drawIsoTile({x: 5, y: -5}, new Tile(0,0,0, new TileElevateParam(0,0,1,1)));
+            this._drawIsoTile({x: 4, y: -5}, new Tile(0,0,1, new TileElevateParam(0,0,1,0)));
+            this._drawIsoTile({x: 4, y: -4}, new Tile(0,0,1, new TileElevateParam(0,1,1,0)));
+            this._drawIsoTile({x: 4, y: -3}, new Tile(0,0,1, new TileElevateParam(0,1,0,0)));
+            this._drawIsoTile({x: 5, y: -5}, new Tile(0,0,1, new TileElevateParam(0,0,1,1)));
 
-        this._drawIsoTile({x: 5, y: -4}, new Tile(0,0,1, new TileElevateParam(0,0,0,0))); // raised, influences all tiles around to line up
+            // raised, influences all tiles around to line up
+            this._drawIsoTile({x: 5, y: -4}, new Tile(0,0,2, new TileElevateParam(0,0,0,0)));
 
-        this._drawIsoTile({x: 5, y: -3}, new Tile(0,0,0, new TileElevateParam(1,1,0,0)));
-        this._drawIsoTile({x: 6, y: -5}, new Tile(0,0,0, new TileElevateParam(0,0,0,1)));
-        this._drawIsoTile({x: 6, y: -4}, new Tile(0,0,0, new TileElevateParam(1,0,0,1)));
-        this._drawIsoTile({x: 6, y: -3}, new Tile(0,0,0, new TileElevateParam(1,0,0,0)));
+            this._drawIsoTile({x: 5, y: -3}, new Tile(0,0,1, new TileElevateParam(1,1,0,0)));
+            this._drawIsoTile({x: 6, y: -5}, new Tile(0,0,1, new TileElevateParam(0,0,0,1)));
+            this._drawIsoTile({x: 6, y: -4}, new Tile(0,0,1, new TileElevateParam(1,0,0,1)));
+            this._drawIsoTile({x: 6, y: -3}, new Tile(0,0,1, new TileElevateParam(1,0,0,0)));
 
+        // One lowered tile surrounded by tiles one level higher
+        // -- sloped
+        // 1 1 1
+        // 1 0 1
+        // 1 1 1
+            this._drawIsoTile({x: 7, y: -5}, new Tile(0,0,1, new TileElevateParam(0,0,-1,0)));
+            this._drawIsoTile({x: 7, y: -4}, new Tile(0,0,1, new TileElevateParam(0,-1,-1,0)));
+            this._drawIsoTile({x: 7, y: -3}, new Tile(0,0,1, new TileElevateParam(0,-1,0,0)));
+            this._drawIsoTile({x: 8, y: -5}, new Tile(0,0,1, new TileElevateParam(0,0,-1,-1)));
 
+            // lowered, influences all tiles around to line up
+            this._drawIsoTile({x: 8, y: -4}, new Tile(0,0,0, new TileElevateParam(0,0,0,0)));
+
+            this._drawIsoTile({x: 8, y: -3}, new Tile(0,0,1, new TileElevateParam(-1,-1,0,0)));
+            this._drawIsoTile({x: 9, y: -5}, new Tile(0,0,1, new TileElevateParam(0,0,0,-1)));
+            this._drawIsoTile({x: 9, y: -4}, new Tile(0,0,1, new TileElevateParam(-1,0,0,-1)));
+            this._drawIsoTile({x: 9, y: -3}, new Tile(0,0,1, new TileElevateParam(-1,0,0,0)));
     },
     /**
      * handles tile drawing using different draw modes
@@ -125,7 +143,7 @@ Renderer.prototype = {
         // Draw frame for tiles above sea level only
         // @todo: Make this configurable (allow tiles below sea level to be rendered with frame according to their (negative) height)
         if (tile.level > 0) {
-            this._drawTileSides(canvasPosition, tile);
+            //this._drawTileSides(canvasPosition, tile);
         }
 
         this._drawIsoTileTop(canvasPosition, tile);
@@ -151,51 +169,69 @@ Renderer.prototype = {
             pos.y -= (this.tileHeight/2*tile.level);
         }
 
-        var offsetPos = {
-                x: (pos.x + this.tileWidth/2) + this.offset.left,
-                y: (pos.y + this.tileHeight/2) + this.offset.top
-            },
-            fullOffsetPos = {
-                x: pos.x + this.tileWidth + this.offset.left,
-                y: pos.y + this.tileHeight + this.offset.top
-            };
+        var tileVertices = this._getTileVertices(pos, tile);
 
-        var tileVertices = {
-            top: {
-                x: offsetPos.x,
-                y: pos.y + this.offset.top
-            },
-            right: {
-                x: fullOffsetPos.x,
-                y:  offsetPos.y
-            },
-            bottom: {
-                x: offsetPos.x,
-                y: fullOffsetPos.y
-            },
-            left: {
-                x: pos.x + this.offset.left,
-                y: offsetPos.y
-            }
-        };
-
-        // pull corners/vertices up
-        if(tile.elevate.top !== 0) {
-            tileVertices.top.y -= this.tileHeight/2;
-        }
-        if(tile.elevate.right !== 0) {
-            tileVertices.right.y -= this.tileHeight/2;
-        }
-        if(tile.elevate.bottom !== 0) {
-            tileVertices.bottom.y -= this.tileHeight/2;
-        }
-        if(tile.elevate.left !== 0) {
-            tileVertices.left.y -= this.tileHeight/2;
-        }
+        var gradient;
 
         this.context.lineWidth = .5;
-
         this.context.fillStyle = this._getTileTopFillStyle(tile);
+
+        // right corner
+        //var linearGradient1 = this.context.createLinearGradient(tileVertices.left.x, tileVertices.left.y, tileVertices.right.x, tileVertices.right.y);
+        // left corner
+        //var linearGradient1 = this.context.createLinearGradient(tileVertices.right.x, tileVertices.right.y, tileVertices.left.x, tileVertices.left.y);
+
+        var gradientStart = false,
+            gradientStop = false;
+
+        //if (tile.elevate.top !== 0) {
+        //    gradientStart = {
+        //        x: tileVertices.bottom.x,
+        //        y: tileVertices.bottom.y
+        //    };
+        //
+        //    gradientStop = {
+        //        x: tileVertices.top.x,
+        //        y: tileVertices.top.y
+        //    };
+        //}
+        //
+        //if (tile.elevate.bottom !== 0) {
+        //    gradientStart = {
+        //        x: tileVertices.top.x,
+        //        y: tileVertices.top.y
+        //    };
+        //
+        //    gradientStop = {
+        //        x: tileVertices.bottom.x,
+        //        y: tileVertices.bottom.y
+        //    };
+        //}
+
+        //if (tile.elevate.top !== 0 && tile.elevate.right !== 0) {
+        //    gradientStart = {
+        //        x: tileVertices.left.x+this.tileHeight/2,
+        //        y: tileVertices.left.y
+        //    };
+        //
+        //    gradientStop = {
+        //        x: tileVertices.top.x,
+        //        y: tileVertices.top.y
+        //    };
+        //}
+
+        //if (tile.elevate.top !== 0 && tile.elevate.left !== 0) {
+        //    linearGradient1 = this.context.createLinearGradient(tileVertices.left.x+this.tileHeight/2, tileVertices.left.y, tileVertices.top.x, tileVertices.top.y);
+        //}
+
+        if (gradientStart !== false && gradientStop !== false) {
+            var linearGradient = this.context.createLinearGradient(gradientStart.x, gradientStart.y, gradientStop.x, gradientStop.y);
+            linearGradient.addColorStop(0, 'red');
+            linearGradient.addColorStop(0.35, 'red');
+            linearGradient.addColorStop(0.35, 'yellow');
+            linearGradient.addColorStop(1, 'yellow');
+            this.context.fillStyle = linearGradient;
+        }
 
         this.context.strokeStyle = "#000";
         this.context.beginPath();
@@ -207,30 +243,6 @@ Renderer.prototype = {
         this.context.fill();
         this.context.stroke();
         this.context.closePath();
-    },
-    /**
-     * Returns fill style depending on tile state
-     * @param {Tile} tile
-     */
-    _getTileTopFillStyle: function(tile) {
-        if (tile.hasFocus) {
-            return "#ff9802";
-        }
-
-        return this._getTileTopFillColor(tile);
-    },
-    /**
-     * Calculates color based on tile level
-     * @param {Tile} tile
-     * @returns {string}
-     * @private
-     */
-    _getTileTopFillColor: function(tile) {
-        if (tile.level > 0) {
-            return this.colorLuminance.calculate(this.config.tileColors.fillTopBase, this.config.tileColors.lightenByLevelMultiplier * tile.level);
-        }
-
-        return this.config.tileColors.fillTopBase;
     },
     /**
      * draws the tile frame for each height level at the given position - based on isometric coordinates
@@ -334,5 +346,82 @@ Renderer.prototype = {
         this.context.font="10px Consolas";
         this.context.fillStyle = color;
         this.context.fillText(text, pos.x, pos.y);
+    },
+    /**
+     * Returns fill style depending on tile state
+     * @param {Tile} tile
+     */
+    _getTileTopFillStyle: function(tile) {
+        if (tile.hasFocus) {
+            return "#ff9802";
+        }
+
+        return this._getTileTopFillColor(tile);
+    },
+    /**
+     * Calculates color based on tile level
+     * @param {Tile} tile
+     * @returns {string}
+     * @private
+     */
+    _getTileTopFillColor: function(tile) {
+        if (tile.level > 0) {
+            return this.colorLuminance.calculate(this.config.tileColors.fillTopBase, this.config.tileColors.lightenByLevelMultiplier * tile.level);
+        }
+
+        return this.config.tileColors.fillTopBase;
+    },
+    /**
+     * Returns an object containing a position object for each vertice of the tile
+     * @parameter {Pos} pos
+     * @parameter {Pos} pos
+     * @private
+     */
+    _getTileVertices: function(pos, tile) {
+        var offsetPos = new Pos((pos.x + this.tileWidth/2) + this.offset.left, (pos.y + this.tileHeight/2) + this.offset.top),
+            fullOffsetPos = new Pos(pos.x + this.tileWidth + this.offset.left, pos.y + this.tileHeight + this.offset.top);
+
+        var tileVertices = new TileVertices(
+            new Pos(offsetPos.x, pos.y + this.offset.top),
+            new Pos(fullOffsetPos.x, offsetPos.y),
+            new Pos(offsetPos.x, fullOffsetPos.y),
+            new Pos(pos.x + this.offset.left, offsetPos.y)
+        );
+
+        return this._adjustVertexPositionByTileElevationSetting(tileVertices, tile.elevate);
+    },
+    /**
+     * Lowers or raises each vertex depending on the tiles current elevateParam
+     * @param tileVertices
+     * @param {TileElevateParam} elevateParam
+     * @private
+     */
+    _adjustVertexPositionByTileElevationSetting: function(tileVertices, elevateParam) {
+        // pull corners/vertices up or down if necessary
+        if(elevateParam.top > 0) {
+            tileVertices.top.y -= this.tileHeight/2;
+        } else if(elevateParam.top < 0) {
+            tileVertices.top.y += this.tileHeight/2;
+        }
+
+        if(elevateParam.right > 0) {
+            tileVertices.right.y -= this.tileHeight/2;
+        } else if(elevateParam.right < 0) {
+            tileVertices.right.y += this.tileHeight/2;
+        }
+
+        if(elevateParam.bottom > 0) {
+            tileVertices.bottom.y -= this.tileHeight/2;
+        } else if(elevateParam.bottom < 0) {
+            tileVertices.bottom.y += this.tileHeight/2;
+        }
+
+        if(elevateParam.left > 0) {
+            tileVertices.left.y -= this.tileHeight/2;
+        } else if(elevateParam.left < 0) {
+            tileVertices.left.y += this.tileHeight/2;
+        }
+
+        return tileVertices;
     }
 };
