@@ -143,7 +143,7 @@ Renderer.prototype = {
         // Draw frame for tiles above sea level only
         // @todo: Make this configurable (allow tiles below sea level to be rendered with frame according to their (negative) height)
         if (tile.level > 0) {
-            //this._drawTileSides(canvasPosition, tile);
+            this._drawTileSides(canvasPosition, tile);
         }
 
         this._drawIsoTileTop(canvasPosition, tile);
