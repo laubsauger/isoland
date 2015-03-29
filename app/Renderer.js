@@ -256,7 +256,8 @@ Renderer.prototype = {
         var tileHeightLevelOffset = (pos.y - (this.tileHeight/2 * (tile.level-1))) + this.offset.top;
 
         var tileTopVertices = this._getTileTopVertices(pos, tile),
-            tileRightSideVertices = this._getTileRightSideVertices(tileTopVertices, tileHeightLevelOffset);
+            tileRightSideVertices = this._getTileRightSideVertices(tileTopVertices, tileHeightLevelOffset),
+            tileLeftSideVertices = this._getTileLeftSideVertices(tileTopVertices, tileHeightLevelOffset);
 
         this.context.lineWidth = 1;
 
@@ -276,11 +277,11 @@ Renderer.prototype = {
         this.context.fillStyle = "#00AA00";
         this.context.strokeStyle = '#000';
         this.context.beginPath();
-            this.context.moveTo(tileTopVertices.left.x, tileHeightLevelOffset);
-            this.context.lineTo(tileTopVertices.left.x, tileTopVertices.left.y);
-            this.context.lineTo(tileTopVertices.bottom.x, tileTopVertices.bottom.y);
-            this.context.lineTo(tileTopVertices.top.x, tileHeightLevelOffset + this.tileHeight/2);
-            this.context.lineTo(tileTopVertices.left.x, tileHeightLevelOffset);
+            this.context.moveTo(tileLeftSideVertices.topLeft.x, tileLeftSideVertices.topLeft.y);
+            this.context.lineTo(tileLeftSideVertices.bottomLeft.x, tileLeftSideVertices.bottomLeft.y);
+            this.context.lineTo(tileLeftSideVertices.bottomRight.x, tileLeftSideVertices.bottomRight.y);
+            this.context.lineTo(tileLeftSideVertices.topRight.x, tileLeftSideVertices.topRight.y);
+            this.context.lineTo(tileLeftSideVertices.topLeft.x, tileLeftSideVertices.topLeft.y);
             this.context.fill();
             this.context.stroke();
         this.context.closePath();
@@ -385,6 +386,34 @@ Renderer.prototype = {
         return this._adjustVertexPositionByTileElevationSetting(tileVertices, tile.elevate);
     },
     /**
+     * @param tileTopVertices
+     * @param tileHeightLevelOffset
+     * @returns {TileSideVertices}
+     * @private
+     */
+    _getTileRightSideVertices: function(tileTopVertices, tileHeightLevelOffset) {
+        return new TileSideVertices(
+            new Pos(tileTopVertices.top.x, tileHeightLevelOffset + this.tileHeight/2),
+            new Pos(tileTopVertices.right.x, tileHeightLevelOffset),
+            new Pos(tileTopVertices.right.x,  tileTopVertices.right.y),
+            new Pos(tileTopVertices.bottom.x, tileTopVertices.bottom.y)
+        );
+    },
+    /**
+     * @param tileTopVertices
+     * @param tileHeightLevelOffset
+     * @returns {TileSideVertices}
+     * @private
+     */
+    _getTileLeftSideVertices: function(tileTopVertices, tileHeightLevelOffset) {
+        return new TileSideVertices(
+            new Pos(tileTopVertices.left.x, tileHeightLevelOffset),
+            new Pos(tileTopVertices.top.x, tileHeightLevelOffset + this.tileHeight/2),
+            new Pos(tileTopVertices.bottom.x, tileTopVertices.bottom.y),
+            new Pos(tileTopVertices.left.x, tileTopVertices.left.y)
+        );
+    },
+    /**
      * Lowers or raises each vertex depending on the tiles current elevateParam
      * @param tileVertices
      * @param {TileElevateParam} elevateParam
@@ -417,19 +446,5 @@ Renderer.prototype = {
         }
 
         return tileVertices;
-    },
-    /**
-     * @param tileTopVertices
-     * @param tileHeightLevelOffset
-     * @returns {TileSideVertices}
-     * @private
-     */
-    _getTileRightSideVertices: function(tileTopVertices, tileHeightLevelOffset) {
-        return new TileSideVertices(
-            new Pos(tileTopVertices.top.x, tileHeightLevelOffset + this.tileHeight/2),
-            new Pos(tileTopVertices.right.x, tileHeightLevelOffset),
-            new Pos(tileTopVertices.right.x,  tileTopVertices.right.y),
-            new Pos(tileTopVertices.bottom.x, tileTopVertices.bottom.y)
-        );
     }
 };
