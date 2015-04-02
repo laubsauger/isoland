@@ -39,7 +39,7 @@ Renderer.prototype = {
             renderMode: config.renderMode,
             zoomLevel: config.zoomLevel,
             tileColors: {
-                fillTopBase: '#5f5fcc',
+                fillTopBase: '#5F5FCC',
                 fillLeftBase: '#00AA00',
                 fillRightBase: '#00FF00',
                 lightenByLevelMultiplier: 0.2
@@ -106,10 +106,11 @@ Renderer.prototype = {
             }
         }
     },
+    /**
+     * draws all possible tile variations
+     * @private
+     */
     _createOffscreenTileBuffer: function() {
-        this.context.fillStyle = 'rgba(0,0,0,0)';
-        this.context.fillRect(0, 0, this.width, this.height);
-
         var maxLevel = 8,
             tileElevateParamCollection = [
                 new TileElevateParam(0, 0, 0, 0),
@@ -205,21 +206,23 @@ Renderer.prototype = {
             baseOffset = new Pos(this.tileWidth*tile.level, 255);
 
         // frame the area we're copying
-        this.offscreenBufferContext.strokeStyle = "#fff";
-        this.offscreenBufferContext.beginPath();
-        // this zero (and the other one below) needs to be replaced by a calculation to reach the next tileset (next elevation variation)
-        this.offscreenBufferContext.moveTo(baseOffset.x, 0);
-        this.offscreenBufferContext.lineTo(baseOffset.x, baseOffset.y);
-        this.offscreenBufferContext.lineTo(baseOffset.x+this.tileWidth, baseOffset.y);
-        this.offscreenBufferContext.lineTo(baseOffset.x+this.tileWidth, 0);
-        this.offscreenBufferContext.stroke();
-        this.offscreenBufferContext.closePath();
+        //this.offscreenBufferContext.strokeStyle = "#fff";
+        //this.offscreenBufferContext.beginPath();
+        //// this zero (and the other one below) needs to be replaced by a calculation to reach the next tileset (next elevation variation)
+        //this.offscreenBufferContext.moveTo(baseOffset.x, 0);
+        //this.offscreenBufferContext.lineTo(baseOffset.x, baseOffset.y);
+        //this.offscreenBufferContext.lineTo(baseOffset.x+this.tileWidth, baseOffset.y);
+        //this.offscreenBufferContext.lineTo(baseOffset.x+this.tileWidth, 0);
+        //this.offscreenBufferContext.stroke();
+        //this.offscreenBufferContext.closePath();
 
-        //var tileImageData = this.offscreenBufferContext.getImageData(0, 0, this.tileWidth, this.tileHeight);
-        //var tileImageData = this.offscreenBufferContext.getImageData(baseOffset.x, 0, this.tileWidth, baseOffset.y);
-
-        this.context.drawImage(this.offscreenCanvas, baseOffset.x, 0, this.tileWidth, baseOffset.y, canvasPosition.x + this.offset.left, canvasPosition.y, this.tileWidth, baseOffset.y);
-        //console.log(canvasPosition.x, canvasPosition.y);
+        // @todo: put this into a dedicated function to make it somewhat understandable
+        // @todo: figure out a decent way to get the position besides dividing by a fiddled out number :D 3.1, maybe the
+        this.context.drawImage(
+            this.offscreenCanvas,
+            baseOffset.x, 0, this.tileWidth, baseOffset.y,
+            canvasPosition.x + this.offset.left, canvasPosition.y - this.tileHeight - (this.tileHeightHalf/3.1), this.tileWidth, baseOffset.y
+        );
     },
     /**
      * draws a tile in iso mode
