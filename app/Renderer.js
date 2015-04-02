@@ -3,13 +3,20 @@
  * @param {Object} $canvas DomElement
  * @param {Object} config
  * @param {ColorLuminance} colorLuminance
+ * @param {HTMLCanvasElement} [offscreenCanvas]
  * @constructor
  */
-var Renderer = function($canvas, config, colorLuminance) {
+var Renderer = function($canvas, config, colorLuminance, offscreenCanvas) {
+    this.canvas = $canvas;
     this.context = $canvas.getContext("2d");
+
+    this.offscreenCanvas = offscreenCanvas ? offscreenCanvas : false;
+    this.offscreenBufferContext = this.offscreenCanvas ? this.offscreenCanvas.getContext("2d") : false;
+
     this.width = $canvas.width;
     this.height = $canvas.height;
-    this.supportedRenderModes = ["iso", "2d", "test"];
+
+    this.supportedRenderModes = ["iso", "2d", "test", "offscreen"];
 
     this.colorLuminance = colorLuminance;
 
@@ -25,7 +32,7 @@ Renderer.prototype = {
      */
     configure: function(config) {
         this.config = {
-            drawTileLabels: config.drawTileLabels || true,
+            drawTileLabels: config.drawTileLabels,
             tileWidth: config.tileWidth,
             tileHeight: config.tileHeight,
             offset: config.offset,
@@ -43,10 +50,14 @@ Renderer.prototype = {
             throw new InvalidArgumentException("Unknown render mode: " + this.config.renderMode);
         }
 
+        if (this.config.renderMode === "iso" && !this.offscreenBufferContext) {
+            throw new InvalidArgumentException("Render mode " + this.config.renderMode + " - needs offscreenBuffer");
+        }
+
         this.tileWidth = this.config.tileWidth;
         this.tileHeight = this.config.tileHeight;
 
-        if (this.config.renderMode === "iso" || this.config.renderMode === "test") {
+        if (this.config.renderMode === "iso" || this.config.renderMode === "test" || this.config.renderMode === "offscreen" ) {
             this.tileHeight = this.tileHeight/2;
         }
 
@@ -57,8 +68,20 @@ Renderer.prototype = {
         return this;
     },
     /**
+     * @returns {*|CanvasRenderingContext2D}
+     */
+    getContext: function() {
+        return this.context;
+    },
+    /**
+     * @returns {*|HTMLCanvasElement}
+     */
+    getCanvas: function() {
+        return this.canvas;
+    },
+    /**
      * Iterates over all tiles in viewport and draws them to canvas
-     * @param {Viewport} viewport
+     * @param {Viewport} [viewport]
      */
     execute: function(viewport) {
         this.context.clearRect(0, 0, this.height, this.width);
@@ -68,14 +91,50 @@ Renderer.prototype = {
             return;
         }
 
+        if (this.config.renderMode === "offscreen") {
+            this._createOffscreenTileBuffer();
+            return;
+        }
+
         for (var x=0; x<viewport.edgeLength; x++) {
             for (var y=0; y<viewport.edgeLength; y++) {
                 var tile = viewport.getTileAt(x, y);
 
                 if (tile instanceof Tile) {
-                    this._drawTile({x: x, y: y}, tile);
+                    this._drawTile(new Pos(x, y), tile);
                 }
             }
+        }
+    },
+    _createOffscreenTileBuffer: function() {
+        this.context.fillStyle = 'rgba(0,0,0,0)';
+        this.context.fillRect(0, 0, this.width, this.height);
+
+        var maxLevel = 8,
+            tileElevateParamCollection = [
+                new TileElevateParam(0, 0, 0, 0),
+                new TileElevateParam(0, 0, 0, 1),
+                new TileElevateParam(0, 0, 1, 0),
+                new TileElevateParam(0, 0, 1, 1),
+                new TileElevateParam(0, 1, 0, 0),
+                new TileElevateParam(0, 1, 0, 1),
+                new TileElevateParam(0, 1, 1, 0),
+                new TileElevateParam(0, 1, 1, 1),
+                new TileElevateParam(1, 0, 0, 0),
+                new TileElevateParam(1, 0, 0, 1),
+                new TileElevateParam(1, 0, 1, 0),
+                new TileElevateParam(1, 0, 1, 1),
+                new TileElevateParam(1, 1, 0, 0),
+                new TileElevateParam(1, 1, 0, 1),
+                new TileElevateParam(1, 1, 1, 0)
+            ],
+            startOffset = new Pos(-5, -1);
+
+        for(var i=0; i < tileElevateParamCollection.length; i++) {
+            for(var x=0; x < maxLevel; x++) {
+                this._drawIsoTile(startOffset, new Tile(startOffset.x++, startOffset.y--, x, tileElevateParamCollection[i]));
+            }
+            startOffset.y += maxLevel*2;
         }
     },
     /**
@@ -105,7 +164,6 @@ Renderer.prototype = {
 
         for(var i=0; i < tileElevateParamCollection.length; i++) {
             for(var x=0; x < maxLevel; x++) {
-                console.log(startOffset, tileElevateParamCollection[i]);
                 this._drawIsoTile(startOffset, new Tile(startOffset.x++, startOffset.y--, x, tileElevateParamCollection[i]));
             }
             startOffset.y += maxLevel*2;
@@ -113,15 +171,55 @@ Renderer.prototype = {
     },
     /**
      * handles tile drawing using different draw modes
-     * @param pos
+     * @param {Pos} pos
      * @param {Tile} tile
      */
     _drawTile: function(pos, tile) {
-        if (this.config.renderMode === "iso") {
-            this._drawIsoTile(pos, tile);
-        } else if (this.config.renderMode === "2d") {
-            this._draw2DTile(pos, tile);
+        switch(this.config.renderMode) {
+            case "iso":
+                this._drawTileImageDataFromBuffer(pos, tile);
+                break;
+            case "2d":
+                this._draw2DTile(pos, tile);
+                break;
+            case "test":
+                this._drawIsoTile(pos, tile);
+                break;
+            default:
+                throw new InvalidArgumentException('_drawTile: renderMode not found');
         }
+    },
+    /**
+     * fetches a tile in iso mode from offscreenbuffer
+     * @param {Pos} pos
+     * @param {Tile} tile
+     */
+    _drawTileImageDataFromBuffer: function(pos, tile) {
+        //console.log(pos, tile);
+        // figure out what type of tile we have
+            // level
+            // elevation settings combined
+            // color and other things
+        //var bufferMap
+        var canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth),
+            baseOffset = new Pos(this.tileWidth*tile.level, 255);
+
+        // frame the area we're copying
+        this.offscreenBufferContext.strokeStyle = "#fff";
+        this.offscreenBufferContext.beginPath();
+        // this zero (and the other one below) needs to be replaced by a calculation to reach the next tileset (next elevation variation)
+        this.offscreenBufferContext.moveTo(baseOffset.x, 0);
+        this.offscreenBufferContext.lineTo(baseOffset.x, baseOffset.y);
+        this.offscreenBufferContext.lineTo(baseOffset.x+this.tileWidth, baseOffset.y);
+        this.offscreenBufferContext.lineTo(baseOffset.x+this.tileWidth, 0);
+        this.offscreenBufferContext.stroke();
+        this.offscreenBufferContext.closePath();
+
+        //var tileImageData = this.offscreenBufferContext.getImageData(0, 0, this.tileWidth, this.tileHeight);
+        //var tileImageData = this.offscreenBufferContext.getImageData(baseOffset.x, 0, this.tileWidth, baseOffset.y);
+
+        this.context.drawImage(this.offscreenCanvas, baseOffset.x, 0, this.tileWidth, baseOffset.y, canvasPosition.x + this.offset.left, canvasPosition.y, this.tileWidth, baseOffset.y);
+        //console.log(canvasPosition.x, canvasPosition.y);
     },
     /**
      * draws a tile in iso mode
@@ -172,8 +270,8 @@ Renderer.prototype = {
         // left corner
         //var linearGradient1 = this.context.createLinearGradient(tileVertices.right.x, tileVertices.right.y, tileVertices.left.x, tileVertices.left.y);
 
-        var gradientStart = false,
-            gradientStop = false;
+        //var gradientStart = false,
+        //    gradientStop = false;
 
         //if (tile.elevate.top !== 0) {
         //    gradientStart = {
@@ -215,14 +313,14 @@ Renderer.prototype = {
         //    linearGradient1 = this.context.createLinearGradient(tileVertices.left.x+this.tileHeightHalf, tileVertices.left.y, tileVertices.top.x, tileVertices.top.y);
         //}
 
-        if (gradientStart !== false && gradientStop !== false) {
-            var linearGradient = this.context.createLinearGradient(gradientStart.x, gradientStart.y, gradientStop.x, gradientStop.y);
-            linearGradient.addColorStop(0, 'red');
-            linearGradient.addColorStop(0.35, 'red');
-            linearGradient.addColorStop(0.35, 'yellow');
-            linearGradient.addColorStop(1, 'yellow');
-            this.context.fillStyle = linearGradient;
-        }
+        //if (gradientStart !== false && gradientStop !== false) {
+        //    var linearGradient = this.context.createLinearGradient(gradientStart.x, gradientStart.y, gradientStop.x, gradientStop.y);
+        //    linearGradient.addColorStop(0, 'red');
+        //    linearGradient.addColorStop(0.35, 'red');
+        //    linearGradient.addColorStop(0.35, 'yellow');
+        //    linearGradient.addColorStop(1, 'yellow');
+        //    this.context.fillStyle = linearGradient;
+        //}
 
         this.context.strokeStyle = "#000";
         this.context.beginPath();
