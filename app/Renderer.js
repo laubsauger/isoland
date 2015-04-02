@@ -1,6 +1,6 @@
 /**
  *
- * @param {Object} $canvas DomElement
+ * @param {HTMLCanvasElement} $canvas
  * @param {Object} config
  * @param {ColorLuminance} colorLuminance
  * @param {HTMLCanvasElement} [offscreenCanvas]
