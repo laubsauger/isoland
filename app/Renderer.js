@@ -13,14 +13,35 @@ var Renderer = function($canvas, config, colorLuminance, offscreenCanvas) {
     this.offscreenCanvas = offscreenCanvas ? offscreenCanvas : false;
     this.offscreenBufferContext = this.offscreenCanvas ? this.offscreenCanvas.getContext("2d") : false;
 
+    // contains string representation of all possible elevation combinations
+    this.bufferMap = [
+        '0000',
+        '1000',
+        '0100',
+        '0010',
+
+        '0001',
+        '1100',
+        '1010',
+        '1001',
+
+        '1110',
+        '1101',
+        '0110',
+        '0101',
+
+        '1011',
+        '0011',
+        '0111'
+        //'1111'
+    ];
+
     this.width = $canvas.width;
     this.height = $canvas.height;
 
     this.supportedRenderModes = ["iso", "2d", "test", "offscreen"];
 
     this.colorLuminance = colorLuminance;
-
-    this.context.translate(0.5, 0.5);
 
     this.logonce = 0;
 
@@ -61,6 +82,10 @@ Renderer.prototype = {
 
         if (this.config.renderMode === "iso" || this.config.renderMode === "test" || this.config.renderMode === "offscreen" ) {
             this.tileHeight = this.tileHeight/2;
+        }
+
+        if (this.config.renderMode !== "iso") {
+            this.context.translate(0.5, 0.5);
         }
 
         this.tileHeightHalf = this.tileHeight/2;
@@ -114,31 +139,12 @@ Renderer.prototype = {
      */
     _createOffscreenTileBuffer: function() {
         var maxLevel = 8,
-            tileElevateParamCollection = [
-                new TileElevateParam(0, 0, 0, 0),
-                new TileElevateParam(1, 0, 0, 0),
-                new TileElevateParam(0, 1, 0, 0),
-                new TileElevateParam(0, 0, 1, 0),
-                new TileElevateParam(0, 0, 0, 1)
-
-                //-----------------------------
-                //new TileElevateParam(0, 0, 0, 0),
-                //new TileElevateParam(0, 0, 0, 1),
-                //new TileElevateParam(0, 0, 1, 0),
-                //new TileElevateParam(0, 0, 1, 1),
-                //new TileElevateParam(0, 1, 0, 0),
-                //new TileElevateParam(0, 1, 0, 1),
-                //new TileElevateParam(0, 1, 1, 0),
-                //new TileElevateParam(0, 1, 1, 1),
-                //new TileElevateParam(1, 0, 0, 0),
-                //new TileElevateParam(1, 0, 0, 1),
-                //new TileElevateParam(1, 0, 1, 0),
-                //new TileElevateParam(1, 0, 1, 1),
-                //new TileElevateParam(1, 1, 0, 0),
-                //new TileElevateParam(1, 1, 0, 1),
-                //new TileElevateParam(1, 1, 1, 0)
-            ],
+            tileElevateParamCollection = [],
             startOffset = new Pos(-5, -1);
+
+        for (var y = 0; y < this.bufferMap.length; y++) {
+            tileElevateParamCollection.push(new TileElevateParam(this.bufferMap[y][0], this.bufferMap[y][1], this.bufferMap[y][2], this.bufferMap[y][3]));
+        }
 
         for(var i=0; i < tileElevateParamCollection.length; i++) {
             for(var x=0; x < maxLevel; x++) {
@@ -224,18 +230,11 @@ Renderer.prototype = {
             // level
             // elevation settings combined
             // color and other things
-        var bufferMap = [
-            '0000',
-            '1000',
-            '0100',
-            '0010',
-            '0001'
-            ],
-            bufferViewport = {width: this.tileWidth, height: 255},
+        var bufferViewportDim = {width: this.tileWidth, height: 256},
             canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth),
-            bufferMapIndex = bufferMap.indexOf(tile.elevate.toString()),
-            elevationVariationSpacing = bufferMapIndex > 0 ? bufferViewport.height/2 : 0,
-            bufferBaseOffset = new Pos(this.tileWidth * tile.level, bufferViewport.height * (bufferMapIndex + 1));
+            bufferMapIndex = this.bufferMap.indexOf(tile.elevate.toString()),
+            elevationVariationSpacing = bufferMapIndex > 0 ? bufferViewportDim.height/2 : 0,
+            bufferBaseOffset = new Pos(this.tileWidth * tile.level, bufferViewportDim.height * (bufferMapIndex + 1));
 
         //// frame the area we're copying
         //this.offscreenBufferContext.strokeStyle = "#fff";
@@ -252,12 +251,12 @@ Renderer.prototype = {
         // @todo: figure out a decent way to get the position besides dividing by a fiddled out number :D
         this.context.drawImage(
             this.offscreenCanvas,
-            bufferBaseOffset.x, bufferMapIndex * bufferViewport.height + elevationVariationSpacing, bufferViewport.width, bufferViewport.height,
-            canvasPosition.x + this.offset.left, canvasPosition.y - this.tileHeight - (this.tileHeightHalf/3), bufferViewport.width, bufferViewport.height
+            bufferBaseOffset.x, bufferMapIndex * (bufferViewportDim.height + elevationVariationSpacing), bufferViewportDim.width, bufferViewportDim.height,
+            canvasPosition.x + this.offset.left, canvasPosition.y - this.tileHeight - (this.tileHeightHalf/3), bufferViewportDim.width, bufferViewportDim.height
         );
 
-        if (this.logonce < 5) {
-            console.log([bufferBaseOffset.x, bufferViewport.height * bufferMapIndex]);
+        if (this.logonce < 4) {
+            console.log(bufferBaseOffset.x, bufferMapIndex * (bufferViewportDim.height + elevationVariationSpacing), elevationVariationSpacing);
             this.logonce++;
         }
     },

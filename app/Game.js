@@ -7,7 +7,7 @@ var Game = function() {
         worldCanvasSize: 400,
         mapCanvasSize: 200,
         testCanvasSize: 1600,
-        offscreenCanvasSize: 2800,
+        offscreenCanvasSize: 2900,
         worldSize: 4,
         worldViewportSize: 4,
         worldTileSize: 96,
