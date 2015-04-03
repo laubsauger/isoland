@@ -22,6 +22,8 @@ var Renderer = function($canvas, config, colorLuminance, offscreenCanvas) {
 
     this.context.translate(0.5, 0.5);
 
+    this.logonce = 0;
+
     this.configure(config);
 };
 
@@ -114,27 +116,48 @@ Renderer.prototype = {
         var maxLevel = 8,
             tileElevateParamCollection = [
                 new TileElevateParam(0, 0, 0, 0),
-                new TileElevateParam(0, 0, 0, 1),
-                new TileElevateParam(0, 0, 1, 0),
-                new TileElevateParam(0, 0, 1, 1),
-                new TileElevateParam(0, 1, 0, 0),
-                new TileElevateParam(0, 1, 0, 1),
-                new TileElevateParam(0, 1, 1, 0),
-                new TileElevateParam(0, 1, 1, 1),
                 new TileElevateParam(1, 0, 0, 0),
-                new TileElevateParam(1, 0, 0, 1),
-                new TileElevateParam(1, 0, 1, 0),
-                new TileElevateParam(1, 0, 1, 1),
-                new TileElevateParam(1, 1, 0, 0),
-                new TileElevateParam(1, 1, 0, 1),
-                new TileElevateParam(1, 1, 1, 0)
+                new TileElevateParam(0, 1, 0, 0),
+                new TileElevateParam(0, 0, 1, 0),
+                new TileElevateParam(0, 0, 0, 1)
+
+                //-----------------------------
+                //new TileElevateParam(0, 0, 0, 0),
+                //new TileElevateParam(0, 0, 0, 1),
+                //new TileElevateParam(0, 0, 1, 0),
+                //new TileElevateParam(0, 0, 1, 1),
+                //new TileElevateParam(0, 1, 0, 0),
+                //new TileElevateParam(0, 1, 0, 1),
+                //new TileElevateParam(0, 1, 1, 0),
+                //new TileElevateParam(0, 1, 1, 1),
+                //new TileElevateParam(1, 0, 0, 0),
+                //new TileElevateParam(1, 0, 0, 1),
+                //new TileElevateParam(1, 0, 1, 0),
+                //new TileElevateParam(1, 0, 1, 1),
+                //new TileElevateParam(1, 1, 0, 0),
+                //new TileElevateParam(1, 1, 0, 1),
+                //new TileElevateParam(1, 1, 1, 0)
             ],
             startOffset = new Pos(-5, -1);
 
         for(var i=0; i < tileElevateParamCollection.length; i++) {
             for(var x=0; x < maxLevel; x++) {
                 this._drawIsoTile(startOffset, new Tile(startOffset.x++, startOffset.y--, x, tileElevateParamCollection[i]));
+                var firstColumnTopLeft = new Pos(startOffset.x, startOffset.y);
             }
+
+            var textOffset = fromGridIndexToIsoPos(firstColumnTopLeft, this.tileHeight, this.tileWidth);
+            var textPosition = new Pos(
+                15,
+                textOffset.y + 160
+            );
+            this._drawTileLabel(
+                tileElevateParamCollection[i].top + ', ' +
+                tileElevateParamCollection[i].right + ', ' +
+                tileElevateParamCollection[i].bottom + ', ' +
+                tileElevateParamCollection[i].left,
+                "#fff", textPosition);
+
             startOffset.y += maxLevel*2;
         }
     },
@@ -201,11 +224,20 @@ Renderer.prototype = {
             // level
             // elevation settings combined
             // color and other things
-        //var bufferMap
-        var canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth),
-            baseOffset = new Pos(this.tileWidth*tile.level, 255);
+        var bufferMap = [
+            '0000',
+            '1000',
+            '0100',
+            '0010',
+            '0001'
+            ],
+            bufferViewport = {width: this.tileWidth, height: 255},
+            canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth),
+            bufferMapIndex = bufferMap.indexOf(tile.elevate.toString()),
+            elevationVariationSpacing = bufferMapIndex > 0 ? bufferViewport.height/2 : 0,
+            bufferBaseOffset = new Pos(this.tileWidth * tile.level, bufferViewport.height * (bufferMapIndex + 1));
 
-        // frame the area we're copying
+        //// frame the area we're copying
         //this.offscreenBufferContext.strokeStyle = "#fff";
         //this.offscreenBufferContext.beginPath();
         //// this zero (and the other one below) needs to be replaced by a calculation to reach the next tileset (next elevation variation)
@@ -217,12 +249,17 @@ Renderer.prototype = {
         //this.offscreenBufferContext.closePath();
 
         // @todo: put this into a dedicated function to make it somewhat understandable
-        // @todo: figure out a decent way to get the position besides dividing by a fiddled out number :D 3.1, maybe the
+        // @todo: figure out a decent way to get the position besides dividing by a fiddled out number :D
         this.context.drawImage(
             this.offscreenCanvas,
-            baseOffset.x, 0, this.tileWidth, baseOffset.y,
-            canvasPosition.x + this.offset.left, canvasPosition.y - this.tileHeight - (this.tileHeightHalf/3.1), this.tileWidth, baseOffset.y
+            bufferBaseOffset.x, bufferMapIndex * bufferViewport.height + elevationVariationSpacing, bufferViewport.width, bufferViewport.height,
+            canvasPosition.x + this.offset.left, canvasPosition.y - this.tileHeight - (this.tileHeightHalf/3), bufferViewport.width, bufferViewport.height
         );
+
+        if (this.logonce < 5) {
+            console.log([bufferBaseOffset.x, bufferViewport.height * bufferMapIndex]);
+            this.logonce++;
+        }
     },
     /**
      * draws a tile in iso mode

@@ -31,14 +31,17 @@ Game.prototype = {
      */
     setup: function() {
         this.offscreenRenderer = this.createOffscreenRenderer();
+        this.offscreenRenderer.execute();
+
         this.worldRenderer = this.createWorldRenderer(this.offscreenRenderer);
 
-        // if the map is to be rendered every frame it should definitely use
+        // if the map is to be rendered every frame it should definitely use offscreen rendering too
         this.mapRenderer = this.createMapRenderer();
 
         this.testRenderer = this.createTestRenderer();
 
-        this.presetMap = [];
+        var mapStorage = new MapStorage();
+        this.presetMap = mapStorage.testMap();
 
         this.worldTileMap = new Map(this.config.worldSize, this.presetMap);
 
@@ -48,9 +51,6 @@ Game.prototype = {
         this.inputHandler = new InputHandler(this.config);
 
         this.testRenderer.execute();
-
-        // @todo: remove this or make it a debug option, offscreen canvas will be created in memory
-        this.offscreenRenderer.execute();
 
         return this;
     },
