@@ -7,7 +7,10 @@ var Game = function() {
         worldCanvasSize: 400,
         mapCanvasSize: 200,
         testCanvasSize: 1600,
-        offscreenCanvasSize: 2900,
+        offscreenCanvasDim: {
+            height: 12000,
+            width: 800
+        },
         worldSize: 4,
         worldViewportSize: 4,
         worldTileSize: 96,
@@ -41,7 +44,7 @@ Game.prototype = {
         this.testRenderer = this.createTestRenderer();
 
         var mapStorage = new MapStorage();
-        this.presetMap = mapStorage.testMap();
+        this.presetMap = mapStorage.testPoolLevel2();
 
         this.worldTileMap = new Map(this.config.worldSize, this.presetMap);
 
@@ -67,7 +70,7 @@ Game.prototype = {
 
         var self = this;
 
-        (function animationLoop(){
+        (function renderLoop(){
             var focusedTile = false;
             //console.log('rendering');
 
@@ -90,7 +93,7 @@ Game.prototype = {
             }
 
             // loop
-            requestAnimationFrame(animationLoop);
+            requestAnimationFrame(renderLoop);
         })();
     },
     /**
@@ -166,14 +169,15 @@ Game.prototype = {
             tileWidth: this.config.worldTileSize,
             tileHeight: this.config.worldTileSize,
             renderMode: "offscreen",
+            //@todo: wtf???
             offset: {
                 top: 175*(this.config.worldTileSize/this.config.testTileSize),
                 left: 48*(this.config.worldTileSize/this.config.testTileSize)
             }
         };
 
-        this.offscreenCanvas.width = this.config.offscreenCanvasSize/3.5;
-        this.offscreenCanvas.height = this.config.offscreenCanvasSize*2;
+        this.offscreenCanvas.width = this.config.offscreenCanvasDim.width;
+        this.offscreenCanvas.height = this.config.offscreenCanvasDim.height;
 
         return new Renderer(this.offscreenCanvas, rendererConfig, new ColorLuminance);
     }

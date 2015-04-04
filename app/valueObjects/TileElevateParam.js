@@ -17,5 +17,5 @@ var TileElevateParam = function(top, right, bottom, left) {
  * @returns {string}
  */
 TileElevateParam.prototype.toString = function() {
-    return this.top + "" + this.right + "" + this.bottom + "" + this.left;
+    return this.top + "," + this.right + "," + this.bottom + "," + this.left;
 };

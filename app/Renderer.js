@@ -15,25 +15,44 @@ var Renderer = function($canvas, config, colorLuminance, offscreenCanvas) {
 
     // contains string representation of all possible elevation combinations
     this.bufferMap = [
-        '0000',
-        '1000',
-        '0100',
-        '0010',
+        // positive
+        '0,0,0,0',
+        '1,0,0,0',
+        '0,1,0,0',
+        '0,0,1,0',
 
-        '0001',
-        '1100',
-        '1010',
-        '1001',
+        '0,0,0,1',
+        '1,1,0,0',
+        '1,0,1,0',
+        '1,0,0,1',
 
-        '1110',
-        '1101',
-        '0110',
-        '0101',
+        '1,1,1,0',
+        '1,1,0,1',
+        '0,1,1,0',
+        '0,1,0,1',
 
-        '1011',
-        '0011',
-        '0111'
-        //'1111'
+        '1,0,1,1',
+        '0,0,1,1',
+        '0,1,1,1',
+
+        //negative
+        '-1,0,0,0',
+        '0,-1,0,0',
+        '0,0,-1,0',
+
+        '0,0,0,-1',
+        '-1,-1,0,0',
+        '-1,0,-1,0',
+        '-1,0,0,-1',
+
+        '-1,-1,-1,0',
+        '-1,-1,0,-1',
+        '0,-1,-1,0',
+        '0,-1,0,-1',
+
+        '-1,0,-1,-1',
+        '0,0,-1,-1',
+        '0,-1,-1,-1'
     ];
 
     this.width = $canvas.width;
@@ -143,7 +162,9 @@ Renderer.prototype = {
             startOffset = new Pos(-5, -1);
 
         for (var y = 0; y < this.bufferMap.length; y++) {
-            tileElevateParamCollection.push(new TileElevateParam(this.bufferMap[y][0], this.bufferMap[y][1], this.bufferMap[y][2], this.bufferMap[y][3]));
+            var bufferMapItem = this.bufferMap[y].split(',');
+            //console.log(bufferMapItem[0], bufferMapItem[1], bufferMapItem[2], bufferMapItem[3]);
+            tileElevateParamCollection.push(new TileElevateParam(bufferMapItem[0], bufferMapItem[1], bufferMapItem[2], bufferMapItem[3]));
         }
 
         for(var i=0; i < tileElevateParamCollection.length; i++) {
@@ -155,7 +176,7 @@ Renderer.prototype = {
             var textOffset = fromGridIndexToIsoPos(firstColumnTopLeft, this.tileHeight, this.tileWidth);
             var textPosition = new Pos(
                 15,
-                textOffset.y + 160
+                textOffset.y + 210
             );
             this._drawTileLabel(
                 tileElevateParamCollection[i].top + ', ' +
@@ -227,9 +248,10 @@ Renderer.prototype = {
     _drawTileImageDataFromBuffer: function(pos, tile) {
         //console.log(pos, tile);
         // figure out what type of tile we have
-            // level
-            // elevation settings combined
-            // color and other things
+        // level
+        // elevation settings combined
+        // color and other things
+
         var bufferViewportDim = {width: this.tileWidth, height: 256},
             canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth),
             bufferMapIndex = this.bufferMap.indexOf(tile.elevate.toString()),
@@ -363,10 +385,10 @@ Renderer.prototype = {
 
         this.context.strokeStyle = "#000";
         this.context.beginPath();
-            this.context.moveTo(tileTopVertices.left.x, tileTopVertices.left.y);
-            this.context.lineTo(tileTopVertices.top.x, tileTopVertices.top.y);
-            this.context.lineTo(tileTopVertices.right.x, tileTopVertices.right.y);
-            this.context.lineTo(tileTopVertices.bottom.x, tileTopVertices.bottom.y);
+        this.context.moveTo(tileTopVertices.left.x, tileTopVertices.left.y);
+        this.context.lineTo(tileTopVertices.top.x, tileTopVertices.top.y);
+        this.context.lineTo(tileTopVertices.right.x, tileTopVertices.right.y);
+        this.context.lineTo(tileTopVertices.bottom.x, tileTopVertices.bottom.y);
 
         this.context.fill();
         this.context.stroke();
@@ -391,25 +413,25 @@ Renderer.prototype = {
         this.context.fillStyle = this.config.tileColors.fillRightBase;
         this.context.strokeStyle = '#000';
         this.context.beginPath();
-            this.context.moveTo(tileRightSideVertices.bottomLeft.x, tileRightSideVertices.bottomLeft.y);
-            this.context.lineTo(tileRightSideVertices.bottomRight.x, tileRightSideVertices.bottomRight.y);
-            this.context.lineTo(tileRightSideVertices.topRight.x, tileRightSideVertices.topRight.y);
-            this.context.lineTo(tileRightSideVertices.topLeft.x, tileRightSideVertices.topLeft.y);
-            this.context.fill();
-            this.context.stroke();
+        this.context.moveTo(tileRightSideVertices.bottomLeft.x, tileRightSideVertices.bottomLeft.y);
+        this.context.lineTo(tileRightSideVertices.bottomRight.x, tileRightSideVertices.bottomRight.y);
+        this.context.lineTo(tileRightSideVertices.topRight.x, tileRightSideVertices.topRight.y);
+        this.context.lineTo(tileRightSideVertices.topLeft.x, tileRightSideVertices.topLeft.y);
+        this.context.fill();
+        this.context.stroke();
         this.context.closePath();
 
         // left side
         this.context.fillStyle = this.config.tileColors.fillLeftBase;
         this.context.strokeStyle = '#000';
         this.context.beginPath();
-            this.context.moveTo(tileLeftSideVertices.topLeft.x, tileLeftSideVertices.topLeft.y);
-            this.context.lineTo(tileLeftSideVertices.bottomLeft.x, tileLeftSideVertices.bottomLeft.y);
-            this.context.lineTo(tileLeftSideVertices.bottomRight.x, tileLeftSideVertices.bottomRight.y);
-            this.context.lineTo(tileLeftSideVertices.topRight.x, tileLeftSideVertices.topRight.y);
-            this.context.lineTo(tileLeftSideVertices.topLeft.x, tileLeftSideVertices.topLeft.y);
-            this.context.fill();
-            this.context.stroke();
+        this.context.moveTo(tileLeftSideVertices.topLeft.x, tileLeftSideVertices.topLeft.y);
+        this.context.lineTo(tileLeftSideVertices.bottomLeft.x, tileLeftSideVertices.bottomLeft.y);
+        this.context.lineTo(tileLeftSideVertices.bottomRight.x, tileLeftSideVertices.bottomRight.y);
+        this.context.lineTo(tileLeftSideVertices.topRight.x, tileLeftSideVertices.topRight.y);
+        this.context.lineTo(tileLeftSideVertices.topLeft.x, tileLeftSideVertices.topLeft.y);
+        this.context.fill();
+        this.context.stroke();
         this.context.closePath();
     },
     /**
@@ -447,13 +469,13 @@ Renderer.prototype = {
         this.context.fillStyle = this._getTileTopFillStyle(tile);
         this.context.strokeStyle = '#000';
         this.context.beginPath();
-            this.context.moveTo(pos.x + this.offset.left, (pos.y+height) + this.offset.top);
-            this.context.lineTo(pos.x + this.offset.left, pos.y + this.offset.top);
-            this.context.lineTo(pos.x+width + this.offset.left, pos.y + this.offset.top);
-            this.context.lineTo(pos.x+width  + this.offset.left, pos.y+height + this.offset.top);
-            this.context.lineTo(pos.x + this.offset.left, (pos.y+height) + this.offset.top);
-            this.context.fill();
-            this.context.stroke();
+        this.context.moveTo(pos.x + this.offset.left, (pos.y+height) + this.offset.top);
+        this.context.lineTo(pos.x + this.offset.left, pos.y + this.offset.top);
+        this.context.lineTo(pos.x+width + this.offset.left, pos.y + this.offset.top);
+        this.context.lineTo(pos.x+width  + this.offset.left, pos.y+height + this.offset.top);
+        this.context.lineTo(pos.x + this.offset.left, (pos.y+height) + this.offset.top);
+        this.context.fill();
+        this.context.stroke();
         this.context.closePath();
     },
     /**
