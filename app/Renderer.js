@@ -55,9 +55,6 @@ var Renderer = function($canvas, config, colorLuminance, offscreenCanvas) {
         '0,-1,-1,-1'
     ];
 
-    this.width = this.canvas.width;
-    this.height = this.canvas.height;
-
     this.supportedRenderModes = ["iso", "2d", "test", "offscreen"];
 
     this.colorLuminance = colorLuminance;
@@ -85,7 +82,8 @@ Renderer.prototype = {
                 fillLeftBase: '#00AA00',
                 fillRightBase: '#00FF00',
                 lightenByLevelMultiplier: 0.2
-            }
+            },
+            canvasDim: config.canvasDim
         };
 
         if (this.supportedRenderModes.indexOf(this.config.renderMode) === -1) {
@@ -104,10 +102,14 @@ Renderer.prototype = {
         }
 
         if (this.config.renderMode !== "offscreen") {
-            this.canvas.width = config.canvasDim.width;
-            this.canvas.height = config.canvasDim.height;
+            this.canvas.width = this.config.canvasDim.width;
+            this.canvas.height = this.config.canvasDim.height;
         }
 
+        this.width = this.canvas.width;
+        this.height = this.canvas.height;
+
+        // translate half pixel to avoid blurry lines
         if (this.config.renderMode !== "iso") {
             this.context.translate(0.5, 0.5);
         }
