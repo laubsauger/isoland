@@ -2,25 +2,153 @@
 <html>
 <head>
     <title>isoland</title>
+    <style>
+        /* deco */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            min-height: 100%;
+        }
+
+        body {
+            margin: 1.5em;
+            font: normal 12px "Helvetica Neue", Helvetica, sans-serif;
+            user-select: none;
+            color: #fff;
+            background: rgb(150, 150, 150);
+            background: -moz-radial-gradient(center, ellipse cover, rgba(94, 153, 204, 1) 0%, rgba(69, 69,69, 1) 100%);
+            background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(94, 153, 204, 1)), color-stop(100%, rgba(69, 69, 69, 1)));
+            background: -webkit-radial-gradient(center, ellipse cover, rgba(94, 153, 204, 1) 0%, rgba(69, 69, 69, 1) 100%);
+            background: radial-gradient(ellipse at center, rgba(150, 150, 150, 1) 0%, rgba(69, 69, 69, 1) 100%);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            margin: 0.2em 0 0.2em 0;
+            padding: 0.2em 0 0.2em 0;
+        }
+
+        fieldset {
+            padding: 1em;
+        }
+
+        label {
+            vertical-align: top;
+            margin: 0.5em;
+        }
+
+        section {
+            display: inline-block;
+            vertical-align: top;
+            background: #444;
+            padding: 1.5em;
+            margin: 1em;
+        }
+
+        textarea {
+            background: #000;
+            font-family: monospace;
+            color: #89C1EA;
+            padding: 5px;
+        }
+
+        .showHideBtn {
+            background: #064C62;
+            float: right;
+            cursor: pointer;
+        }
+
+        .world {
+            width: 62%;
+        }
+
+        .map {
+            width: 13%;
+        }
+
+        .debug {
+            width: 20%;
+        }
+
+        .debug > div {
+            margin: 1em;
+        }
+
+        .scrollable {
+            overflow: scroll;
+        }
+    </style>
 </head>
 <body>
-    <div >
-        <canvas id="map" style="background-color: #000;"></canvas>
-        <canvas id="world" style="background-color: #000;"></canvas>
-        <canvas id="test" style="background-color: #000;"></canvas>
-    </div>
+    <h1>Isoland</h1>
 
+    <section class="world">
+        <h1>World</h1>
+        <canvas id="world" style="background-color: #000; vertical-align: top;"></canvas>
+    </section>
+
+    <section class="map">
+        <h1>Map</h1>
+        <canvas id="map" style="background-color: #000; vertical-align: top;"></canvas>
+    </section>
+
+    <section class="debug">
+        <h1>Debug</h1>
+        <div>
+            <h3>Offscreen Canvas <span class="showHideBtn" data-alt-text="hide">show</span></h3>
+            <div class="scrollable">
+                <canvas id="offscreen" style="background-color: #000; vertical-align: top; display: none;"></canvas>
+            </div>
+        </div>
+        <div>
+            <h3>Testbed  Canvas <span class="showHideBtn" data-alt-text="hide">show</span></h3>
+            <div class="scrollable">
+                <canvas id="test" style="background-color: #000; vertical-align: top; display: none;"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section class="mapLoader">
+        <h1>gnarf</h1>
+        <form>
+            <fieldset>
+                <legend>JSON</legend>
+                <label for="input">input</label>
+                <textarea name="input" id="input" cols="30" rows="10"></textarea>
+                <label for="output">output</label>
+                <textarea name="output" id="output" cols="30" rows="10"></textarea>
+            </fieldset>
+        </form>
+    </section>
+
+    <!-- Libs / Helper -->
     <script src="lib/arrayRotate.js"></script>
     <script src="lib/coordinates.js"></script>
+    <script src="lib/colorLuminance.js"></script>
+    <script src="lib/renderToCanvas.js"></script>
 
     <script src="app/Exceptions.js"></script>
+    <script src="app/maps/test.map.js"></script>
+
+    <!-- VOs -->
+    <script src="app/valueObjects/Pos.js"></script>
+    <script src="app/valueObjects/TileTopVertices.js"></script>
+    <script src="app/valueObjects/TileSideVertices.js"></script>
+    <script src="app/valueObjects/TileElevateParam.js"></script>
+    <script src="app/valueObjects/Tile.js"></script>
+
+    <!-- Juicy bits -->
     <script src="app/Map.js"></script>
-    <script src="app/Tile.js"></script>
     <script src="app/Viewport.js"></script>
     <script src="app/Renderer.js"></script>
     <script src="app/InputHandler.js"></script>
     <script src="app/UI.js"></script>
     <script src="app/Game.js"></script>
+
+    <!-- Third party -->
     <script src="vendor/jquery-2.1.1.min.js"></script>
     <script src="vendor/jquery.ba-throttle-debounce.min.js"></script>
     <script src="vendor/dat.gui.min.js"></script>
@@ -36,6 +164,17 @@
             gui.add(game, 'setup');
             gui.add(game, 'run');
         };
+
+        $('form').on('submit', function() {
+
+        });
+
+        $('.showHideBtn').on('click', function() {
+            var text = $(this).text();
+            $(this).text($(this).data('alt-text'));
+            $(this).data('alt-text', text);
+            $(this).parents('div').find('canvas').toggle();
+        });
     </script>
 </body>
 </html>

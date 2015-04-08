@@ -3,9 +3,14 @@ var Game = function() {
         worldCanvas: document.querySelector('#world'),
         mapCanvas: document.querySelector('#map'),
         testCanvas: document.querySelector('#test'),
+        offscreenCanvas: document.querySelector('#offscreen'),
         worldCanvasSize: 400,
-        mapCanvasSize: 400,
-        testCanvasSize: 200,
+        mapCanvasSize: 200,
+        testCanvasSize: 1600,
+        offscreenCanvasDim: {
+            height: 12000,
+            width: 800
+        },
         worldSize: 4,
         worldViewportSize: 4,
         worldTileSize: 96,
@@ -19,6 +24,7 @@ var Game = function() {
     this.worldCanvas = this.config.worldCanvas;
     this.mapCanvas = this.config.mapCanvas;
     this.testCanvas = this.config.testCanvas;
+    this.offscreenCanvas = this.config.offscreenCanvas;
 };
 
 Game.prototype = {
@@ -27,58 +33,27 @@ Game.prototype = {
      * @returns {Game}
      */
     setup: function() {
-        this.worldRenderer = this.createWorldRenderer();
+        this.offscreenRenderer = this.createOffscreenRenderer();
+        this.offscreenRenderer.execute();
+
+        this.worldRenderer = this.createWorldRenderer(this.offscreenRenderer);
+
+        // if the map is to be rendered every frame it should definitely use offscreen rendering too
         this.mapRenderer = this.createMapRenderer();
+
         this.testRenderer = this.createTestRenderer();
 
-        this.presetMap = [
-            //[
-            //    {
-            //        x: 0,
-            //        y: 0,
-            //        level: 1
-            //    },
-            //    {
-            //        x: 0,
-            //        y: 1,
-            //        level: 2
-            //    },
-            //    {
-            //        x: 0,
-            //        y: 2,
-            //        level: 3
-            //    }
-            //],[
-            //    {
-            //        x: 1,
-            //        y: 0,
-            //        level: 1
-            //    }
-            //],[
-            //    {
-            //        x: 2,
-            //        y: 0,
-            //        level: 2
-            //    }
-            //],[
-            //    {
-            //        x: 3,
-            //        y: 0,
-            //        level: 3
-            //    }
-            //]
-        ];
+        var mapStorage = new MapStorage();
+        this.presetMap = mapStorage.testPoolLevel2();
 
         this.worldTileMap = new Map(this.config.worldSize, this.presetMap);
 
         this.worldViewport = new Viewport(this.config.worldViewportSize, this.worldTileMap);
         this.mapViewport = new Viewport(this.config.worldSize, this.worldTileMap);
 
-        this.testViewport = new Viewport(4, new Map(4));
-
         this.inputHandler = new InputHandler(this.config);
 
-        this.testRenderer.execute(this.testViewport);
+        this.testRenderer.execute();
 
         return this;
     },
@@ -86,16 +61,9 @@ Game.prototype = {
      * run the game loop
      */
     run: function() {
-        //>> game loop
-        // 1. register viewport and game state changes (e.g. ask inputHandler for inputs) .
-        // 2. do stuff
-        // 3. apply changes
-        // 4. redraw
-        //<< game loop
-
         var self = this;
 
-        (function animationLoop(){
+        (function renderLoop(){
             var focusedTile = false;
             //console.log('rendering');
 
@@ -118,14 +86,15 @@ Game.prototype = {
             }
 
             // loop
-            requestAnimationFrame(animationLoop);
+            requestAnimationFrame(renderLoop);
         })();
     },
     /**
      * Create World renderer
+     * @param {Renderer} offscreenRenderer
      * @returns {Renderer}
      */
-    createWorldRenderer: function() {
+    createWorldRenderer: function(offscreenRenderer) {
         var rendererConfig = {
             tileWidth: this.config.worldTileSize,
             tileHeight: this.config.worldTileSize,
@@ -133,12 +102,14 @@ Game.prototype = {
             offset: {
                 top: 150,
                 left: 150
+            },
+            canvasDim: {
+                width: this.config.worldCanvasSize,
+                height: this.config.worldCanvasSize
             }
         };
 
-        this.worldCanvas.width = this.worldCanvas.height = this.config.worldCanvasSize;
-
-        return new Renderer(this.worldCanvas, rendererConfig);
+        return new Renderer(this.worldCanvas, rendererConfig, new ColorLuminance, offscreenRenderer.getCanvas());
     },
     /**
      * Create Overview Map renderer
@@ -149,16 +120,19 @@ Game.prototype = {
             tileWidth: this.config.mapTileSize,
             tileHeight: this.config.mapTileSize,
             renderMode: "2d",
+            drawTileLabels: true,
             offset: {
                 top: 20,
                 left: 20
             },
+            canvasDim: {
+                width: this.config.mapCanvasSize,
+                height: this.config.mapCanvasSize
+            },
             zoomLevel: this.mapZoomLevel
         };
 
-        this.mapCanvas.width = this.mapCanvas.height = this.config.mapCanvasSize;
-
-        return new Renderer(this.mapCanvas, rendererConfig);
+        return new Renderer(this.mapCanvas, rendererConfig, new ColorLuminance);
     },
     /**
      * Create Test renderer
@@ -171,15 +145,43 @@ Game.prototype = {
             tileWidth: this.config.testTileSize,
             tileHeight: this.config.testTileSize,
             renderMode: "test",
+            drawTileLabels: true,
             offset: {
-                top: 30,
-                left: 74
+                top: 175,
+                left: 48
+            },
+            canvasDim: {
+                width: this.config.testCanvasSize/3.5,
+                height: this.config.testCanvasSize*2
             }
         };
 
-        this.testCanvas.width = this.config.testCanvasSize*2;
-        this.testCanvas.height = this.config.testCanvasSize/2;
+        return new Renderer(this.testCanvas, rendererConfig, new ColorLuminance);
+    },
+    /**
+     *
+     * @returns {Renderer}
+     */
+    createOffscreenRenderer: function() {
+        var rendererConfig = {
+            tileWidth: this.config.worldTileSize,
+            tileHeight: this.config.worldTileSize,
+            renderMode: "offscreen",
+            //@todo: wtf???
+            offset: {
+                top: 175*(this.config.worldTileSize/this.config.testTileSize),
+                left: 48*(this.config.worldTileSize/this.config.testTileSize)
+            },
+            canvasDim: {
+                width: this.config.offscreenCanvasDim.width,
+                height: this.config.offscreenCanvasDim.height
+            }
+        };
 
-        return new Renderer(this.testCanvas, rendererConfig);
+        return new Renderer(
+            createBufferCanvas(this.config.offscreenCanvasDim.width, this.config.offscreenCanvasDim.height),
+            rendererConfig,
+            new ColorLuminance
+        );
     }
 };
