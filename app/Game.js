@@ -61,13 +61,6 @@ Game.prototype = {
      * run the game loop
      */
     run: function() {
-        //>> game loop
-        // 1. register viewport and game state changes (e.g. ask inputHandler for inputs) .
-        // 2. do stuff
-        // 3. apply changes
-        // 4. redraw
-        //<< game loop
-
         var self = this;
 
         (function renderLoop(){
@@ -109,10 +102,12 @@ Game.prototype = {
             offset: {
                 top: 150,
                 left: 150
+            },
+            canvasDim: {
+                width: this.config.worldCanvasSize,
+                height: this.config.worldCanvasSize
             }
         };
-
-        this.worldCanvas.width = this.worldCanvas.height = this.config.worldCanvasSize;
 
         return new Renderer(this.worldCanvas, rendererConfig, new ColorLuminance, offscreenRenderer.getCanvas());
     },
@@ -130,10 +125,12 @@ Game.prototype = {
                 top: 20,
                 left: 20
             },
+            canvasDim: {
+                width: this.config.mapCanvasSize,
+                height: this.config.mapCanvasSize
+            },
             zoomLevel: this.mapZoomLevel
         };
-
-        this.mapCanvas.width = this.mapCanvas.height = this.config.mapCanvasSize;
 
         return new Renderer(this.mapCanvas, rendererConfig, new ColorLuminance);
     },
@@ -152,11 +149,12 @@ Game.prototype = {
             offset: {
                 top: 175,
                 left: 48
+            },
+            canvasDim: {
+                width: this.config.testCanvasSize/3.5,
+                height: this.config.testCanvasSize*2
             }
         };
-
-        this.testCanvas.width = this.config.testCanvasSize/3.5;
-        this.testCanvas.height = this.config.testCanvasSize*2;
 
         return new Renderer(this.testCanvas, rendererConfig, new ColorLuminance);
     },
@@ -173,12 +171,17 @@ Game.prototype = {
             offset: {
                 top: 175*(this.config.worldTileSize/this.config.testTileSize),
                 left: 48*(this.config.worldTileSize/this.config.testTileSize)
+            },
+            canvasDim: {
+                width: this.config.offscreenCanvasDim.width,
+                height: this.config.offscreenCanvasDim.height
             }
         };
 
-        this.offscreenCanvas.width = this.config.offscreenCanvasDim.width;
-        this.offscreenCanvas.height = this.config.offscreenCanvasDim.height;
-
-        return new Renderer(this.offscreenCanvas, rendererConfig, new ColorLuminance);
+        return new Renderer(
+            createBufferCanvas(this.config.offscreenCanvasDim.width, this.config.offscreenCanvasDim.height),
+            rendererConfig,
+            new ColorLuminance
+        );
     }
 };

@@ -8,7 +8,7 @@
  */
 var Renderer = function($canvas, config, colorLuminance, offscreenCanvas) {
     this.canvas = $canvas;
-    this.context = $canvas.getContext("2d");
+    this.context = this.canvas.getContext("2d");
 
     this.offscreenCanvas = offscreenCanvas ? offscreenCanvas : false;
     this.offscreenBufferContext = this.offscreenCanvas ? this.offscreenCanvas.getContext("2d") : false;
@@ -55,8 +55,8 @@ var Renderer = function($canvas, config, colorLuminance, offscreenCanvas) {
         '0,-1,-1,-1'
     ];
 
-    this.width = $canvas.width;
-    this.height = $canvas.height;
+    this.width = this.canvas.width;
+    this.height = this.canvas.height;
 
     this.supportedRenderModes = ["iso", "2d", "test", "offscreen"];
 
@@ -101,6 +101,11 @@ Renderer.prototype = {
 
         if (this.config.renderMode === "iso" || this.config.renderMode === "test" || this.config.renderMode === "offscreen" ) {
             this.tileHeight = this.tileHeight/2;
+        }
+
+        if (this.config.renderMode !== "offscreen") {
+            this.canvas.width = config.canvasDim.width;
+            this.canvas.height = config.canvasDim.height;
         }
 
         if (this.config.renderMode !== "iso") {
@@ -246,12 +251,6 @@ Renderer.prototype = {
      * @param {Tile} tile
      */
     _drawTileImageDataFromBuffer: function(pos, tile) {
-        //console.log(pos, tile);
-        // figure out what type of tile we have
-        // level
-        // elevation settings combined
-        // color and other things
-
         var bufferViewportDim = {width: this.tileWidth, height: 256},
             canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth),
             bufferMapIndex = this.bufferMap.indexOf(tile.elevate.toString()),
@@ -270,7 +269,7 @@ Renderer.prototype = {
         //this.offscreenBufferContext.closePath();
 
         // @todo: put this into a dedicated function to make it somewhat understandable
-        // @todo: figure out a decent way to get the position besides dividing by a fiddled out number :D
+        // @todo: figure out a decent way to get the position besides dividing by a fiddled out number 3 :D
         this.context.drawImage(
             this.offscreenCanvas,
             bufferBaseOffset.x, bufferMapIndex * (bufferViewportDim.height + elevationVariationSpacing), bufferViewportDim.width, bufferViewportDim.height,
@@ -654,5 +653,5 @@ Renderer.prototype = {
         }
 
         return tileVertices;
-    }
+    },
 };

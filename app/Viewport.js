@@ -1,7 +1,7 @@
 /**
  * Contains the handling of the currently visible part of the map
- * @param {Object} map
  * @param {Number} edgeLength
+ * @param {Map} map
  * @param {Number} [offsetX] -optional
  * @param {Number} [offsetY] -optional
  * @constructor
