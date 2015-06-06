@@ -190,7 +190,9 @@ Renderer.prototype = {
                 tileElevateParamCollection[i].right + ', ' +
                 tileElevateParamCollection[i].bottom + ', ' +
                 tileElevateParamCollection[i].left,
-                "#fff", textPosition);
+                "#fff",
+                textPosition
+            );
 
             startOffset.y += maxLevel*2;
         }
@@ -271,7 +273,7 @@ Renderer.prototype = {
         //this.offscreenBufferContext.closePath();
 
         // @todo: put this into a dedicated function to make it somewhat understandable
-        // @todo: figure out a decent way to get the position besides dividing by a fiddled out number 3 :D
+        // @todo: figure out a decent way to get the position besides dividing by a fiddled out number: 3 :D
         this.context.drawImage(
             this.offscreenCanvas,
             bufferBaseOffset.x, bufferMapIndex * (bufferViewportDim.height + elevationVariationSpacing), bufferViewportDim.width, bufferViewportDim.height,

@@ -83,7 +83,7 @@ describe('Renderer', function() {
                 tileHeight: 20,
                 renderMode: "2d",
                 offset: 0,
-		        canvasDim: {width:0,height:0}
+                canvasDim: {width:0,height:0}
             };
 
             var renderer = new Renderer(canvasStub, rendererConfig, colorLuminanceStub);
@@ -97,7 +97,7 @@ describe('Renderer', function() {
                 tileHeight: 20,
                 renderMode: "iso",
                 offset: 0,
-		        canvasDim: {width:0,height:0}
+                canvasDim: {width:0,height:0}
             };
 
             var renderer = new Renderer(canvasStub, rendererConfig, colorLuminanceStub, offscreenCanvasStub);
@@ -110,7 +110,7 @@ describe('Renderer', function() {
                 tileHeight: 20,
                 renderMode: "unsupported",
                 offset: 0,
-		        canvasDim: {width:0,height:0}
+                canvasDim: {width:0,height:0}
             };
 
             //@todo: figure out how to properly expect specific exceptions with jasmine2.x
@@ -127,7 +127,7 @@ describe('Renderer', function() {
                     tileHeight: 20,
                     renderMode: "iso",
                     offset: 0,
-		            canvasDim: {width:0,height:0}
+                    canvasDim: {width:0,height:0}
                 };
 
             var renderer = new Renderer(canvasStub, rendererConfig, colorLuminanceStub, offscreenCanvasStub);
@@ -144,7 +144,7 @@ describe('Renderer', function() {
                     tileHeight: 20,
                     renderMode: "2d",
                     offset: 0,
-		            canvasDim: {width:0,height:0}
+                    canvasDim: {width:0,height:0}
                 };
 
             var renderer = new Renderer(canvasStub, rendererConfig, colorLuminanceStub);
@@ -160,7 +160,7 @@ describe('Renderer', function() {
                 tileHeight: 20,
                 renderMode: "test",
                 offset: 0,
-		        canvasDim: {width:0,height:0}
+                canvasDim: {width:0,height:0}
             };
 
             var renderer = new Renderer(canvasStub, rendererConfig, colorLuminanceStub);

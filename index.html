@@ -55,10 +55,18 @@
             padding: 5px;
         }
 
+        ::selection {
+            background-color: #6692B2;
+        }
+
         .showHideBtn {
-            background: #064C62;
+            background: #6E6E6E;
             float: right;
             cursor: pointer;
+            font-weight: initial;
+            padding: 0.1em 0.75em 0.1em 0.75em;
+            min-width: 75px;
+            text-align: center;
         }
 
         .world {
@@ -117,9 +125,9 @@
             <fieldset>
                 <legend>JSON</legend>
                 <label for="input">input</label>
-                <textarea name="input" id="input" cols="30" rows="10"></textarea>
+                <textarea name="input" id="input" cols="30" rows="10" spellcheck="false"></textarea>
                 <label for="output">output</label>
-                <textarea name="output" id="output" cols="30" rows="10"></textarea>
+                <textarea name="output" id="output" cols="30" rows="10" spellcheck="false"></textarea>
             </fieldset>
         </form>
     </section>
