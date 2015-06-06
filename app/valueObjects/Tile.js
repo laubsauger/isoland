@@ -11,5 +11,5 @@ var Tile = function(x, y, level, elevateParam) {
     this.y = y;
     this.level = level;
     this.elevate = elevateParam || new TileElevateParam(0, 0, 0, 0);
-    this.hasFocus = false;
+    this.isHovered = this.isSelected = false;
 };

@@ -64,26 +64,30 @@ Game.prototype = {
         var self = this;
 
         (function renderLoop(){
-            var focusedTile = false;
-            //console.log('rendering');
+            var selectedTile = {},
+                hoveredTile = {};
 
-            if (self.inputHandler.selectedTile) {
-                focusedTile = self.worldViewport.getTileAt(self.inputHandler.selectedTile.x, self.inputHandler.selectedTile.y);
+            if (self.inputHandler.selectedTilePos) {
+                selectedTile = self.worldViewport.getTileAt(self.inputHandler.selectedTilePos.x, self.inputHandler.selectedTilePos.y) || {};
 
-                if (focusedTile instanceof Tile) {
-                    //noinspection JSPrimitiveTypeWrapperUsage
-                    focusedTile.hasFocus = true;
+                if (selectedTile instanceof Tile) {
+                    selectedTile.isSelected = true;
+                }
+            }
+
+            if (self.inputHandler.hoveredTilePos) {
+                hoveredTile = self.worldViewport.getTileAt(self.inputHandler.hoveredTilePos.x, self.inputHandler.hoveredTilePos.y) || {};
+
+                if (hoveredTile instanceof Tile) {
+                    hoveredTile.isHovered = true;
                 }
             }
 
             self.worldRenderer.execute(self.worldViewport);
             self.mapRenderer.execute(self.mapViewport);
 
-            // clean up
-            if (focusedTile instanceof Tile) {
-                //noinspection JSPrimitiveTypeWrapperUsage
-                focusedTile.hasFocus = false;
-            }
+            // clean up one-off stuff
+            hoveredTile.isHovered = false;
 
             // loop
             requestAnimationFrame(renderLoop);

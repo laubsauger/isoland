@@ -1,5 +1,5 @@
 var InputHandler = function(config) {
-    this.selectedTile = false;
+    this.selectedTilePos = false;
     this.config = config;
 
     this.setup();
@@ -18,8 +18,8 @@ InputHandler.prototype = {
             document.querySelector('canvas#world'),
             "mousemove",
             (function() {
-                var params = self._getDefaultParameters();
-                return function(evt) { $.throttle(16, function(evt) { return params.instance._mouseCoordsToTileCoords(evt, params)})(evt)};
+                var params = self.getDefaultParameters();
+                return function(evt) { $.throttle(16, function(evt) { return params._this.handleMouseMoveEvent(evt, params)})(evt)};
             })()
         );
 
@@ -27,24 +27,28 @@ InputHandler.prototype = {
             document.querySelector('canvas#world'),
             "mousedown",
             (function() {
-                var params = self._getDefaultParameters();
+                var params = self.getDefaultParameters();
                 params.debug = true;
 
-                return function(evt) { $.throttle(16, function(evt) {return params.instance._mouseCoordsToTileCoords(evt, params)})(evt)};
+                return function(evt) { $.throttle(16, function(evt) {return params._this.handleMouseDownEvent(evt, params)})(evt)};
             })()
         );
     },
-    _getDefaultParameters: function() {
-        return {
-            instance: this,
-            canvasOffsetTop: 150,
-            canvasOffsetLeft: 150,
-            tileWidth: this.config.worldTileSize,
-            tileHeight: this.config.worldTileSize,
-            worldSize: this.config.worldSize,
-            canvasSize: this.config.worldCanvasSize,
-            debug: false
-        };
+    /**
+     * Handles mouse move event; sets currently hovered tile
+     * @param evt
+     * @param params
+     */
+    handleMouseMoveEvent: function(evt, params) {
+        params._this.hoveredTilePos = params._this.mouseCoordsToTileCoords(evt, params);
+    },
+    /**
+     * Handles mouse down event; sets currently selected tile
+     * @param evt
+     * @param params
+     */
+    handleMouseDownEvent: function(evt, params) {
+        params._this.selectedTilePos = params._this.mouseCoordsToTileCoords(evt, params);
     },
     /**
      * Creates event listeners, optional data object is passed through
@@ -58,23 +62,35 @@ InputHandler.prototype = {
     /**
      * Converts current mouse coordinates to absolute 2D tile grid position / array indices
      * @param evt
-     * @private
      * @param params
      */
-    _mouseCoordsToTileCoords: function(evt, params) {
+    mouseCoordsToTileCoords: function(evt, params) {
         var yMouse = evt.offsetY - params.canvasOffsetTop;
         var xMouse = evt.offsetX - params.canvasOffsetLeft;
 
-        params.instance.selectedTile = {
-            x: Math.round(xMouse / params.tileWidth + yMouse / (params.tileHeight/2))-1,
-            y: Math.round(yMouse / (params.tileHeight/2) - xMouse / params.tileWidth)
-        };
-
         if (params.debug === true) {
             console.log('viewportX', xMouse, 'viewportY', yMouse);
-            console.log(typeof params.debug);
-            console.log(params.debug);
-            console.log(params.debug || false);
         }
+
+        return new Pos(
+            Math.round(xMouse / params.tileWidth + yMouse / (params.tileHeight/2))-1,
+            Math.round(yMouse / (params.tileHeight/2) - xMouse / params.tileWidth)
+        );
+    },
+    /**
+     * Returns default params
+     * @returns {{}}
+     */
+    getDefaultParameters: function() {
+        return {
+            _this: this,
+            canvasOffsetTop: 150,
+            canvasOffsetLeft: 150,
+            tileWidth: this.config.worldTileSize,
+            tileHeight: this.config.worldTileSize,
+            worldSize: this.config.worldSize,
+            canvasSize: this.config.worldCanvasSize,
+            debug: false
+        };
     }
 };

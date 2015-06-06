@@ -498,8 +498,12 @@ Renderer.prototype = {
      * @param {Tile} tile
      */
     _getTileTopFillStyle: function(tile) {
-        if (tile.hasFocus) {
+        if (tile.isHovered) {
             return "#ff9802";
+        }
+
+        if (tile.isSelected) {
+            return "#E23131";
         }
 
         return this._getTileTopFillColor(tile);
