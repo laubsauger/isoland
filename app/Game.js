@@ -61,7 +61,8 @@ Game.prototype = {
      * run the game loop
      */
     run: function() {
-        var self = this;
+        var self = this,
+            currentTileSelection = [];
 
         (function renderLoop(){
             var selectedTile = {},
@@ -70,7 +71,8 @@ Game.prototype = {
             if (self.inputHandler.selectedTilePos) {
                 selectedTile = self.worldViewport.getTileAt(self.inputHandler.selectedTilePos.x, self.inputHandler.selectedTilePos.y) || {};
 
-                if (selectedTile instanceof Tile) {
+                if (selectedTile instanceof Tile && currentTileSelection.indexOf(selectedTile) === -1) {
+                    currentTileSelection.push(selectedTile);
                     selectedTile.isSelected = true;
                 }
             }
@@ -88,6 +90,15 @@ Game.prototype = {
 
             // clean up one-off stuff
             hoveredTile.isHovered = false;
+
+            //@todo replace length check with interaction; e.g. mousright or something
+            if (currentTileSelection.length > 3) {
+                currentTileSelection.forEach(function(item) {
+                    item.isSelected = false;
+                });
+
+                currentTileSelection = [];
+            }
 
             // loop
             requestAnimationFrame(renderLoop);
