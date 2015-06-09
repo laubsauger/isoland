@@ -5,15 +5,14 @@ canvas based isometric engine
 
 ## Features
 ### Done
-- basic rendering
-    - iso renderer
+- rendering
+    - iso renderer (now supports 'slopes' or 'lifted vertices')
     - zoomable minimap (2d renderer)
-    
+- offscreen prerendering for all tile variations
 - basic input processing
     - mouse hover
 
 ### Todo
-- offscreen prerendering for all tile variations
 - user modifiable terrain (see legacy code)
 - pregenerate terrain with perlin noise (see legacy code)
 
