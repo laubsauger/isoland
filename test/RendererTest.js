@@ -254,7 +254,7 @@ describe('Renderer', function() {
 
             renderer.execute(viewport);
 
-            expect(viewport.getTileAt).toHaveBeenCalledWith(0, 1);
+            expect(viewport.getTileAt).toHaveBeenCalledWith(new Pos(0, 1));
             expect(renderer._getTileTopFillStyle).toHaveBeenCalled();
         });
     });

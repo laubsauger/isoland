@@ -49,37 +49,37 @@ describe('Viewport', function() {
         it('rotates the array of tiles in view clockwise', function() {
             var rotatingViewport = new Viewport(3, map);
 
-            var oldTopRightTile = rotatingViewport.getTileAt(0,2),
-                oldBottomLeftTile = rotatingViewport.getTileAt(2,0);
+            var oldTopRightTile = rotatingViewport.getTileAt(new Pos(0,2)),
+                oldBottomLeftTile = rotatingViewport.getTileAt(new Pos(2,0));
 
             rotatingViewport.rotateClockwise();
 
-            var newTopRightTile = rotatingViewport.getTileAt(0,2),
-                newBottomLeftTile = rotatingViewport.getTileAt(2,0);
+            var newTopRightTile = rotatingViewport.getTileAt(new Pos(0,2)),
+                newBottomLeftTile = rotatingViewport.getTileAt(new Pos(2,0));
 
             expect(newTopRightTile).not.toEqual(oldTopRightTile);
             expect(newBottomLeftTile).not.toEqual(oldBottomLeftTile);
 
-            expect(rotatingViewport.getTileAt(2,2)).toEqual(oldTopRightTile);
-            expect(rotatingViewport.getTileAt(0,0)).toEqual(oldBottomLeftTile);
+            expect(rotatingViewport.getTileAt(new Pos(2,2))).toEqual(oldTopRightTile);
+            expect(rotatingViewport.getTileAt(new Pos(0,0))).toEqual(oldBottomLeftTile);
         });
 
         it('rotates the array of tiles in view counterclockwise', function() {
             var rotatingViewport = new Viewport(3, map);
 
-            var oldTopRightTile = rotatingViewport.getTileAt(0,2),
-                oldBottomLeftTile = rotatingViewport.getTileAt(2,0);
+            var oldTopRightTile = rotatingViewport.getTileAt(new Pos(0,2)),
+                oldBottomLeftTile = rotatingViewport.getTileAt(new Pos(2,0));
 
             rotatingViewport.rotateCounterClockwise();
 
-            var newTopRightTile = rotatingViewport.getTileAt(0,2),
-                newBottomLeftTile = rotatingViewport.getTileAt(2,0);
+            var newTopRightTile = rotatingViewport.getTileAt(new Pos(0,2)),
+                newBottomLeftTile = rotatingViewport.getTileAt(new Pos(2,0));
 
             expect(newTopRightTile).not.toEqual(oldTopRightTile);
             expect(newBottomLeftTile).not.toEqual(oldBottomLeftTile);
 
-            expect(rotatingViewport.getTileAt(0,0)).toEqual(oldTopRightTile);
-            expect(rotatingViewport.getTileAt(2,2)).toEqual(oldBottomLeftTile);
+            expect(rotatingViewport.getTileAt(new Pos(0,0))).toEqual(oldTopRightTile);
+            expect(rotatingViewport.getTileAt(new Pos(2,2))).toEqual(oldBottomLeftTile);
         });
 
         it('modifies the viewport orientation when rotating the array of tiles in view', function() {
@@ -118,17 +118,17 @@ describe('Viewport', function() {
             var smallMap = new Map(4),
                 viewport = new Viewport(3, map);
 
-            expect(viewport.getTileAt(2,2)).toEqual(smallMap.getTileAt(2,2));
+            expect(viewport.getTileAt(new Pos(2,2))).toEqual(smallMap.getTileAt(new Pos(2,2)));
         });
 
         it('returns the expected tiles when creating the viewport with passed offset position (= viewport was moved)', function() {
             var smallMap = new Map(4),
                 expectedTilePosition = {x: 2, y: 2},
-                expectedTile = smallMap.getTileAt(expectedTilePosition.x, expectedTilePosition.y),
+                expectedTile = smallMap.getTileAt(new Pos(expectedTilePosition.x, expectedTilePosition.y)),
                 viewportOffset = {x: 2, y: 2},
                 viewport = new Viewport(2, map, viewportOffset.x, viewportOffset.y);
 
-            expect(viewport.getTileAt(0,0)).toEqual(expectedTile);
+            expect(viewport.getTileAt(new Pos(0, 0))).toEqual(expectedTile);
         });
 
         it('throws exception when trying to create a viewport with offsets that are out of bounds (= moved too far, no map left to render)', function() {

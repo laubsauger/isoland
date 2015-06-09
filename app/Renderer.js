@@ -151,7 +151,7 @@ Renderer.prototype = {
 
         for (var x=0; x<viewport.edgeLength; x++) {
             for (var y=0; y<viewport.edgeLength; y++) {
-                var tile = viewport.getTileAt(x, y);
+                var tile = viewport.getTileAt(new Pos(x, y));
 
                 if (tile instanceof Tile) {
                     this._drawTile(new Pos(x, y), tile);

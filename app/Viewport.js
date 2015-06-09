@@ -46,19 +46,17 @@ Viewport.prototype = {
             this.tiles[x] = [];
 
             for (var y=0; y<this.edgeLength; y++) {
-                this.tiles[x][y] = map.getTileAt(x + this.offset.x, y + this.offset.y);
+                this.tiles[x][y] = map.getTileAt(new Pos(x + this.offset.x, y + this.offset.y));
             }
         }
     },
     /**
      * Get Tile object by its 2D grid coords/array indices
-     * @todo: add function getTileAtGridIndex({x: x,y: y}) that takes a position object - which every tile object should use instead of this.x this.y
-     * @param x
-     * @param y
+     * @param {Pos} pos
      * @returns {Tile}
      */
-    getTileAt: function(x,y) {
-        return (this.tiles[x] && this.tiles[x][y]) ? this.tiles[x][y] : null;
+    getTileAt: function(pos) {
+        return (this.tiles[pos.x] && this.tiles[pos.x][pos.y]) ? this.tiles[pos.x][pos.y] : null;
     },
     /**
      * Performs clockwise arrayRotate on the tile array

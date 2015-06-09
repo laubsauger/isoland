@@ -14,7 +14,7 @@ describe('Map', function() {
         it('returns the tile at the provided coordinates', function() {
             var tile = new Tile(2, 2, 0);
 
-            expect(map.getTileAt(2,2)).toEqual(tile);
+            expect(map.getTileAt(new Pos(2,2))).toEqual(tile);
         });
 
         it('throws exception when passed edgeLength is out of range', function() {

@@ -71,7 +71,7 @@ Game.prototype = {
 
             if (self.inputHandler.selectedTilePos) {
                 //@todo figure out a way to perform visibility (z-buffer style) checks to prevent interaction with tiles that are hidden behind/below others
-                selectedTile = self.worldViewport.getTileAt(self.inputHandler.selectedTilePos.x, self.inputHandler.selectedTilePos.y) || {};
+                selectedTile = self.worldViewport.getTileAt(self.inputHandler.selectedTilePos) || {};
 
                 if (selectedTile instanceof Tile && currentTileSelection.indexOf(selectedTile) === -1) {
                     currentTileSelection.push(selectedTile);
@@ -81,7 +81,7 @@ Game.prototype = {
 
             if (self.inputHandler.hoveredTilePos) {
                 //@todo figure out a way to perform visibility (z-buffer style) checks to prevent interaction with tiles that are hidden behind/below others
-                hoveredTile = self.worldViewport.getTileAt(self.inputHandler.hoveredTilePos.x, self.inputHandler.hoveredTilePos.y) || {};
+                hoveredTile = self.worldViewport.getTileAt(self.inputHandler.hoveredTilePos) || {};
 
                 if (hoveredTile instanceof Tile) {
                     hoveredTile.isHovered = true;

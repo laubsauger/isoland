@@ -36,12 +36,10 @@ Map.prototype = {
     },
     /**
      * Returns tile object at the provided map indices
-     * @todo: add function getTileAtGridIndex({x: x,y: y}) that takes a position object - which every tile object should use instead of this.x this.y
-     * @param x
-     * @param y
+     * @param {Pos} pos
      * @returns {Tile}
      */
-    getTileAt: function(x, y) {
-        return this.tiles[x][y];
+    getTileAt: function(pos) {
+        return this.tiles[pos.x][pos.y];
     }
 };
