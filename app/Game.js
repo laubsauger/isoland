@@ -64,11 +64,13 @@ Game.prototype = {
         var self = this,
             currentTileSelection = [];
 
+        //@todo input handling implementation details sitting in here is messy shiat
         (function renderLoop(){
             var selectedTile = {},
                 hoveredTile = {};
 
             if (self.inputHandler.selectedTilePos) {
+                //@todo figure out a way to perform visibility (z-buffer style) checks to prevent interaction with tiles that are hidden behind/below others
                 selectedTile = self.worldViewport.getTileAt(self.inputHandler.selectedTilePos.x, self.inputHandler.selectedTilePos.y) || {};
 
                 if (selectedTile instanceof Tile && currentTileSelection.indexOf(selectedTile) === -1) {
@@ -78,6 +80,7 @@ Game.prototype = {
             }
 
             if (self.inputHandler.hoveredTilePos) {
+                //@todo figure out a way to perform visibility (z-buffer style) checks to prevent interaction with tiles that are hidden behind/below others
                 hoveredTile = self.worldViewport.getTileAt(self.inputHandler.hoveredTilePos.x, self.inputHandler.hoveredTilePos.y) || {};
 
                 if (hoveredTile instanceof Tile) {
@@ -91,7 +94,7 @@ Game.prototype = {
             // clean up one-off stuff
             hoveredTile.isHovered = false;
 
-            //@todo replace length check with interaction; e.g. mousright or something
+            //@todo replace length check for selection clearing with an interaction; e.g. mouserightdown or something
             if (currentTileSelection.length > 3) {
                 currentTileSelection.forEach(function(item) {
                     item.isSelected = false;

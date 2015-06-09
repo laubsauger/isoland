@@ -280,10 +280,10 @@ Renderer.prototype = {
             canvasPosition.x + this.offset.left, canvasPosition.y - this.tileHeight - (this.tileHeightHalf/3), bufferViewportDim.width, bufferViewportDim.height
         );
 
-        if (this.logonce < 4) {
-            console.log(bufferBaseOffset.x, bufferMapIndex * (bufferViewportDim.height + elevationVariationSpacing), elevationVariationSpacing);
-            this.logonce++;
-        }
+        //if (this.logonce < 4) {
+        //    console.log(bufferBaseOffset.x, bufferMapIndex * (bufferViewportDim.height + elevationVariationSpacing), elevationVariationSpacing);
+        //    this.logonce++;
+        //}
     },
     /**
      * draws a tile in iso mode
