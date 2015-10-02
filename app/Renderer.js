@@ -59,7 +59,7 @@ var Renderer = function($canvas, config, colorLuminance, offscreenCanvas) {
 
     this.colorLuminance = colorLuminance;
 
-    this.logonce = 0;
+    //this.logonce = 0;
 
     this.configure(config);
 };
@@ -168,15 +168,28 @@ Renderer.prototype = {
             tileElevateParamCollection = [],
             startOffset = new Pos(-5, -1);
 
-        for (var y = 0; y < this.bufferMap.length; y++) {
-            var bufferMapItem = this.bufferMap[y].split(',');
+        var index = 0;
+        for (var y = 0; y < this.bufferMap.length*2; y++) {
+            var bufferMapItem = this.bufferMap[index].split(',');
             //console.log(bufferMapItem[0], bufferMapItem[1], bufferMapItem[2], bufferMapItem[3]);
             tileElevateParamCollection.push(new TileElevateParam(bufferMapItem[0], bufferMapItem[1], bufferMapItem[2], bufferMapItem[3]));
+
+            index++;
+            if (index >= this.bufferMap.length) {
+                index = 0;
+            }
         }
 
         for(var i=0; i < tileElevateParamCollection.length; i++) {
             for(var x=0; x < maxLevel; x++) {
-                this._drawIsoTile(startOffset, new Tile(startOffset.x++, startOffset.y--, x, tileElevateParamCollection[i]));
+                var tile = new Tile(startOffset.x++, startOffset.y--, x, tileElevateParamCollection[i]);
+
+                // second set of buffer tiles => different color
+                if (i > this.bufferMap.length) {
+                    tile.isHovered = true;
+                }
+
+                this._drawIsoTile(startOffset, tile);
                 var firstColumnTopLeft = new Pos(startOffset.x, startOffset.y);
             }
 
@@ -185,6 +198,7 @@ Renderer.prototype = {
                 15,
                 textOffset.y + 210
             );
+
             this._drawTileLabel(
                 tileElevateParamCollection[i].top + ', ' +
                 tileElevateParamCollection[i].right + ', ' +
@@ -236,6 +250,7 @@ Renderer.prototype = {
      */
     _drawTile: function(pos, tile) {
         switch(this.config.renderMode) {
+
             case "iso":
                 this._drawTileImageDataFromBuffer(pos, tile);
                 break;
@@ -257,8 +272,14 @@ Renderer.prototype = {
     _drawTileImageDataFromBuffer: function(pos, tile) {
         var bufferViewportDim = {width: this.tileWidth, height: 256},
             canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth),
-            bufferMapIndex = this.bufferMap.indexOf(tile.elevate.toString()),
-            elevationVariationSpacing = bufferMapIndex > 0 ? bufferViewportDim.height/2 : 0,
+            bufferMapIndex = this.bufferMap.indexOf(tile.elevate.toString());
+
+        //if (tile.isHovered) {
+        //    bufferMapIndex = bufferMapIndex * 2;
+        //    console.log(bufferMapIndex);
+        //}
+
+        var elevationVariationSpacing = bufferMapIndex > 0 ? bufferViewportDim.height/2 : 0,
             bufferBaseOffset = new Pos(this.tileWidth * tile.level, bufferViewportDim.height * (bufferMapIndex + 1));
 
         //// frame the area we're copying
@@ -324,67 +345,8 @@ Renderer.prototype = {
 
         var tileTopVertices = this._getTileTopVertices(pos, tile);
 
-        var gradient;
-
         this.context.lineWidth = .5;
         this.context.fillStyle = this._getTileTopFillStyle(tile);
-
-        // right corner
-        //var linearGradient1 = this.context.createLinearGradient(tileVertices.left.x, tileVertices.left.y, tileVertices.right.x, tileVertices.right.y);
-        // left corner
-        //var linearGradient1 = this.context.createLinearGradient(tileVertices.right.x, tileVertices.right.y, tileVertices.left.x, tileVertices.left.y);
-
-        //var gradientStart = false,
-        //    gradientStop = false;
-
-        //if (tile.elevate.top !== 0) {
-        //    gradientStart = {
-        //        x: tileVertices.bottom.x,
-        //        y: tileVertices.bottom.y
-        //    };
-        //
-        //    gradientStop = {
-        //        x: tileVertices.top.x,
-        //        y: tileVertices.top.y
-        //    };
-        //}
-        //
-        //if (tile.elevate.bottom !== 0) {
-        //    gradientStart = {
-        //        x: tileVertices.top.x,
-        //        y: tileVertices.top.y
-        //    };
-        //
-        //    gradientStop = {
-        //        x: tileVertices.bottom.x,
-        //        y: tileVertices.bottom.y
-        //    };
-        //}
-
-        //if (tile.elevate.top !== 0 && tile.elevate.right !== 0) {
-        //    gradientStart = {
-        //        x: tileVertices.left.x+this.tileHeightHalf,
-        //        y: tileVertices.left.y
-        //    };
-        //
-        //    gradientStop = {
-        //        x: tileVertices.top.x,
-        //        y: tileVertices.top.y
-        //    };
-        //}
-
-        //if (tile.elevate.top !== 0 && tile.elevate.left !== 0) {
-        //    linearGradient1 = this.context.createLinearGradient(tileVertices.left.x+this.tileHeightHalf, tileVertices.left.y, tileVertices.top.x, tileVertices.top.y);
-        //}
-
-        //if (gradientStart !== false && gradientStop !== false) {
-        //    var linearGradient = this.context.createLinearGradient(gradientStart.x, gradientStart.y, gradientStop.x, gradientStop.y);
-        //    linearGradient.addColorStop(0, 'red');
-        //    linearGradient.addColorStop(0.35, 'red');
-        //    linearGradient.addColorStop(0.35, 'yellow');
-        //    linearGradient.addColorStop(1, 'yellow');
-        //    this.context.fillStyle = linearGradient;
-        //}
 
         this.context.strokeStyle = "#000";
         this.context.beginPath();
@@ -661,5 +623,5 @@ Renderer.prototype = {
         }
 
         return tileVertices;
-    },
+    }
 };
