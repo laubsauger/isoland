@@ -207,7 +207,7 @@ describe('Renderer', function() {
 
             viewport = new Viewport(2, new Map(2));
             var tile = new Tile(0,0,1);
-            tile.isHovered = true;
+            tile.hovered = true;
 
             spyOn(renderer, '_getTileTopFillStyle').and.returnValue('#bbb');
             spyOn(viewport, 'getTileAt').and.returnValue(tile);
@@ -247,7 +247,7 @@ describe('Renderer', function() {
 
             viewport = new Viewport(2, new Map(2));
             var tile = new Tile(0,0,1);
-            tile.isHovered = true;
+            tile.hovered = true;
 
             spyOn(renderer, '_getTileTopFillStyle').and.returnValue('#bbb');
             spyOn(viewport, 'getTileAt').and.returnValue(tile);

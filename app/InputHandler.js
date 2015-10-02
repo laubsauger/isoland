@@ -72,6 +72,13 @@ InputHandler.prototype = {
             console.log('viewportX', xMouse, 'viewportY', yMouse);
         }
 
+        if (params.debug === true) {
+            console.log(new Pos(
+                Math.round(xMouse / params.tileWidth + yMouse / (params.tileHeight/2))-1,
+                Math.round(yMouse / (params.tileHeight/2) - xMouse / params.tileWidth)
+            ));
+        }
+
         return new Pos(
             Math.round(xMouse / params.tileWidth + yMouse / (params.tileHeight/2))-1,
             Math.round(yMouse / (params.tileHeight/2) - xMouse / params.tileWidth)

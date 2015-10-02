@@ -20,10 +20,10 @@
             user-select: none;
             color: #fff;
             background: rgb(150, 150, 150);
-            background: -moz-radial-gradient(center, ellipse cover, rgba(94, 153, 204, 1) 0%, rgba(69, 69,69, 1) 100%);
-            background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(94, 153, 204, 1)), color-stop(100%, rgba(69, 69, 69, 1)));
-            background: -webkit-radial-gradient(center, ellipse cover, rgba(94, 153, 204, 1) 0%, rgba(69, 69, 69, 1) 100%);
-            background: radial-gradient(ellipse at center, rgba(150, 150, 150, 1) 0%, rgba(69, 69, 69, 1) 100%);
+            /*background: -moz-radial-gradient(center, ellipse cover, rgba(94, 153, 204, 1) 0%, rgba(69, 69,69, 1) 100%);*/
+            /*background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(94, 153, 204, 1)), color-stop(100%, rgba(69, 69, 69, 1)));*/
+            /*background: -webkit-radial-gradient(center, ellipse cover, rgba(94, 153, 204, 1) 0%, rgba(69, 69, 69, 1) 100%);*/
+            /*background: radial-gradient(ellipse at center, rgba(150, 150, 150, 1) 0%, rgba(69, 69, 69, 1) 100%);*/
         }
 
         h1, h2, h3, h4, h5, h6 {
@@ -70,7 +70,7 @@
         }
 
         .world {
-            width: 62%;
+            width: 55%;
         }
 
         .map {
@@ -78,15 +78,19 @@
         }
 
         .debug {
-            width: 20%;
+            width: 27%;
         }
 
         .debug > div {
             margin: 1em;
         }
 
-        .scrollable {
-            overflow: scroll;
+        /*.scrollable {*/
+            /*overflow: scroll;*/
+        /*}*/
+
+        .float-right {
+            float: right;
         }
     </style>
 </head>
@@ -103,18 +107,18 @@
         <canvas id="map" style="background-color: #000; vertical-align: top;"></canvas>
     </section>
 
-    <section class="debug">
+    <section class="debug float-right">
         <h1>Debug</h1>
-        <div>
-            <h3>Offscreen Canvas <span class="showHideBtn" data-alt-text="hide">show</span></h3>
-            <div class="scrollable">
-                <canvas id="offscreen" style="background-color: #000; vertical-align: top; display: none;"></canvas>
-            </div>
-        </div>
+        <!--<div>-->
+            <!--<h3>Offscreen Canvas <span class="showHideBtn" data-alt-text="hide">show</span></h3>-->
+            <!--<div class="scrollable">-->
+                <!--<canvas id="offscreen" style="background-color: #000; vertical-align: top; display: none; "></canvas>-->
+            <!--</div>-->
+        <!--</div>-->
         <div>
             <h3>Testbed  Canvas <span class="showHideBtn" data-alt-text="hide">show</span></h3>
-            <div class="scrollable">
-                <canvas id="test" style="background-color: #000; vertical-align: top; display: none;"></canvas>
+            <div>
+                <canvas id="test" style="background-color: #000; vertical-align: top;"></canvas>
             </div>
         </div>
     </section>

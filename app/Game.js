@@ -6,7 +6,7 @@ var Game = function() {
         offscreenCanvas: document.querySelector('#offscreen'),
         worldCanvasSize: 400,
         mapCanvasSize: 200,
-        testCanvasSize: 1600,
+        testCanvasSize: 3600,
         offscreenCanvasDim: {
             height: 12000,
             width: 800
@@ -62,42 +62,57 @@ Game.prototype = {
      */
     run: function() {
         var self = this,
-            currentTileSelection = [];
+            currentTileSelection = [],
+            canvasCollection = [
+                    {
+                        'renderer': this.worldRenderer,
+                        'viewport': this.worldViewport
+                    },{
+                        'renderer': this.mapRenderer,
+                        'viewport': this.mapViewport
+                    }
+            ];
 
         //@todo input handling implementation details sitting in here is messy shiat
         (function renderLoop(){
-            var selectedTile = {},
-                hoveredTile = {};
+            // execute renderer
+            canvasCollection.forEach(function(canvas) {
+                var hoveredTile = {};
 
-            if (self.inputHandler.selectedTilePos) {
-                //@todo figure out a way to perform visibility (z-buffer style) checks to prevent interaction with tiles that are hidden behind/below others
-                selectedTile = self.worldViewport.getTileAt(self.inputHandler.selectedTilePos) || {};
+                if (self.inputHandler.selectedTilePos) {
+                    canvasCollection.forEach(function(canvas) {
+                        //@todo figure out a way to perform visibility (z-buffer style) checks to prevent interaction with tiles that are hidden behind/below others
+                        var selectedTile = canvas.viewport.getTileAt(self.inputHandler.selectedTilePos) || {};
 
-                if (selectedTile instanceof Tile && currentTileSelection.indexOf(selectedTile) === -1) {
-                    currentTileSelection.push(selectedTile);
-                    selectedTile.isSelected = true;
+                        if (selectedTile instanceof Tile && currentTileSelection.indexOf(selectedTile) === -1) {
+                            selectedTile.selected = true;
+                            currentTileSelection.push(selectedTile);
+                            console.log(selectedTile);
+                        }
+                    });
                 }
-            }
 
-            if (self.inputHandler.hoveredTilePos) {
-                //@todo figure out a way to perform visibility (z-buffer style) checks to prevent interaction with tiles that are hidden behind/below others
-                hoveredTile = self.worldViewport.getTileAt(self.inputHandler.hoveredTilePos) || {};
+                if (self.inputHandler.hoveredTilePos) {
+                    canvasCollection.forEach(function(canvas) {
+                        //@todo figure out a way to perform visibility (z-buffer style) checks to prevent interaction with tiles that are hidden behind/below others
+                        hoveredTile = canvas.viewport.getTileAt(self.inputHandler.hoveredTilePos) || {};
 
-                if (hoveredTile instanceof Tile) {
-                    hoveredTile.isHovered = true;
+                        if (hoveredTile instanceof Tile) {
+                            hoveredTile.hovered = true;
+                        }
+                    });
                 }
-            }
 
-            self.worldRenderer.execute(self.worldViewport);
-            self.mapRenderer.execute(self.mapViewport);
+                canvas.renderer.execute(canvas.viewport);
 
-            // clean up one-off stuff
-            hoveredTile.isHovered = false;
+                // clean up one-off stuff
+                hoveredTile.hovered = false;
+            });
 
             //@todo replace length check for selection clearing with an interaction; e.g. mouserightdown or something
             if (currentTileSelection.length > 3) {
-                currentTileSelection.forEach(function(item) {
-                    item.isSelected = false;
+                currentTileSelection.forEach(function(tile) {
+                    tile.selected = false;
                 });
 
                 currentTileSelection = [];
@@ -169,7 +184,7 @@ Game.prototype = {
                 left: 48
             },
             canvasDim: {
-                width: this.config.testCanvasSize/3.5,
+                width: this.config.testCanvasSize/2,
                 height: this.config.testCanvasSize*2
             }
         };

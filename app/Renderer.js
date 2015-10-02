@@ -13,7 +13,7 @@ var Renderer = function($canvas, config, colorLuminance, offscreenCanvas) {
     this.offscreenCanvas = offscreenCanvas ? offscreenCanvas : false;
     this.offscreenBufferContext = this.offscreenCanvas ? this.offscreenCanvas.getContext("2d") : false;
 
-    // contains string representation of all possible elevation combinations
+    // contains string representation of all possible combinations of elevated vertices
     this.bufferMap = [
         // positive
         '0,0,0,0',
@@ -79,8 +79,10 @@ Renderer.prototype = {
             zoomLevel: config.zoomLevel,
             tileColors: {
                 fillTopBase: '#5F5FCC',
-                fillLeftBase: '#00AA00',
-                fillRightBase: '#00FF00',
+                fillTopSelected: '#E23131',
+                fillTopHovered: '#FF9802',
+                fillSideLeftBase: '#00AA00',
+                fillSideRightBase: '#00FF00',
                 lightenByLevelMultiplier: 0.2
             },
             canvasDim: config.canvasDim
@@ -175,6 +177,7 @@ Renderer.prototype = {
             tileElevateParamCollection.push(new TileElevateParam(bufferMapItem[0], bufferMapItem[1], bufferMapItem[2], bufferMapItem[3]));
 
             index++;
+            
             if (index >= this.bufferMap.length) {
                 index = 0;
             }
@@ -186,18 +189,16 @@ Renderer.prototype = {
 
                 // second set of buffer tiles => different color
                 if (i > this.bufferMap.length) {
-                    tile.isHovered = true;
+                    tile.hovered = true;
                 }
 
                 this._drawIsoTile(startOffset, tile);
-                var firstColumnTopLeft = new Pos(startOffset.x, startOffset.y);
             }
 
+            var firstColumnTopLeft = new Pos(startOffset.x, startOffset.y);
+
             var textOffset = fromGridIndexToIsoPos(firstColumnTopLeft, this.tileHeight, this.tileWidth);
-            var textPosition = new Pos(
-                15,
-                textOffset.y + 210
-            );
+            var textPosition = new Pos(15, textOffset.y + 210);
 
             this._drawTileLabel(
                 tileElevateParamCollection[i].top + ', ' +
@@ -234,13 +235,43 @@ Renderer.prototype = {
                 new TileElevateParam(1, 1, 0, 1),
                 new TileElevateParam(1, 1, 1, 0)
             ],
-            startOffset = new Pos(-5, -1);
+            self = this;
 
-        for(var i=0; i < tileElevateParamCollection.length; i++) {
-            for(var x=0; x < maxLevel; x++) {
-                this._drawIsoTile(startOffset, new Tile(startOffset.x++, startOffset.y--, x, tileElevateParamCollection[i]));
+        var types = [
+            {'name': 'default', 'startOffset': new Pos(-5, -1)},
+            {'name': 'hover', 'startOffset': new Pos(3, -9)},
+            {'name': 'selected', 'startOffset': new Pos(11, -17)}
+        ];
+
+        types.forEach(function(type) {
+            var config = {
+                'maxLevel': maxLevel,
+                'type': type.name,
+                'startOffset': type.startOffset
+            };
+
+            for(var i=0; i < tileElevateParamCollection.length; i++) {
+                self._drawTestTileCollection(type.startOffset, config, tileElevateParamCollection[i]);
+                // increment height offset by twice the maxheight
+                type.startOffset.y += config.maxLevel*2;
             }
-            startOffset.y += maxLevel*2;
+        });
+    },
+    _drawTestTileCollection: function(startOffset, config, elevateParam) {
+        for(var x=0; x < config.maxLevel; x++) {
+            var tile = new Tile(startOffset.x++, startOffset.y--, x, elevateParam);
+
+            switch(config.type) {
+                case 'hover':
+                    tile.hovered = true;
+                    break;
+                case 'selected':
+                    tile.selected = true;
+                    break;
+                default: break;
+            }
+
+            this._drawIsoTile(startOffset, tile);
         }
     },
     /**
@@ -250,7 +281,6 @@ Renderer.prototype = {
      */
     _drawTile: function(pos, tile) {
         switch(this.config.renderMode) {
-
             case "iso":
                 this._drawTileImageDataFromBuffer(pos, tile);
                 break;
@@ -274,7 +304,7 @@ Renderer.prototype = {
             canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth),
             bufferMapIndex = this.bufferMap.indexOf(tile.elevate.toString());
 
-        //if (tile.isHovered) {
+        //if (tile.isHovered()) {
         //    bufferMapIndex = bufferMapIndex * 2;
         //    console.log(bufferMapIndex);
         //}
@@ -375,7 +405,7 @@ Renderer.prototype = {
         this.context.lineWidth = 1;
 
         // right side
-        this.context.fillStyle = this.config.tileColors.fillRightBase;
+        this.context.fillStyle = this.config.tileColors.fillSideRightBase;
         this.context.strokeStyle = '#000';
         this.context.beginPath();
         this.context.moveTo(tileRightSideVertices.bottomLeft.x, tileRightSideVertices.bottomLeft.y);
@@ -387,7 +417,7 @@ Renderer.prototype = {
         this.context.closePath();
 
         // left side
-        this.context.fillStyle = this.config.tileColors.fillLeftBase;
+        this.context.fillStyle = this.config.tileColors.fillSideLeftBase;
         this.context.strokeStyle = '#000';
         this.context.beginPath();
         this.context.moveTo(tileLeftSideVertices.topLeft.x, tileLeftSideVertices.topLeft.y);
@@ -460,15 +490,13 @@ Renderer.prototype = {
      * @param {Tile} tile
      */
     _getTileTopFillStyle: function(tile) {
-        if (tile.isHovered) {
-            return "#ff9802";
+        var color = this._getTileTopFillColor(tile);
+
+        if (tile.level > 0) {
+            return this.colorLuminance.calculate(color, this.config.tileColors.lightenByLevelMultiplier * tile.level);
         }
 
-        if (tile.isSelected) {
-            return "#E23131";
-        }
-
-        return this._getTileTopFillColor(tile);
+        return color;
     },
     /**
      * Calculates color based on tile level
@@ -477,8 +505,12 @@ Renderer.prototype = {
      * @private
      */
     _getTileTopFillColor: function(tile) {
-        if (tile.level > 0) {
-            return this.colorLuminance.calculate(this.config.tileColors.fillTopBase, this.config.tileColors.lightenByLevelMultiplier * tile.level);
+        if (tile.isHovered()) {
+            return this.config.tileColors.fillTopHovered;
+        }
+
+        if (tile.isSelected()) {
+            return this.config.tileColors.fillTopSelected;
         }
 
         return this.config.tileColors.fillTopBase;
