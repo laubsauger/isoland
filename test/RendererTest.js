@@ -93,6 +93,7 @@ describe('Renderer', function() {
 
         it('sets up an iso renderer', function() {
             var rendererConfig = {
+                maxLevel: 8,
                 tileWidth: 20,
                 tileHeight: 20,
                 renderMode: "iso",
@@ -106,6 +107,7 @@ describe('Renderer', function() {
 
         it('throws exception when passing unsupported renderMode', function() {
             var rendererConfig = {
+                maxLevel: 8,
                 tileWidth: 20,
                 tileHeight: 20,
                 renderMode: "unsupported",
@@ -123,6 +125,7 @@ describe('Renderer', function() {
     describe('execution', function() {
         it('iso: draws viewport to canvas', function() {
             var rendererConfig = {
+                    maxLevel: 8,
                     tileWidth: 20,
                     tileHeight: 20,
                     renderMode: "iso",
@@ -156,6 +159,7 @@ describe('Renderer', function() {
 
         it('test: draws viewport to canvas', function() {
             var rendererConfig = {
+                maxLevel: 8,
                 tileWidth: 20,
                 tileHeight: 20,
                 renderMode: "test",
