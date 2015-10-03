@@ -85,9 +85,11 @@ Renderer.prototype = {
                 fillSideRightBase: '#00FF00',
                 lightenByLevelMultiplier: 0.2
             },
-            canvasDim: config.canvasDim
+            canvasDim: config.canvasDim,
+            maxLevel: config.maxLevel || 0
         };
 
+        //@todo: abstract perspective dimension adjustments
         if (this.supportedRenderModes.indexOf(this.config.renderMode) === -1) {
             throw new InvalidArgumentException("Unknown render mode: " + this.config.renderMode);
         }
@@ -161,8 +163,7 @@ Renderer.prototype = {
      * @private
      */
     _createOffscreenTileBuffer: function() {
-        var maxLevel = 8,
-            tileElevateParamCollection = [],
+        var tileElevateParamCollection = [],
             self = this;
 
         var index = 0;
@@ -186,7 +187,7 @@ Renderer.prototype = {
 
         types.forEach(function(type) {
             var config = {
-                'maxLevel': maxLevel,
+                'maxLevel': self.config.maxLevel,
                 'type': type.name,
                 'startOffset': type.startOffset
             };
@@ -252,24 +253,12 @@ Renderer.prototype = {
             canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth),
             bufferMapIndex = this.bufferMap.indexOf(tile.elevate.toString());
 
-        //if (tile.isHovered()) {
-        //    bufferMapIndex = bufferMapIndex * 2;
-        //    console.log(bufferMapIndex);
-        //}
-
         var elevationVariationSpacing = bufferMapIndex > 0 ? bufferViewportDim.height/2 : 0,
-            bufferBaseOffset = new Pos(this.tileWidth * tile.level, bufferViewportDim.height * (bufferMapIndex + 1));
+            bufferBaseOffset = new Pos((this.tileWidth * tile.level), bufferViewportDim.height * (bufferMapIndex + 1));
 
-        //// frame the area we're copying
-        //this.offscreenBufferContext.strokeStyle = "#fff";
-        //this.offscreenBufferContext.beginPath();
-        //// this zero (and the other one below) needs to be replaced by a calculation to reach the next tileset (next elevation variation)
-        //this.offscreenBufferContext.moveTo(baseOffset.x, 0);
-        //this.offscreenBufferContext.lineTo(baseOffset.x, baseOffset.y);
-        //this.offscreenBufferContext.lineTo(baseOffset.x+this.tileWidth, baseOffset.y);
-        //this.offscreenBufferContext.lineTo(baseOffset.x+this.tileWidth, 0);
-        //this.offscreenBufferContext.stroke();
-        //this.offscreenBufferContext.closePath();
+        if (tile.isHovered()) {
+            bufferBaseOffset.x += (this.tileWidth * this.config.maxLevel);
+        }
 
         // @todo: put this into a dedicated function to make it somewhat understandable
         // @todo: figure out a decent way to get the position besides dividing by a fiddled out number: 3 :D

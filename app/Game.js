@@ -128,6 +128,7 @@ Game.prototype = {
      */
     createWorldRenderer: function(offscreenRenderer) {
         var rendererConfig = {
+            maxLevel: 8,
             tileWidth: this.config.worldTileSize,
             tileHeight: this.config.worldTileSize,
             renderMode: "iso",
@@ -174,6 +175,7 @@ Game.prototype = {
      */
     createTestRenderer: function() {
         var rendererConfig = {
+            maxLevel: 8,
             tileWidth: this.config.testTileSize,
             tileHeight: this.config.testTileSize,
             renderMode: "test",
@@ -199,6 +201,7 @@ Game.prototype = {
      */
     createOffscreenRenderer: function() {
         var rendererConfig = {
+            maxLevel: 8,
             tileWidth: this.config.worldTileSize,
             tileHeight: this.config.worldTileSize,
             renderMode: "offscreen",
