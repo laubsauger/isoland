@@ -141,12 +141,7 @@ Renderer.prototype = {
     execute: function(viewport) {
         this.context.clearRect(0, 0, this.height, this.width);
 
-        if (this.config.renderMode === "test") {
-            this._drawTestTiles();
-            return;
-        }
-
-        if (this.config.renderMode === "offscreen") {
+        if (this.config.renderMode === "offscreen" || this.config.renderMode === "test") {
             this._createOffscreenTileBuffer();
             return;
         }
@@ -168,7 +163,7 @@ Renderer.prototype = {
     _createOffscreenTileBuffer: function() {
         var maxLevel = 8,
             tileElevateParamCollection = [],
-            startOffset = new Pos(-5, -1);
+            self = this;
 
         var index = 0;
         for (var y = 0; y < this.bufferMap.length*2; y++) {
@@ -183,60 +178,6 @@ Renderer.prototype = {
             }
         }
 
-        for(var i=0; i < tileElevateParamCollection.length; i++) {
-            for(var x=0; x < maxLevel; x++) {
-                var tile = new Tile(startOffset.x++, startOffset.y--, x, tileElevateParamCollection[i]);
-
-                // second set of buffer tiles => different color
-                if (i > this.bufferMap.length) {
-                    tile.hovered = true;
-                }
-
-                this._drawIsoTile(startOffset, tile);
-            }
-
-            var firstColumnTopLeft = new Pos(startOffset.x, startOffset.y);
-
-            var textOffset = fromGridIndexToIsoPos(firstColumnTopLeft, this.tileHeight, this.tileWidth);
-            var textPosition = new Pos(15, textOffset.y + 210);
-
-            this._drawTileLabel(
-                tileElevateParamCollection[i].top + ', ' +
-                tileElevateParamCollection[i].right + ', ' +
-                tileElevateParamCollection[i].bottom + ', ' +
-                tileElevateParamCollection[i].left,
-                "#fff",
-                textPosition
-            );
-
-            startOffset.y += maxLevel*2;
-        }
-    },
-    /**
-     * Draw Test Tiles in a horizontal line
-     * @todo add json file loader
-     */
-    _drawTestTiles: function() {
-        var maxLevel = 8,
-            tileElevateParamCollection = [
-                new TileElevateParam(0, 0, 0, 0),
-                new TileElevateParam(0, 0, 0, 1),
-                new TileElevateParam(0, 0, 1, 0),
-                new TileElevateParam(0, 0, 1, 1),
-                new TileElevateParam(0, 1, 0, 0),
-                new TileElevateParam(0, 1, 0, 1),
-                new TileElevateParam(0, 1, 1, 0),
-                new TileElevateParam(0, 1, 1, 1),
-                new TileElevateParam(1, 0, 0, 0),
-                new TileElevateParam(1, 0, 0, 1),
-                new TileElevateParam(1, 0, 1, 0),
-                new TileElevateParam(1, 0, 1, 1),
-                new TileElevateParam(1, 1, 0, 0),
-                new TileElevateParam(1, 1, 0, 1),
-                new TileElevateParam(1, 1, 1, 0)
-            ],
-            self = this;
-
         var types = [
             {'name': 'default', 'startOffset': new Pos(-5, -1)},
             {'name': 'hover', 'startOffset': new Pos(3, -9)},
@@ -250,14 +191,21 @@ Renderer.prototype = {
                 'startOffset': type.startOffset
             };
 
-            for(var i=0; i < tileElevateParamCollection.length; i++) {
-                self._drawTestTileCollection(type.startOffset, config, tileElevateParamCollection[i]);
+            for (var i = 0; i < tileElevateParamCollection.length; i++) {
+                self._drawIsoTileCollection(type.startOffset, config, tileElevateParamCollection[i]);
                 // increment height offset by twice the maxheight
-                type.startOffset.y += config.maxLevel*2;
+                type.startOffset.y += config.maxLevel * 2;
             }
         });
     },
-    _drawTestTileCollection: function(startOffset, config, elevateParam) {
+    /**
+     *
+     * @param startOffset
+     * @param config
+     * @param elevateParam
+     * @private
+     */
+    _drawIsoTileCollection: function(startOffset, config, elevateParam) {
         for(var x=0; x < config.maxLevel; x++) {
             var tile = new Tile(startOffset.x++, startOffset.y--, x, elevateParam);
 

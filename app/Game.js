@@ -6,16 +6,15 @@ var Game = function() {
         offscreenCanvas: document.querySelector('#offscreen'),
         worldCanvasSize: 400,
         mapCanvasSize: 200,
-        testCanvasSize: 3600,
         offscreenCanvasDim: {
-            height: 12000,
-            width: 800
+            height: 13982, //@todo: find out why antialiasing seems to fail starting at heigth > 13982
+            width: 2400
         },
         worldSize: 4,
         worldViewportSize: 4,
         worldTileSize: 96,
         mapTileSize: 64,
-        testTileSize: 48,
+        testTileSize: 96,
         mapZoomLevel: 2
     };
 
@@ -180,12 +179,15 @@ Game.prototype = {
             renderMode: "test",
             drawTileLabels: true,
             offset: {
-                top: 175,
-                left: 48
+                //top: 175,
+                //left: 48
+                //@todo: should be tileheight x maxLevel or something...
+                top: 350,
+                left: this.config.worldTileSize
             },
             canvasDim: {
-                width: this.config.testCanvasSize/2,
-                height: this.config.testCanvasSize*2
+                width: this.config.offscreenCanvasDim.width,
+                height: this.config.offscreenCanvasDim.height
             }
         };
 
@@ -200,16 +202,20 @@ Game.prototype = {
             tileWidth: this.config.worldTileSize,
             tileHeight: this.config.worldTileSize,
             renderMode: "offscreen",
-            //@todo: wtf???
             offset: {
-                top: 175*(this.config.worldTileSize/this.config.testTileSize),
-                left: 48*(this.config.worldTileSize/this.config.testTileSize)
+                //@todo: should be tileheight x maxLevel or something...
+                top: 350,
+                left: this.config.worldTileSize
             },
             canvasDim: {
                 width: this.config.offscreenCanvasDim.width,
                 height: this.config.offscreenCanvasDim.height
             }
         };
+        
+        console.log(this.config.worldTileSize/this.config.testTileSize);
+        
+        console.log(rendererConfig.offset);
 
         return new Renderer(
             createBufferCanvas(this.config.offscreenCanvasDim.width, this.config.offscreenCanvasDim.height),
