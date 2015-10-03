@@ -3,10 +3,10 @@
  * @param {Number} x
  * @param {Number} y
  * @param {Number} level
- * @param {TileElevateParam} [elevateParam]
+ * @param {TileSlopeParam} [slopeParam]
  * @constructor
  */
-var Tile = function(x, y, level, elevateParam) {
+var Tile = function(x, y, level, slopeParam) {
     this.x = x;
     this.y = y;
     this.level = level;
@@ -16,7 +16,7 @@ var Tile = function(x, y, level, elevateParam) {
 
     //this.uuid = Math.random().toString().substring(3);
 
-    this.elevate = elevateParam || new TileElevateParam(0, 0, 0, 0);
+    this.slope = slopeParam || new TileSlopeParam(0, 0, 0, 0);
 };
 
 Tile.prototype.isHovered = function() {

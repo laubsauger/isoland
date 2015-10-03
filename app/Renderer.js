@@ -13,7 +13,7 @@ var Renderer = function($canvas, config, colorLuminance, offscreenCanvas) {
     this.offscreenCanvas = offscreenCanvas ? offscreenCanvas : false;
     this.offscreenBufferContext = this.offscreenCanvas ? this.offscreenCanvas.getContext("2d") : false;
 
-    // contains string representation of all possible combinations of elevated vertices
+    // contains string representation of all possible combinations of sloped tiles
     this.bufferMap = [
         // positive
         '0,0,0,0',
@@ -163,14 +163,14 @@ Renderer.prototype = {
      * @private
      */
     _createOffscreenTileBuffer: function() {
-        var tileElevateParamCollection = [],
+        var tileSlopeParamCollection = [],
             self = this;
 
         var index = 0;
         for (var y = 0; y < this.bufferMap.length*2; y++) {
             var bufferMapItem = this.bufferMap[index].split(',');
             //console.log(bufferMapItem[0], bufferMapItem[1], bufferMapItem[2], bufferMapItem[3]);
-            tileElevateParamCollection.push(new TileElevateParam(bufferMapItem[0], bufferMapItem[1], bufferMapItem[2], bufferMapItem[3]));
+            tileSlopeParamCollection.push(new TileSlopeParam(bufferMapItem[0], bufferMapItem[1], bufferMapItem[2], bufferMapItem[3]));
 
             index++;
             
@@ -192,8 +192,8 @@ Renderer.prototype = {
                 'startOffset': type.startOffset
             };
 
-            for (var i = 0; i < tileElevateParamCollection.length; i++) {
-                self._drawIsoTileCollection(type.startOffset, config, tileElevateParamCollection[i]);
+            for (var i = 0; i < tileSlopeParamCollection.length; i++) {
+                self._drawIsoTileCollection(type.startOffset, config, tileSlopeParamCollection[i]);
                 // increment height offset by twice the maxheight
                 type.startOffset.y += config.maxLevel * 2;
             }
@@ -203,12 +203,12 @@ Renderer.prototype = {
      *
      * @param startOffset
      * @param config
-     * @param elevateParam
+     * @param slopeParam
      * @private
      */
-    _drawIsoTileCollection: function(startOffset, config, elevateParam) {
+    _drawIsoTileCollection: function(startOffset, config, slopeParam) {
         for(var x=0; x < config.maxLevel; x++) {
-            var tile = new Tile(startOffset.x++, startOffset.y--, x, elevateParam);
+            var tile = new Tile(startOffset.x++, startOffset.y--, x, slopeParam);
 
             switch(config.type) {
                 case 'hover':
@@ -251,17 +251,20 @@ Renderer.prototype = {
     _drawTileImageDataFromBuffer: function(pos, tile) {
         var bufferViewportDim = {width: this.tileWidth, height: 256},
             canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth),
-            bufferMapIndex = this.bufferMap.indexOf(tile.elevate.toString());
+            bufferMapIndex = this.bufferMap.indexOf(tile.slope.toString());
 
         var elevationVariationSpacing = bufferMapIndex > 0 ? bufferViewportDim.height/2 : 0,
             bufferBaseOffset = new Pos((this.tileWidth * tile.level), bufferViewportDim.height * (bufferMapIndex + 1));
 
-        if (tile.isHovered()) {
+        // adjust baseOffset according to tile state
+        if (tile.isSelected()) {
+            bufferBaseOffset.x += (this.tileWidth * this.config.maxLevel) * 2;
+        } else if (tile.isHovered()) {
             bufferBaseOffset.x += (this.tileWidth * this.config.maxLevel);
         }
 
         // @todo: put this into a dedicated function to make it somewhat understandable
-        // @todo: figure out a decent way to get the position besides dividing by a fiddled out number: 3 :D
+        // @todo: figure out a decent way to get the position besides dividing by a fiddled out number: 3 (or 1/8 tileHeight) :D
         this.context.drawImage(
             this.offscreenCanvas,
             bufferBaseOffset.x, bufferMapIndex * (bufferViewportDim.height + elevationVariationSpacing), bufferViewportDim.width, bufferViewportDim.height,
@@ -469,7 +472,7 @@ Renderer.prototype = {
             new Pos(pos.x + this.offset.left, offsetPos.y)
         );
 
-        return this._getTileVerticesModifiedByTileElevationParam(tileVertices, tile.elevate);
+        return this._getTileVerticesModifiedByTileElevationParam(tileVertices, tile.slope);
     },
     /**
      * @param tileTopVertices
@@ -486,7 +489,7 @@ Renderer.prototype = {
             new Pos(tileTopVertices.bottom.x, tileTopVertices.bottom.y)
         );
 
-        return this._getTileVerticesModifiedByTileElevationParam(tileVertices, tile.elevate);
+        return this._getTileVerticesModifiedByTileElevationParam(tileVertices, tile.slope);
     },
     /**
      * @param tileTopVertices
@@ -503,27 +506,27 @@ Renderer.prototype = {
             new Pos(tileTopVertices.left.x, tileTopVertices.left.y)
         );
 
-        return this._getTileVerticesModifiedByTileElevationParam(tileVertices, tile.elevate);
+        return this._getTileVerticesModifiedByTileElevationParam(tileVertices, tile.slope);
     },
     /**
-     * Lowers or raises each vertex depending on the tiles current elevateParam
+     * Lowers or raises each vertex depending on the tiles current slopeParam
      * @param tileVertices
-     * @param {TileElevateParam} elevateParam
+     * @param {TileSlopeParam} slopeParam
      * @private
      */
-    _getTileVerticesModifiedByTileElevationParam: function(tileVertices, elevateParam) {
+    _getTileVerticesModifiedByTileElevationParam: function(tileVertices, slopeParam) {
         // pull corners/vertices up or down if necessary
-        if(elevateParam.top > 0) {
+        if(slopeParam.top > 0) {
             if (tileVertices instanceof TileTopVertices) {
                 tileVertices.top.y -= this.tileHeightHalf;
             }
-        } else if(elevateParam.top < 0) {
+        } else if(slopeParam.top < 0) {
             if (tileVertices instanceof TileTopVertices) {
                 tileVertices.top.y += this.tileHeightHalf;
             }
         }
 
-        if(elevateParam.right > 0) {
+        if(slopeParam.right > 0) {
             if (tileVertices instanceof TileTopVertices) {
                 tileVertices.right.y -= this.tileHeightHalf;
             }
@@ -532,7 +535,7 @@ Renderer.prototype = {
                 tileVertices.topRight.y -= this.tileHeightHalf;
                 tileVertices.bottomRight.y += this.tileHeightHalf;
             }
-        } else if(elevateParam.right < 0) {
+        } else if(slopeParam.right < 0) {
             if (tileVertices instanceof TileTopVertices) {
                 tileVertices.right.y += this.tileHeightHalf;
             }
@@ -542,7 +545,7 @@ Renderer.prototype = {
             }
         }
 
-        if(elevateParam.bottom > 0) {
+        if(slopeParam.bottom > 0) {
             if (tileVertices instanceof TileTopVertices) {
                 tileVertices.bottom.y -= this.tileHeightHalf;
             }
@@ -556,7 +559,7 @@ Renderer.prototype = {
                 tileVertices.topRight.y -= this.tileHeightHalf;
                 tileVertices.bottomRight.y += this.tileHeightHalf;
             }
-        } else if(elevateParam.bottom < 0) {
+        } else if(slopeParam.bottom < 0) {
             if (tileVertices instanceof TileTopVertices) {
                 tileVertices.bottom.y += this.tileHeightHalf;
             }
@@ -572,7 +575,7 @@ Renderer.prototype = {
             }
         }
 
-        if(elevateParam.left > 0) {
+        if(slopeParam.left > 0) {
             if (tileVertices instanceof TileTopVertices) {
                 tileVertices.left.y -= this.tileHeightHalf;
             }
@@ -581,7 +584,7 @@ Renderer.prototype = {
                 tileVertices.topLeft.y -= this.tileHeightHalf;
                 tileVertices.bottomLeft.y += this.tileHeightHalf;
             }
-        } else if(elevateParam.left < 0) {
+        } else if(slopeParam.left < 0) {
             if (tileVertices instanceof TileTopVertices) {
                 tileVertices.left.y += this.tileHeightHalf;
             }

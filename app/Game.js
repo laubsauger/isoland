@@ -109,7 +109,7 @@ Game.prototype = {
             });
 
             //@todo replace length check for selection clearing with an interaction; e.g. mouserightdown or something
-            if (currentTileSelection.length > 3) {
+            if (currentTileSelection.length > 4) {
                 currentTileSelection.forEach(function(tile) {
                     tile.selected = false;
                 });

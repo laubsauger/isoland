@@ -1,12 +1,12 @@
 /**
- * TileElevateParam VO
+ * TileSlopeParam VO
  * @param {int} top
  * @param {int} right
  * @param {int} bottom
  * @param {int} left
  * @constructor
  */
-var TileElevateParam = function(top, right, bottom, left) {
+var TileSlopeParam = function(top, right, bottom, left) {
     this.top = top;
     this.right = right;
     this.bottom = bottom;
@@ -16,6 +16,6 @@ var TileElevateParam = function(top, right, bottom, left) {
 /**
  * @returns {string}
  */
-TileElevateParam.prototype.toString = function() {
+TileSlopeParam.prototype.toString = function() {
     return this.top + "," + this.right + "," + this.bottom + "," + this.left;
 };
