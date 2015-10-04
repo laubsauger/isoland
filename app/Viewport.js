@@ -19,6 +19,9 @@ var Viewport = function(edgeLength, map, offsetX, offsetY) {
         throw new InvalidArgumentException([offsetX, offsetY], 'Viewport', 'construct', 'offsetX/offsetY');
     }
 
+    this.hoveredTile = {};
+    this.hoveredTile = {};
+    this.selectedTiles = [];
     this.edgeLength = edgeLength;
     this.orientation = 0;
     this.tiles = [];
@@ -53,8 +56,9 @@ Viewport.prototype = {
     /**
      * Get Tile object by its 2D grid coords/array indices
      * @param {Pos} pos
-     * @returns {Tile}
+     * @returns 0|Tile
      */
+    //@todo figure out a way to perform visibility checks (z-buffer style) to prevent interaction with tiles that are hidden behind/below others
     getTileAt: function(pos) {
         return (this.tiles[pos.x] && this.tiles[pos.x][pos.y]) ? this.tiles[pos.x][pos.y] : null;
     },
@@ -88,5 +92,38 @@ Viewport.prototype = {
      */
     getOrientation: function() {
         return this.orientation;
+    },
+    /**
+     * @param selectedTilePos
+     */
+    setSelectedTile: function(selectedTilePos) {
+        var tile = this.getTileAt(selectedTilePos);
+
+        if (tile instanceof Tile && this.selectedTiles.indexOf(tile) === -1) {
+            tile.selected = true;
+            this.selectedTiles.push(tile);
+        }
+    },
+    setHoveredTile: function(hoveredTilePos) {
+        var tile = this.getTileAt(hoveredTilePos);
+
+        if (tile instanceof Tile) {
+            this.hoveredTile = tile;
+            this.hoveredTile.hovered = true;
+        }
+    },
+    cleanup: function() {
+        if (this.hoveredTile) {
+            this.hoveredTile.hovered = false;
+        }
+
+        //@todo replace length check for selection clearing with an interaction; e.g. mouserightdown or something
+        if (this.selectedTiles.length > 4) {
+            this.selectedTiles.forEach(function(tile) {
+                tile.selected = false;
+            });
+
+            this.selectedTiles = [];
+        }
     }
 };

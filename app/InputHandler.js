@@ -1,5 +1,6 @@
 var InputHandler = function(config) {
     this.selectedTilePos = false;
+    this.viewportOrientationChange = false;
     this.config = config;
 
     this.setup();
@@ -16,7 +17,7 @@ InputHandler.prototype = {
 
         this.register(
             document.querySelector('canvas#world'),
-            "mousemove",
+            'mousemove',
             (function() {
                 var params = self.getDefaultParameters();
                 return function(evt) { $.throttle(16, function(evt) { return params._this.handleMouseMoveEvent(evt, params)})(evt)};
@@ -25,12 +26,23 @@ InputHandler.prototype = {
 
         this.register(
             document.querySelector('canvas#world'),
-            "mousedown",
+            'mousedown',
             (function() {
                 var params = self.getDefaultParameters();
                 params.debug = true;
 
                 return function(evt) { $.throttle(16, function(evt) {return params._this.handleMouseDownEvent(evt, params)})(evt)};
+            })()
+        );
+
+        this.register(
+            document.querySelector('.rotate--cw'),
+            'click',
+            (function() {
+                var params = self.getDefaultParameters();
+                params.debug = true;
+
+                return function(evt) { $.throttle(16, function(evt) {return params._this.handleRotateButtonClickEvent(evt, params)})(evt)};
             })()
         );
     },
@@ -51,13 +63,25 @@ InputHandler.prototype = {
         params._this.selectedTilePos = params._this.mouseCoordsToTileCoords(evt, params);
     },
     /**
+     * Handles mouse down event; sets currently selected tile
+     * @param evt
+     * @param params
+     */
+    handleRotateButtonClickEvent: function(evt, params) {
+        params._this.viewportOrientationChange = evt.target.value;
+    },
+    /**
      * Creates event listeners, optional data object is passed through
      * @param element
      * @param eventName
      * @param fn
      */
     register: function(element, eventName, fn) {
-        element.addEventListener(eventName, fn, false);
+        try {
+            element.addEventListener(eventName, fn, false);
+        } catch (e) {
+            console.error(e, 'Could not register event listener: ' + eventName);
+        }
     },
     /**
      * Converts current mouse coordinates to absolute 2D tile grid position / array indices

@@ -7,7 +7,7 @@ var Game = function() {
         worldCanvasSize: 400,
         mapCanvasSize: 200,
         offscreenCanvasDim: {
-            height: 13982, //@todo: find out why antialiasing seems to fail starting at heigth > 13982
+            height: 22200, //@todo: find out why antialiasing seems to fail starting at heigth > 13982
             width: 2400
         },
         worldSize: 4,
@@ -24,6 +24,7 @@ var Game = function() {
     this.mapCanvas = this.config.mapCanvas;
     this.testCanvas = this.config.testCanvas;
     this.offscreenCanvas = this.config.offscreenCanvas;
+    this.redrawableCanvases = [];
 };
 
 Game.prototype = {
@@ -35,91 +36,66 @@ Game.prototype = {
         this.offscreenRenderer = this.createOffscreenRenderer();
         this.offscreenRenderer.execute();
 
-        this.worldRenderer = this.createWorldRenderer(this.offscreenRenderer);
-
-        // if the map is to be rendered every frame it should definitely use offscreen rendering too
-        this.mapRenderer = this.createMapRenderer();
-
         this.testRenderer = this.createTestRenderer();
+        this.testRenderer.execute();
+
+        this.worldRenderer = this.createWorldRenderer(this.offscreenRenderer);
+        this.mapRenderer = this.createMapRenderer(); //@todo: the map will be rendered every frame => should definitely use offscreen rendering too
 
         var mapStorage = new MapStorage();
         this.presetMap = mapStorage.testPoolLevel2();
-
         this.worldTileMap = new Map(this.config.worldSize, this.presetMap);
 
         this.worldViewport = new Viewport(this.config.worldViewportSize, this.worldTileMap);
+        this._addRenderLoopCanvas(this.worldRenderer, this.worldViewport);
+
         this.mapViewport = new Viewport(this.config.worldSize, this.worldTileMap);
+        this._addRenderLoopCanvas(this.mapRenderer, this.mapViewport);
 
         this.inputHandler = new InputHandler(this.config);
 
-        this.testRenderer.execute();
-
         return this;
+    },
+    _getRenderLoopCanvases: function() {
+        return this.redrawableCanvases;
+    },
+    _addRenderLoopCanvas: function(renderer, viewport) {
+        this.redrawableCanvases.push({'renderer': renderer, 'viewport': viewport});
     },
     /**
      * run the game loop
      */
     run: function() {
-        var self = this,
-            currentTileSelection = [],
-            canvasCollection = [
-                    {
-                        'renderer': this.worldRenderer,
-                        'viewport': this.worldViewport
-                    },{
-                        'renderer': this.mapRenderer,
-                        'viewport': this.mapViewport
-                    }
-            ];
+        var self = this;
 
         //@todo input handling implementation details sitting in here is messy shiat
         (function renderLoop(){
             // execute renderer
-            canvasCollection.forEach(function(canvas) {
-                var hoveredTile = {};
-
-                if (self.inputHandler.selectedTilePos) {
-                    canvasCollection.forEach(function(canvas) {
-                        //@todo figure out a way to perform visibility (z-buffer style) checks to prevent interaction with tiles that are hidden behind/below others
-                        var selectedTile = canvas.viewport.getTileAt(self.inputHandler.selectedTilePos) || {};
-
-                        if (selectedTile instanceof Tile && currentTileSelection.indexOf(selectedTile) === -1) {
-                            selectedTile.selected = true;
-                            currentTileSelection.push(selectedTile);
-                            console.log(selectedTile);
-                        }
-                    });
-                }
-
-                if (self.inputHandler.hoveredTilePos) {
-                    canvasCollection.forEach(function(canvas) {
-                        //@todo figure out a way to perform visibility (z-buffer style) checks to prevent interaction with tiles that are hidden behind/below others
-                        hoveredTile = canvas.viewport.getTileAt(self.inputHandler.hoveredTilePos) || {};
-
-                        if (hoveredTile instanceof Tile) {
-                            hoveredTile.hovered = true;
-                        }
-                    });
-                }
+            self._getRenderLoopCanvases().forEach(function(canvas) {
+                self._updateViewportWithInputHandlerChanges(canvas.viewport, self.inputHandler);
 
                 canvas.renderer.execute(canvas.viewport);
-
-                // clean up one-off stuff
-                hoveredTile.hovered = false;
+                canvas.viewport.cleanup();
             });
-
-            //@todo replace length check for selection clearing with an interaction; e.g. mouserightdown or something
-            if (currentTileSelection.length > 4) {
-                currentTileSelection.forEach(function(tile) {
-                    tile.selected = false;
-                });
-
-                currentTileSelection = [];
-            }
 
             // loop
             requestAnimationFrame(renderLoop);
         })();
+    },
+    /**
+     * Apply state changes from input handler to viewport
+     * @param viewport
+     * @param inputHandler
+     * @private
+     */
+    _updateViewportWithInputHandlerChanges: function(viewport, inputHandler) {
+        if (inputHandler.selectedTilePos) {
+            viewport.setSelectedTile(inputHandler.selectedTilePos);
+        }
+
+        if (inputHandler.hoveredTilePos) {
+            viewport.setHoveredTile(inputHandler.hoveredTilePos);
+        }
     },
     /**
      * Create World renderer
@@ -216,10 +192,6 @@ Game.prototype = {
             }
         };
         
-        console.log(this.config.worldTileSize/this.config.testTileSize);
-        
-        console.log(rendererConfig.offset);
-
         return new Renderer(
             createBufferCanvas(this.config.offscreenCanvasDim.width, this.config.offscreenCanvasDim.height),
             rendererConfig,
