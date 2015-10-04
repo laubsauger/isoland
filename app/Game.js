@@ -40,7 +40,7 @@ Game.prototype = {
         this.testRenderer.execute();
 
         this.worldRenderer = this.createWorldRenderer(this.offscreenRenderer);
-        this.mapRenderer = this.createMapRenderer(); //@todo: the map will be rendered every frame => should definitely use offscreen rendering too
+        this.mapRenderer = this.createMapRenderer(); //@todo: the map will be rendered every frame => should definitely use offscreen buffer too
 
         var mapStorage = new MapStorage();
         this.presetMap = mapStorage.testPoolLevel2();
@@ -72,35 +72,13 @@ Game.prototype = {
         (function renderLoop(){
             // execute renderer
             self._getRenderLoopCanvases().forEach(function(canvas) {
-                self._updateViewportWithInputHandlerChanges(canvas.viewport, self.inputHandler);
-
+                canvas.viewport.update(self.inputHandler);
                 canvas.renderer.execute(canvas.viewport);
-                canvas.viewport.cleanup();
             });
 
             // loop
             requestAnimationFrame(renderLoop);
         })();
-    },
-    /**
-     * Apply state changes from input handler to viewport
-     * @param viewport
-     * @param inputHandler
-     * @private
-     */
-    _updateViewportWithInputHandlerChanges: function(viewport, inputHandler) {
-        if (inputHandler.viewportOrientationChange) {
-            viewport.rotate(inputHandler.viewportOrientationChange);
-            inputHandler.viewportOrientationChange = false;
-        }
-
-        if (inputHandler.selectedTilePos) {
-            viewport.setSelectedTile(inputHandler.selectedTilePos);
-        }
-
-        if (inputHandler.hoveredTilePos) {
-            viewport.setHoveredTile(inputHandler.hoveredTilePos);
-        }
     },
     /**
      * Create World renderer

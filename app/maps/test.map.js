@@ -46,10 +46,10 @@ MapStorage.prototype.testPoolLevel2 = function() {
             new Tile(2, 2, 1, new TileSlopeParam(0, 0, 0, 0)),
             new Tile(2, 3, 2, new TileSlopeParam(-1, -1, 0, 0))
         ],[
-            new Tile(3, 0, 2, new TileSlopeParam(0, 0, 0, -1)),
-            new Tile(3, 1, 2, new TileSlopeParam(-1, 0, 0, -1)),
-            new Tile(3, 2, 2, new TileSlopeParam(-1, 0, 0, -1)),
-            new Tile(3, 3, 2, new TileSlopeParam(-1, 0, 0, 0))
+            new Tile(3, 0, 2, new TileSlopeParam(0, 0, 0, 0)),
+            new Tile(3, 1, 1, new TileSlopeParam(0, 0, 0, 0)),
+            new Tile(3, 2, 1, new TileSlopeParam(0, 0, 0, 0)),
+            new Tile(3, 3, 2, new TileSlopeParam(0, 0, 0, 0))
         ]
     ]
 };

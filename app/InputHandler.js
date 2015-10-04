@@ -1,6 +1,6 @@
 var InputHandler = function(config) {
     this.selectedTilePos = false;
-    this.viewportOrientationChange = false;
+    this.viewportOrientationChangeDirection = false;
     this.config = config;
 
     this.setup();
@@ -40,8 +40,6 @@ InputHandler.prototype = {
             'click',
             (function() {
                 var params = self.getDefaultParameters();
-                params.debug = true;
-
                 return function(evt) { $.throttle(16, function(evt) {return params._this.handleRotateButtonClickEvent(evt, params)})(evt)};
             })()
         );
@@ -68,7 +66,7 @@ InputHandler.prototype = {
      * @param params
      */
     handleRotateButtonClickEvent: function(evt, params) {
-        params._this.viewportOrientationChange = evt.target.value;
+        params._this.viewportOrientationChangeDirection = evt.target.value;
     },
     /**
      * Creates event listeners, optional data object is passed through

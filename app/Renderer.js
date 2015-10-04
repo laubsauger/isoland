@@ -153,10 +153,22 @@ Renderer.prototype = {
                 var tile = viewport.getTileAt(new Pos(x, y));
 
                 if (tile instanceof Tile) {
+                    // rotate tile slope if viewport was rotated
+                    if (viewport.hasOrientationChanged()) {
+                        //@todo: tile selection breaks after rotating
+                        if (viewport.orientationChangeDirection === 'cw') {
+                            tile.slope = new TileSlopeParam(tile.slope.right, tile.slope.bottom, tile.slope.left, tile.slope.top);
+                        } else {
+                            tile.slope = new TileSlopeParam(tile.slope.left, tile.slope.top, tile.slope.right, tile.slope.bottom);
+                        }
+                    }
+
                     this._drawTile(new Pos(x, y), tile);
                 }
             }
         }
+
+        viewport.cleanup();
     },
     /**
      * draws all possible tile variations
@@ -169,7 +181,6 @@ Renderer.prototype = {
         var index = 0;
         for (var y = 0; y < this.bufferMap.length*2; y++) {
             var bufferMapItem = this.bufferMap[index].split(',');
-            //console.log(bufferMapItem[0], bufferMapItem[1], bufferMapItem[2], bufferMapItem[3]);
             tileSlopeParamCollection.push(new TileSlopeParam(bufferMapItem[0], bufferMapItem[1], bufferMapItem[2], bufferMapItem[3]));
 
             index++;
@@ -251,9 +262,8 @@ Renderer.prototype = {
     _drawTileImageDataFromBuffer: function(pos, tile) {
         var bufferViewportDim = {width: this.tileWidth, height: 256},
             canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth),
-            bufferMapIndex = this.bufferMap.indexOf(tile.slope.toString());
-
-        var elevationVariationSpacing = bufferMapIndex > 0 ? bufferViewportDim.height/2 : 0,
+            bufferMapIndex = this.bufferMap.indexOf(tile.slope.toString()),
+            elevationVariationSpacing = bufferMapIndex > 0 ? bufferViewportDim.height/2 : 0,
             bufferBaseOffset = new Pos((this.tileWidth * tile.level), bufferViewportDim.height * (bufferMapIndex + 1));
 
         // adjust baseOffset according to tile state

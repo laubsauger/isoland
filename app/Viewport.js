@@ -24,6 +24,8 @@ var Viewport = function(edgeLength, map, offsetX, offsetY) {
     this.selectedTiles = [];
     this.edgeLength = edgeLength;
     this.orientation = 0;
+    this.orientationChangeDirection = false;
+    this.orientationChanged = false;
     this.tiles = [];
 
     this.offset = {
@@ -54,6 +56,32 @@ Viewport.prototype = {
         }
     },
     /**
+     *
+     * @param inputHandler
+     */
+    update: function(inputHandler) {
+        this._updateWithInputHandlerChanges(inputHandler);
+    },
+    /**
+     *
+     * @param inputHandler
+     * @private
+     */
+    _updateWithInputHandlerChanges: function(inputHandler) {
+        if (inputHandler.viewportOrientationChangeDirection) {
+            this.rotate(inputHandler.viewportOrientationChangeDirection);
+            inputHandler.viewportOrientationChangeDirection = false;
+        }
+
+        if (inputHandler.selectedTilePos) {
+            this.setSelectedTile(inputHandler.selectedTilePos);
+        }
+
+        if (inputHandler.hoveredTilePos) {
+            this.setHoveredTile(inputHandler.hoveredTilePos);
+        }
+    },
+    /**
      * Get Tile object by its 2D grid coords/array indices
      * @param {Pos} pos
      * @returns Tile|{}
@@ -72,6 +100,9 @@ Viewport.prototype = {
         } else {
             this.rotateClockwise();
         }
+
+        this.orientationChanged = true;
+        this.orientationChangeDirection = direction;
     },
     /**
      * clockwise arrayRotate the tile array
@@ -86,8 +117,8 @@ Viewport.prototype = {
         this.tiles = arrayRotate('r', this.tiles);
     },
     /**
-     * counterclockwise arrayRotate the tile array
-     */
+    * counterclockwise arrayRotate the tile array
+    */
     rotateCounterClockwise: function() {
         if ((this.orientation - 90) <= -360) {
             this.orientation = 0;
@@ -144,8 +175,10 @@ Viewport.prototype = {
             this.selectedTiles = [];
         }
 
-        if (this.viewportOrientationChange) {
-            this.viewportOrientationChange = false;
-        }
+        this.orientationChangeDirection = false;
+        this.orientationChanged = false;
+    },
+    hasOrientationChanged: function() {
+        return this.orientationChanged;
     }
 };
