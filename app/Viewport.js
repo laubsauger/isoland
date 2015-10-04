@@ -56,14 +56,25 @@ Viewport.prototype = {
     /**
      * Get Tile object by its 2D grid coords/array indices
      * @param {Pos} pos
-     * @returns 0|Tile
+     * @returns Tile|{}
      */
     //@todo figure out a way to perform visibility checks (z-buffer style) to prevent interaction with tiles that are hidden behind/below others
     getTileAt: function(pos) {
         return (this.tiles[pos.x] && this.tiles[pos.x][pos.y]) ? this.tiles[pos.x][pos.y] : null;
     },
     /**
-     * Performs clockwise arrayRotate on the tile array
+     *
+     * @param direction
+     */
+    rotate: function(direction) {
+        if ('ccw' === direction) {
+            this.rotateCounterClockwise();
+        } else {
+            this.rotateClockwise();
+        }
+    },
+    /**
+     * clockwise arrayRotate the tile array
      */
     rotateClockwise: function() {
         if ((this.orientation + 90) >= 360) {
@@ -75,7 +86,7 @@ Viewport.prototype = {
         this.tiles = arrayRotate('r', this.tiles);
     },
     /**
-     * Performs counterclockwise arrayRotate on the tile array
+     * counterclockwise arrayRotate the tile array
      */
     rotateCounterClockwise: function() {
         if ((this.orientation - 90) <= -360) {
@@ -104,6 +115,10 @@ Viewport.prototype = {
             this.selectedTiles.push(tile);
         }
     },
+    /**
+     *
+     * @param hoveredTilePos
+     */
     setHoveredTile: function(hoveredTilePos) {
         var tile = this.getTileAt(hoveredTilePos);
 
@@ -112,6 +127,9 @@ Viewport.prototype = {
             this.hoveredTile.hovered = true;
         }
     },
+    /**
+     * perform cleanup operations
+     */
     cleanup: function() {
         if (this.hoveredTile) {
             this.hoveredTile.hovered = false;
@@ -124,6 +142,10 @@ Viewport.prototype = {
             });
 
             this.selectedTiles = [];
+        }
+
+        if (this.viewportOrientationChange) {
+            this.viewportOrientationChange = false;
         }
     }
 };

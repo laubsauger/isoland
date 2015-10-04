@@ -36,7 +36,7 @@ InputHandler.prototype = {
         );
 
         this.register(
-            document.querySelector('.rotate--cw'),
+            document.querySelectorAll('.rotate--cw, .rotate--ccw'),
             'click',
             (function() {
                 var params = self.getDefaultParameters();
@@ -78,7 +78,13 @@ InputHandler.prototype = {
      */
     register: function(element, eventName, fn) {
         try {
-            element.addEventListener(eventName, fn, false);
+            if (element.length > 1) {
+                for (var i = 0; i < element.length; i++) {
+                    element[i].addEventListener(eventName, fn, false)
+                }
+            } else {
+                element.addEventListener(eventName, fn, false);
+            }
         } catch (e) {
             console.error(e, 'Could not register event listener: ' + eventName);
         }
@@ -93,10 +99,7 @@ InputHandler.prototype = {
         var xMouse = evt.offsetX - params.canvasOffsetLeft;
 
         if (params.debug === true) {
-            console.log('viewportX', xMouse, 'viewportY', yMouse);
-        }
-
-        if (params.debug === true) {
+            //console.log('viewportX', xMouse, 'viewportY', yMouse);
             console.log(new Pos(
                 Math.round(xMouse / params.tileWidth + yMouse / (params.tileHeight/2))-1,
                 Math.round(yMouse / (params.tileHeight/2) - xMouse / params.tileWidth)

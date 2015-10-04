@@ -89,6 +89,11 @@ Game.prototype = {
      * @private
      */
     _updateViewportWithInputHandlerChanges: function(viewport, inputHandler) {
+        if (inputHandler.viewportOrientationChange) {
+            viewport.rotate(inputHandler.viewportOrientationChange);
+            inputHandler.viewportOrientationChange = false;
+        }
+
         if (inputHandler.selectedTilePos) {
             viewport.setSelectedTile(inputHandler.selectedTilePos);
         }
