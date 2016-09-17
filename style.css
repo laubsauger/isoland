@@ -1,0 +1,101 @@
+/* deco */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    min-height: 100%;
+}
+
+body {
+    margin: 1.5em;
+    font: normal 12px "Helvetica Neue", Helvetica, sans-serif;
+    user-select: none;
+    color: #fff;
+    background: rgb(150, 150, 150);
+    /*background: -moz-radial-gradient(center, ellipse cover, rgba(94, 153, 204, 1) 0%, rgba(69, 69,69, 1) 100%);*/
+    /*background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(94, 153, 204, 1)), color-stop(100%, rgba(69, 69, 69, 1)));*/
+    /*background: -webkit-radial-gradient(center, ellipse cover, rgba(94, 153, 204, 1) 0%, rgba(69, 69, 69, 1) 100%);*/
+    /*background: radial-gradient(ellipse at center, rgba(150, 150, 150, 1) 0%, rgba(69, 69, 69, 1) 100%);*/
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0.2em 0 0.2em 0;
+    padding: 0.2em 0 0.2em 0;
+}
+
+fieldset {
+    padding: 1em;
+}
+
+label {
+    vertical-align: top;
+    margin: 0.5em;
+}
+
+section {
+    display: inline-block;
+    vertical-align: top;
+    background: #444;
+    padding: 1.5em;
+    margin: 1em;
+}
+
+textarea {
+    background: #000;
+    font-family: monospace;
+    color: #89C1EA;
+    padding: 5px;
+}
+
+::selection {
+    background-color: #6692B2;
+}
+
+.showHideBtn {
+    background: #6E6E6E;
+    float: right;
+    cursor: pointer;
+    font-weight: initial;
+    padding: 0.1em 0.75em 0.1em 0.75em;
+    min-width: 75px;
+    text-align: center;
+}
+
+.world {
+    width: 55%;
+}
+
+.map {
+    width: 13%;
+}
+
+.debug {
+    width: 27%;
+}
+
+.debug > div {
+    margin: 1em;
+}
+
+button {
+    background-color: #000;
+    color: #ddd;
+    padding: 5px 10px;
+    font-size: 1em;
+    border: 1px solid rgb(75, 75, 75);
+    margin: 5px 5px 0 0;
+}
+
+button:hover {
+    border-color: #ff3300;
+}
+/*.scrollable {*/
+/*overflow: scroll;*/
+/*}*/
+
+.float-right {
+    float: right;
+}

@@ -74,7 +74,7 @@ Viewport.prototype = {
         }
 
         if (inputHandler.selectedTilePos) {
-            this.setSelectedTile(inputHandler.selectedTilePos, inputHandler.activeKeys);
+            this.setSelectedTile(inputHandler.selectedTilePos, inputHandler.activeKeys.shift);
             inputHandler.selectedTilePos = false;
         }
 
@@ -95,7 +95,7 @@ Viewport.prototype = {
     },
     /**
      *
-     * @param direction
+     * @param {string} direction
      */
     rotate: function(direction) {
         if ('ccw' === direction) {
@@ -139,28 +139,18 @@ Viewport.prototype = {
         return this.orientation;
     },
     /**
-     * @param selectedTilePos
+     * @param {Pos} selectedTilePos
+     * @param {boolean} shiftKeyActive
      */
-    setSelectedTile: function(selectedTilePos, inputHandlerActiveKeys) {
-        // clear selection when clicked without shift
-        if (!inputHandlerActiveKeys.shift) {
-            this.selectedTiles.forEach(function(tile) {
-                tile.selected = false;
-            });
-            this.selectedTiles = [];
+    setSelectedTile: function(selectedTilePos, shiftKeyActive) {
+        if (!shiftKeyActive) {
+            this.clearSelection();
         }
 
-        // add tile to selection
-        var tile = this.getTileAt(selectedTilePos);
-        if (tile instanceof Tile && this.selectedTiles.indexOf(tile) === -1) {
-            tile.selected = true;
-            this.selectedTiles.push(tile);
-            console.log('selected', tile);
-        }
+        this.addToSelection(this.getTileAt(selectedTilePos));
     },
     /**
-     *
-     * @param hoveredTilePos
+     * @param {Pos} hoveredTilePos
      */
     setHoveredTile: function(hoveredTilePos) {
         var tile = this.getTileAt(hoveredTilePos);
@@ -171,6 +161,24 @@ Viewport.prototype = {
         }
     },
     /**
+     * @param tile
+     */
+    addToSelection: function(tile) {
+        if (tile instanceof Tile && this.selectedTiles.indexOf(tile) === -1) {
+            tile.selected = true;
+            this.selectedTiles.push(tile);
+            console.log('selected', tile);
+        }
+    },
+
+    clearSelection: function() {
+        this.selectedTiles.forEach(function(tile) {
+            tile.selected = false;
+        });
+        this.selectedTiles = [];
+    },
+
+    /**
      * perform cleanup operations
      */
     cleanup: function() {
@@ -178,18 +186,10 @@ Viewport.prototype = {
             this.hoveredTile.hovered = false;
         }
 
-        ////@todo replace length check for selection clearing with an interaction; e.g. mouserightdown or something
-        //if (this.selectedTiles.length > 4) {
-        //    this.selectedTiles.forEach(function(tile) {
-        //        tile.selected = false;
-        //    });
-        //
-        //    this.selectedTiles = [];
-        //}
-
         this.orientationChangeDirection = false;
         this.orientationChanged = false;
     },
+
     hasOrientationChanged: function() {
         return this.orientationChanged;
     }

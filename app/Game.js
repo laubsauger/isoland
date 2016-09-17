@@ -33,6 +33,8 @@ Game.prototype = {
      * @returns {Game}
      */
     setup: function() {
+        this.ui = new UI();
+
         this.offscreenRenderer = this.createOffscreenRenderer();
         this.offscreenRenderer.execute();
 
@@ -52,7 +54,7 @@ Game.prototype = {
         this.mapViewport = new Viewport(this.config.worldSize, this.worldTileMap);
         this._addRenderLoopCanvas(this.mapRenderer, this.mapViewport);
 
-        this.inputHandler = new InputHandler(this.config);
+        this.inputHandler = new InputHandler(this.config, this.ui);
 
         return this;
     },

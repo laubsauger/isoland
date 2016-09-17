@@ -1,4 +1,4 @@
-var InputHandler = function(config) {
+var InputHandler = function(config, UI) {
     this.selectedTilePos = false;
     this.activeKeys = {
         shift: false
@@ -7,7 +7,7 @@ var InputHandler = function(config) {
     this.viewportOrientationChangeDirection = false;
     this.config = config;
 
-    this.setup();
+    this.setup(UI);
 
     return this;
 };
@@ -15,8 +15,9 @@ var InputHandler = function(config) {
 InputHandler.prototype = {
     /**
      * Attach Event listeners
+     *
      */
-    setup: function() {
+    setup: function(UI) {
         var self = this;
 
         this.register(
