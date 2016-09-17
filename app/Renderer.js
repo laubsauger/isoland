@@ -80,9 +80,9 @@ Renderer.prototype = {
             tileColors: {
                 fillTopBase: '#5F5FCC',
                 fillTopSelected: '#E23131',
-                fillTopHovered: '#FF9802',
                 fillSideLeftBase: '#00AA00',
                 fillSideRightBase: '#00FF00',
+                hovered: '#ffbe00',
                 lightenByLevelMultiplier: 0.2
             },
             canvasDim: config.canvasDim,
@@ -148,6 +148,14 @@ Renderer.prototype = {
             return;
         }
 
+        this._drawViewport(viewport);
+    },
+
+    /**
+     * @param {Viewport} viewport
+     * @private
+     */
+    _drawViewport: function(viewport) {
         for (var x=0; x<viewport.edgeLength; x++) {
             for (var y=0; y<viewport.edgeLength; y++) {
                 var tile = viewport.getTileAt(new Pos(x, y));
@@ -169,6 +177,7 @@ Renderer.prototype = {
 
         viewport.cleanup();
     },
+
     /**
      * draws all possible tile variations
      * @private
@@ -178,7 +187,7 @@ Renderer.prototype = {
             self = this;
 
         var index = 0;
-        for (var y = 0; y < this.bufferMap.length*2; y++) {
+        for (var y = 0; y < this.bufferMap.length*3; y++) {
             var bufferMapItem = this.bufferMap[index].split(',');
             tileSlopeParamCollection.push(new TileSlopeParam(bufferMapItem[0], bufferMapItem[1], bufferMapItem[2], bufferMapItem[3]));
 
@@ -192,7 +201,8 @@ Renderer.prototype = {
         var types = [
             {'name': 'default', 'startOffset': new Pos(-5, -1)},
             {'name': 'hover', 'startOffset': new Pos(3, -9)},
-            {'name': 'selected', 'startOffset': new Pos(11, -17)}
+            {'name': 'selected', 'startOffset': new Pos(11, -17)},
+            {'name': 'selectedAndHovered', 'startOffset': new Pos(19, -25)}
         ];
 
         types.forEach(function(type) {
@@ -226,6 +236,10 @@ Renderer.prototype = {
                     break;
                 case 'selected':
                     tile.selected = true;
+                    break;
+                case 'selectedAndHovered':
+                    tile.selected = true;
+                    tile.hovered = true;
                     break;
                 default: break;
             }
@@ -266,11 +280,15 @@ Renderer.prototype = {
             bufferBaseOffset = new Pos((this.tileWidth * tile.level), bufferViewportDim.height * (bufferMapIndex + 1));
 
         // adjust baseOffset according to tile state
-        if (tile.isSelected()) {
+        if (tile.isSelected()&& tile.isHovered()) {
+            bufferBaseOffset.x += (this.tileWidth * this.config.maxLevel) * 3;
+        } else if (tile.isSelected()) {
             bufferBaseOffset.x += (this.tileWidth * this.config.maxLevel) * 2;
         } else if (tile.isHovered()) {
             bufferBaseOffset.x += (this.tileWidth * this.config.maxLevel);
         }
+
+        bufferBaseOffset.x += tile.level * 5;
 
         // @todo: put this into a dedicated function to make it somewhat understandable
         // @todo: figure out a decent way to get the position besides dividing by a fiddled out number: 3 (or 1/8 tileHeight) :D
@@ -293,6 +311,7 @@ Renderer.prototype = {
     _drawIsoTile: function(pos, tile) {
         var canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth);
 
+        canvasPosition.x += tile.level * 5;
         // Draw frame for tiles above sea level only
         // @todo: Make this configurable (allow tiles below sea level to be rendered with frame according to their (negative) height)
         if (tile.level > 0) {
@@ -321,13 +340,19 @@ Renderer.prototype = {
         if(tile.level > 0) {
             pos.y -= ((this.tileHeight/2)*tile.level);
         }
-
+        
         var tileTopVertices = this._getTileTopVertices(pos, tile);
 
         this.context.lineWidth = .5;
         this.context.fillStyle = this._getTileTopFillStyle(tile);
 
-        this.context.strokeStyle = "#000";
+        if (tile.hovered) {
+            this.context.lineWidth = 2.5;
+            this.context.strokeStyle = this.config.tileColors.hovered;
+        } else {
+            this.context.strokeStyle = '#000';
+        }
+
         this.context.beginPath();
         this.context.moveTo(tileTopVertices.left.x, tileTopVertices.left.y);
         this.context.lineTo(tileTopVertices.top.x, tileTopVertices.top.y);
@@ -351,11 +376,16 @@ Renderer.prototype = {
             tileRightSideVertices = this._getTileRightSideVertices(tileTopVertices, tileHeightLevelOffset, tile),
             tileLeftSideVertices = this._getTileLeftSideVertices(tileTopVertices, tileHeightLevelOffset, tile);
 
-        this.context.lineWidth = 1;
+        if (tile.hovered) {
+            this.context.lineWidth = 2;
+            this.context.strokeStyle = this.config.tileColors.hovered;
+        } else {
+            this.context.lineWidth = 1;
+            this.context.strokeStyle = '#000';
+        }
 
         // right side
         this.context.fillStyle = this.config.tileColors.fillSideRightBase;
-        this.context.strokeStyle = '#000';
         this.context.beginPath();
         this.context.moveTo(tileRightSideVertices.bottomLeft.x, tileRightSideVertices.bottomLeft.y);
         this.context.lineTo(tileRightSideVertices.bottomRight.x, tileRightSideVertices.bottomRight.y);
@@ -367,7 +397,6 @@ Renderer.prototype = {
 
         // left side
         this.context.fillStyle = this.config.tileColors.fillSideLeftBase;
-        this.context.strokeStyle = '#000';
         this.context.beginPath();
         this.context.moveTo(tileLeftSideVertices.topLeft.x, tileLeftSideVertices.topLeft.y);
         this.context.lineTo(tileLeftSideVertices.bottomLeft.x, tileLeftSideVertices.bottomLeft.y);
@@ -411,7 +440,14 @@ Renderer.prototype = {
     _draw2DTileTop: function(pos, width, height, tile) {
         this.context.lineWidth = 1;
         this.context.fillStyle = this._getTileTopFillStyle(tile);
-        this.context.strokeStyle = '#000';
+
+        if (tile.hovered) {
+            this.context.lineWidth = 1.5;
+            this.context.strokeStyle = this.config.tileColors.hovered;
+        } else {
+            this.context.strokeStyle = '#000';
+        }
+
         this.context.beginPath();
         this.context.moveTo(pos.x + this.offset.left, (pos.y+height) + this.offset.top);
         this.context.lineTo(pos.x + this.offset.left, pos.y + this.offset.top);
@@ -454,10 +490,6 @@ Renderer.prototype = {
      * @private
      */
     _getTileTopFillColor: function(tile) {
-        if (tile.isHovered()) {
-            return this.config.tileColors.fillTopHovered;
-        }
-
         if (tile.isSelected()) {
             return this.config.tileColors.fillTopSelected;
         }
@@ -467,7 +499,7 @@ Renderer.prototype = {
     /**
      * Returns an object containing a position object for each vertice of the tile
      * @parameter {Pos} pos
-     * @parameter {Pos} pos
+     * @parameter {Tile} tile
      * @private
      */
     _getTileTopVertices: function(pos, tile) {

@@ -8,7 +8,7 @@ var Game = function() {
         mapCanvasSize: 200,
         offscreenCanvasDim: {
             height: 22200, //@todo: find out why antialiasing seems to fail starting at heigth > 13982
-            width: 2400
+            width: 3600
         },
         worldSize: 4,
         worldViewportSize: 4,
@@ -98,7 +98,6 @@ Game.prototype = {
 
         var statsElements = document.querySelectorAll('.stats canvas');
         statsElements.forEach(function(statsEl) {
-            console.log(statsEl);
             statsEl.style.display = 'block';
         });
 
