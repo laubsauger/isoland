@@ -74,13 +74,15 @@ Viewport.prototype = {
         }
 
         if (inputHandler.selectedTilePos) {
-            this.setSelectedTile(inputHandler.selectedTilePos);
+            this.setSelectedTile(inputHandler.selectedTilePos, inputHandler.activeKeys);
             inputHandler.selectedTilePos = false;
         }
 
         if (inputHandler.hoveredTilePos) {
             this.setHoveredTile(inputHandler.hoveredTilePos);
         }
+
+        inputHandler.cleanup();
     },
     /**
      * Get Tile object by its 2D grid coords/array indices
@@ -139,9 +141,17 @@ Viewport.prototype = {
     /**
      * @param selectedTilePos
      */
-    setSelectedTile: function(selectedTilePos) {
-        var tile = this.getTileAt(selectedTilePos);
+    setSelectedTile: function(selectedTilePos, inputHandlerActiveKeys) {
+        // clear selection when clicked without shift
+        if (!inputHandlerActiveKeys.shift) {
+            this.selectedTiles.forEach(function(tile) {
+                tile.selected = false;
+            });
+            this.selectedTiles = [];
+        }
 
+        // add tile to selection
+        var tile = this.getTileAt(selectedTilePos);
         if (tile instanceof Tile && this.selectedTiles.indexOf(tile) === -1) {
             tile.selected = true;
             this.selectedTiles.push(tile);

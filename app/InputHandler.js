@@ -1,5 +1,9 @@
 var InputHandler = function(config) {
     this.selectedTilePos = false;
+    this.activeKeys = {
+        shift: false
+    };
+
     this.viewportOrientationChangeDirection = false;
     this.config = config;
 
@@ -29,7 +33,6 @@ InputHandler.prototype = {
             'mousedown',
             (function() {
                 var params = self.getDefaultParameters();
-
                 //params.debug = true;
                 return function(evt) { $.throttle(16, function(evt) {return params._this.handleMouseDownEvent(evt, params)})(evt)};
             })()
@@ -58,6 +61,10 @@ InputHandler.prototype = {
      * @param params
      */
     handleMouseDownEvent: function(evt, params) {
+        if (evt.shiftKey) {
+            params._this.activeKeys.shift = true;
+        }
+
         params._this.selectedTilePos = params._this.mouseCoordsToTileCoords(evt, params);
     },
     /**
@@ -124,5 +131,9 @@ InputHandler.prototype = {
             canvasSize: this.config.worldCanvasSize,
             debug: false
         };
+    },
+
+    cleanup: function() {
+        this.activeKeys.shift = false;
     }
 };
