@@ -10,6 +10,7 @@
     <section class="world">
         <h1>World</h1>
         <canvas id="world" style="background-color: #000; vertical-align: top;"></canvas>
+        <div class="world-controls"></div>
     </section>
 
     <section class="map">
@@ -17,10 +18,10 @@
         <canvas id="map" style="background-color: #000; vertical-align: top;"></canvas>
     </section>
 
-    <section class="debug float-right">
+    <section class="debug">
         <h1>Debug</h1>
         <div>
-            <h3>Testbed  Canvas (same data as offscreen tile buffer)<span class="showHideBtn" data-alt-text="hide">show</span></h3>
+            <h3>offscreen tile buffer data<span class="showHideBtn" data-alt-text="hide">show</span></h3>
             <div>
                 <canvas id="test" style="background-color: #000; vertical-align: top;display:none;"></canvas>
             </div>
@@ -68,6 +69,7 @@
     <script src="vendor/jquery-2.1.1.min.js"></script>
     <script src="vendor/jquery.ba-throttle-debounce.min.js"></script>
     <script src="vendor/dat.gui.min.js"></script>
+    <script src="vendor/stats.min.js"></script>
 
     <script>
         window.onload = function() {

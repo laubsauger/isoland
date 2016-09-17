@@ -58,22 +58,14 @@ textarea {
     background: #6E6E6E;
     float: right;
     cursor: pointer;
-    font-weight: initial;
+    font-weight: normal;
     padding: 0.1em 0.75em 0.1em 0.75em;
     min-width: 75px;
     text-align: center;
-}
-
-.world {
-    width: 55%;
-}
-
-.map {
-    width: 13%;
-}
-
-.debug {
-    width: 27%;
+    display: block;
+    margin: 0 5px;
+    top: -1px;
+    position: relative;
 }
 
 .debug > div {
@@ -81,9 +73,10 @@ textarea {
 }
 
 button {
+    position: relative;
     background-color: #000;
     color: #ddd;
-    padding: 5px 10px;
+    padding: 5px 10px 5px 20px;
     font-size: 1em;
     border: 1px solid rgb(75, 75, 75);
     margin: 5px 5px 0 0;
@@ -92,10 +85,38 @@ button {
 button:hover {
     border-color: #ff3300;
 }
+
+button:after {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    display: block;
+    width: 10px;
+    height: 14px;
+}
+
+.icon-clockwise:after {
+    content: '\21BB';
+}
+.icon-counterclockwise:after {
+    content: '\21BA';
+}
 /*.scrollable {*/
 /*overflow: scroll;*/
 /*}*/
 
 .float-right {
     float: right;
+}
+
+/**
+ * stats
+ */
+.stats {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+}
+.stats canvas {
+    /*float: left;*/
 }

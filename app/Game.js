@@ -42,7 +42,8 @@ Game.prototype = {
         this.testRenderer.execute();
 
         this.worldRenderer = this.createWorldRenderer(this.offscreenRenderer);
-        this.mapRenderer = this.createMapRenderer(); //@todo: the map will be rendered every frame => should definitely use offscreen buffer too
+        //@todo: the map will be rendered every frame => should definitely use offscreen buffer too
+        this.mapRenderer = this.createMapRenderer();
 
         var mapStorage = new MapStorage();
         this.presetMap = mapStorage.testPoolLevel2();
@@ -70,18 +71,40 @@ Game.prototype = {
     run: function() {
         var self = this;
 
-        //@todo input handling implementation details sitting in here is messy shiat
+        var stats = this.initStats();
+
         (function renderLoop(){
+            stats.begin();
+
             // execute renderer
             self._getRenderLoopCanvases().forEach(function(canvas) {
                 canvas.viewport.update(self.inputHandler);
                 canvas.renderer.execute(canvas.viewport);
             });
 
+            stats.end();
+
             // loop
             requestAnimationFrame(renderLoop);
         })();
     },
+
+    initStats: function() {
+        var stats = new Stats();
+        stats.dom.style.top = 'initial';
+        stats.dom.style.left = 'initial';
+        stats.dom.className = 'stats';
+        document.body.appendChild( stats.dom );
+
+        var statsElements = document.querySelectorAll('.stats canvas');
+        statsElements.forEach(function(statsEl) {
+            console.log(statsEl);
+            statsEl.style.display = 'block';
+        });
+
+        return stats;
+    },
+
     /**
      * Create World renderer
      * @param {Renderer} offscreenRenderer
