@@ -29,8 +29,8 @@ InputHandler.prototype = {
             'mousedown',
             (function() {
                 var params = self.getDefaultParameters();
-                params.debug = true;
 
+                //params.debug = true;
                 return function(evt) { $.throttle(16, function(evt) {return params._this.handleMouseDownEvent(evt, params)})(evt)};
             })()
         );

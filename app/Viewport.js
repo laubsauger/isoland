@@ -75,6 +75,7 @@ Viewport.prototype = {
 
         if (inputHandler.selectedTilePos) {
             this.setSelectedTile(inputHandler.selectedTilePos);
+            inputHandler.selectedTilePos = false;
         }
 
         if (inputHandler.hoveredTilePos) {
@@ -144,6 +145,7 @@ Viewport.prototype = {
         if (tile instanceof Tile && this.selectedTiles.indexOf(tile) === -1) {
             tile.selected = true;
             this.selectedTiles.push(tile);
+            console.log('selected', tile);
         }
     },
     /**
@@ -166,14 +168,14 @@ Viewport.prototype = {
             this.hoveredTile.hovered = false;
         }
 
-        //@todo replace length check for selection clearing with an interaction; e.g. mouserightdown or something
-        if (this.selectedTiles.length > 4) {
-            this.selectedTiles.forEach(function(tile) {
-                tile.selected = false;
-            });
-
-            this.selectedTiles = [];
-        }
+        ////@todo replace length check for selection clearing with an interaction; e.g. mouserightdown or something
+        //if (this.selectedTiles.length > 4) {
+        //    this.selectedTiles.forEach(function(tile) {
+        //        tile.selected = false;
+        //    });
+        //
+        //    this.selectedTiles = [];
+        //}
 
         this.orientationChangeDirection = false;
         this.orientationChanged = false;

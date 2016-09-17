@@ -155,7 +155,6 @@ Renderer.prototype = {
                 if (tile instanceof Tile) {
                     // rotate tile slope if viewport was rotated
                     if (viewport.hasOrientationChanged()) {
-                        //@todo: tile selection breaks after rotating
                         if (viewport.orientationChangeDirection === 'cw') {
                             tile.slope = new TileSlopeParam(tile.slope.right, tile.slope.bottom, tile.slope.left, tile.slope.top);
                         } else {
