@@ -81,7 +81,7 @@ describe('Renderer', function() {
             var rendererConfig = {
                 tileWidth: 20,
                 tileHeight: 20,
-                renderMode: "2d",
+                renderMode: "map",
                 offset: 0,
                 canvasDim: {width:0,height:0}
             };
@@ -145,7 +145,7 @@ describe('Renderer', function() {
             var rendererConfig = {
                     tileWidth: 20,
                     tileHeight: 20,
-                    renderMode: "2d",
+                    renderMode: "map",
                     offset: 0,
                     canvasDim: {width:0,height:0}
                 };
@@ -226,7 +226,7 @@ describe('Renderer', function() {
             var rendererConfig = {
                 tileWidth: 20,
                 tileHeight: 20,
-                renderMode: "2d",
+                renderMode: "map",
                 offset: 0,
 		        canvasDim: {width:0,height:0}
             };
@@ -243,7 +243,7 @@ describe('Renderer', function() {
             var rendererConfig = {
                 tileWidth: 20,
                 tileHeight: 20,
-                renderMode: "2d",
+                renderMode: "map",
                 offset: 0,
 		        canvasDim: {width:0,height:0}
             };

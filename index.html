@@ -16,6 +16,7 @@
     <section class="map">
         <h1>Map</h1>
         <canvas id="map" style="background-color: #000; vertical-align: top;"></canvas>
+        <div class="map-data"></div>
     </section>
 
     <section class="debug">
@@ -23,7 +24,7 @@
         <div>
             <h3>offscreen tile buffer data<span class="showHideBtn" data-alt-text="hide">show</span></h3>
             <div>
-                <canvas id="test" style="background-color: #000; vertical-align: top;"></canvas>
+                <canvas id="test" style="background-color: #000; vertical-align: top;display:none;"></canvas>
             </div>
         </div>
     </section>
@@ -83,9 +84,9 @@
             gui.add(game, 'run');
         };
 
-        $('form').on('submit', function() {
-
-        });
+//        $('form').on('submit', function() {
+//
+//        });
 
         $('.showHideBtn').on('click', function() {
             var text = $(this).text();

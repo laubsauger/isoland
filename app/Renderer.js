@@ -13,8 +13,13 @@ var Renderer = function($canvas, config, colorLuminance, offscreenCanvas) {
     this.offscreenCanvas = offscreenCanvas ? offscreenCanvas : false;
     this.offscreenBufferContext = this.offscreenCanvas ? this.offscreenCanvas.getContext("2d") : false;
 
-    // contains string representation of all possible combinations of sloped tiles
-    this.bufferMap = [
+    this.renderModeMap = {
+        'iso': this._drawTileImageDataFromBuffer.bind(this),
+        'map':  this._draw2DTile.bind(this),
+        'test': this._drawIsoTile.bind(this)
+    };
+
+    this.slopeMapBuffer = [
         // positive
         '0,0,0,0',
         '1,0,0,0',
@@ -55,7 +60,7 @@ var Renderer = function($canvas, config, colorLuminance, offscreenCanvas) {
         '0,-1,-1,-1'
     ];
 
-    this.supportedRenderModes = ["iso", "2d", "test", "offscreen"];
+    this.supportedRenderModes = ["iso", "map", "test", "offscreen"];
 
     this.colorLuminance = colorLuminance;
 
@@ -187,13 +192,13 @@ Renderer.prototype = {
             self = this;
 
         var index = 0;
-        for (var y = 0; y < this.bufferMap.length*3; y++) {
-            var bufferMapItem = this.bufferMap[index].split(',');
+        for (var y = 0; y < this.slopeMapBuffer.length*3; y++) {
+            var bufferMapItem = this.slopeMapBuffer[index].split(',');
             tileSlopeParamCollection.push(new TileSlopeParam(bufferMapItem[0], bufferMapItem[1], bufferMapItem[2], bufferMapItem[3]));
 
             index++;
             
-            if (index >= this.bufferMap.length) {
+            if (index >= this.slopeMapBuffer.length) {
                 index = 0;
             }
         }
@@ -253,19 +258,7 @@ Renderer.prototype = {
      * @param {Tile} tile
      */
     _drawTile: function(pos, tile) {
-        switch(this.config.renderMode) {
-            case "iso":
-                this._drawTileImageDataFromBuffer(pos, tile);
-                break;
-            case "2d":
-                this._draw2DTile(pos, tile);
-                break;
-            case "test":
-                this._drawIsoTile(pos, tile);
-                break;
-            default:
-                throw new InvalidArgumentException('_drawTile: renderMode not found');
-        }
+        this.renderModeMap[this.config.renderMode](pos, tile);
     },
     /**
      * fetches a tile in iso mode from offscreenbuffer
@@ -275,7 +268,7 @@ Renderer.prototype = {
     _drawTileImageDataFromBuffer: function(pos, tile) {
         var bufferViewportDim = {width: this.tileWidth, height: 256},
             canvasPosition = fromGridIndexToIsoPos(pos, this.tileHeight, this.tileWidth),
-            bufferMapIndex = this.bufferMap.indexOf(tile.slope.toString()),
+            bufferMapIndex = this.slopeMapBuffer.indexOf(tile.slope.toString()),
             elevationVariationSpacing = bufferMapIndex > 0 ? bufferViewportDim.height/2 : 0,
             bufferBaseOffset = new Pos((this.tileWidth * tile.level), bufferViewportDim.height * (bufferMapIndex + 1));
 
@@ -441,13 +434,6 @@ Renderer.prototype = {
         this.context.lineWidth = 1;
         this.context.fillStyle = this._getTileTopFillStyle(tile);
 
-        if (tile.hovered) {
-            this.context.lineWidth = 1.5;
-            this.context.strokeStyle = this.config.tileColors.hovered;
-        } else {
-            this.context.strokeStyle = '#000';
-        }
-
         this.context.beginPath();
         this.context.moveTo(pos.x + this.offset.left, (pos.y+height) + this.offset.top);
         this.context.lineTo(pos.x + this.offset.left, pos.y + this.offset.top);
@@ -455,7 +441,13 @@ Renderer.prototype = {
         this.context.lineTo(pos.x+width  + this.offset.left, pos.y+height + this.offset.top);
         this.context.lineTo(pos.x + this.offset.left, (pos.y+height) + this.offset.top);
         this.context.fill();
-        this.context.stroke();
+
+        if (tile.hovered) {
+            this.context.lineWidth = 2;
+            this.context.strokeStyle = this.config.tileColors.hovered;
+            this.context.stroke();
+        }
+
         this.context.closePath();
     },
     /**

@@ -5,17 +5,18 @@ var Game = function() {
         testCanvas: document.querySelector('#test'),
         offscreenCanvas: document.querySelector('#offscreen'),
         worldCanvasSize: 400,
-        mapCanvasSize: 200,
+        mapCanvasSize: 300,
         offscreenCanvasDim: {
             height: 22200, //@todo: find out why antialiasing seems to fail starting at heigth > 13982
             width: 3600
         },
-        worldSize: 4,
+        worldSize: 8,
         worldViewportSize: 4,
         worldTileSize: 96,
         mapTileSize: 64,
         testTileSize: 96,
-        mapZoomLevel: 2
+        mapZoomLevel: 2,
+        metersPerTile: 15.625
     };
 
     this.mapZoomLevel = this.config.mapZoomLevel;
@@ -33,8 +34,6 @@ Game.prototype = {
      * @returns {Game}
      */
     setup: function() {
-        this.ui = new UI();
-
         this.offscreenRenderer = this.createOffscreenRenderer();
         this.offscreenRenderer.execute();
 
@@ -46,14 +45,19 @@ Game.prototype = {
         this.mapRenderer = this.createMapRenderer();
 
         var mapStorage = new MapStorage();
-        this.presetMap = mapStorage.testPoolLevel2();
-        this.worldTileMap = new Map(this.config.worldSize, this.presetMap);
+        this.mapData = mapStorage.flatMap(this.config.worldSize);
+        this.worldTileMap = new Map(this.config.worldSize, this.mapData);
 
         this.worldViewport = new Viewport(this.config.worldViewportSize, this.worldTileMap);
         this._addRenderLoopCanvas(this.worldRenderer, this.worldViewport);
 
         this.mapViewport = new Viewport(this.config.worldSize, this.worldTileMap);
         this._addRenderLoopCanvas(this.mapRenderer, this.mapViewport);
+
+        this.ui = new UI({
+            worldSize: this.config.worldSize,
+            metersPerTile: this.config.metersPerTile
+        });
 
         this.inputHandler = new InputHandler(this.config, this.ui);
 
@@ -84,7 +88,6 @@ Game.prototype = {
 
             stats.end();
 
-            // loop
             requestAnimationFrame(renderLoop);
         })();
     },
@@ -135,7 +138,7 @@ Game.prototype = {
         var rendererConfig = {
             tileWidth: this.config.mapTileSize,
             tileHeight: this.config.mapTileSize,
-            renderMode: "2d",
+            renderMode: "map",
             drawTileLabels: true,
             offset: {
                 top: 20,

@@ -53,3 +53,19 @@ MapStorage.prototype.testPoolLevel2 = function() {
         ]
     ]
 };
+
+MapStorage.prototype.flatMap = function(size) {
+    var map = [];
+
+    for (var width = 0; width < size; width++) {
+        var row = [];
+        for (var height = 0; height < size; height++) {
+            var flatTile =  new Tile(width, height, 1, new TileSlopeParam(0, 0, 0, 0));
+            row.push(flatTile);
+        }
+
+        map.push(row);
+    }
+    
+    return map;
+};

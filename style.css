@@ -101,12 +101,9 @@ button:after {
 .icon-counterclockwise:after {
     content: '\21BA';
 }
-/*.scrollable {*/
-/*overflow: scroll;*/
-/*}*/
 
-.float-right {
-    float: right;
+.map-data > div > div{
+    line-height: 1.5em;
 }
 
 /**
