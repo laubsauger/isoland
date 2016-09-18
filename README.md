@@ -11,8 +11,10 @@ canvas based isometric engine
     - iso renderer (now supports 'slopes' or 'lifted vertices')
     - zoomable minimap (2d renderer)
 - offscreen prerendering for all tile variations
-- basic input processing
-    - mouse hover
+- interaction
+    - tile hover
+    - tile selection
+    - rotate viewport cw/ccw
 
 ### Todo
 - user modifiable terrain (see legacy code)
