@@ -83,10 +83,9 @@ Game.prototype = {
 
             // execute renderer
             self._getRenderLoopCanvases().forEach(function(canvas) {
-                canvas.viewport.update(self.inputHandler);
+                canvas.viewport.update(self.inputHandler, canvas.renderer.config.renderMode === 'map');
                 canvas.renderer.execute(canvas.viewport);
             });
-
             stats.end();
 
             requestAnimationFrame(renderLoop);

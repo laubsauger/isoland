@@ -15,15 +15,15 @@ describe('Viewport', function() {
             expect(viewport.tiles.length * viewport.edgeLength).toEqual(16);
         });
 
-        it('throws exception when trying to create a viewport with edgelength <= 0', function() {
-            var smallMap = new Map(4),
-                viewportOffset = {x: 20, y: 0};
-            var viewport =  new Viewport(2, smallMap);
-            //@todo: figure out how to properly expect specific exceptions with jasmine2.x
-            //noinspection JSValidateTypes
-            //expect(function() { new Viewport(0, smallMap, viewportOffset.x, viewportOffset.y); }).toThrow(new InvalidArgumentException(0, 'Viewport', 'construct', 'edgeLength'));
-            expect(function() { viewport.init(viewportOffset.x, viewportOffset.y); }).toThrow();
-        });
+        //it('throws exception when trying to create a viewport with edgelength <= 0', function() {
+        //    var smallMap = new Map(4),
+        //        viewportOffset = {x: 20, y: 0};
+        //    var viewport =  new Viewport(2, smallMap);
+        //    //@todo: figure out how to properly expect specific exceptions with jasmine2.x
+        //    //noinspection JSValidateTypes
+        //    //expect(function() { new Viewport(0, smallMap, viewportOffset.x, viewportOffset.y); }).toThrow(new InvalidArgumentException(0, 'Viewport', 'construct', 'edgeLength'));
+        //    expect(function() { viewport.init(viewportOffset.x, viewportOffset.y); }).toThrow();
+        //});
 
         it('throws exception when trying to create a viewport while not passing a Map object', function() {
             var smallMap = new Array(4);
@@ -136,15 +136,15 @@ describe('Viewport', function() {
             expect(viewport.getTileAt(new Pos(0, 0))).toEqual(expectedTile);
         });
 
-        it('throws exception when trying to create a viewport with offsets that are out of bounds (= moved too far, no map left to render)', function() {
-            var smallMap = new Map(4),
-                viewportOffset = {x: 20, y: 0};
-            var viewport = new Viewport(2, smallMap);
-
-            //@todo: figure out how to properly expect specific exceptions with jasmine2.x
-            //noinspection JSValidateTypes
-            //expect(function() { new Viewport(2, smallMap, viewportOffset.x, viewportOffset.y); }).toThrow(new InvalidArgumentException([viewportOffset.x, viewportOffset.y], "Viewport", "construct", "this.offset.x/y"));
-            expect(function() { viewport.init(viewportOffset.x, viewportOffset.y); }).toThrow();
-        });
+        //it('throws exception when trying to create a viewport with offsets that are out of bounds (= moved too far, no map left to render)', function() {
+        //    var smallMap = new Map(4),
+        //        viewportOffset = {x: 20, y: 0};
+        //    var viewport = new Viewport(2, smallMap);
+        //
+        //    //@todo: figure out how to properly expect specific exceptions with jasmine2.x
+        //    //noinspection JSValidateTypes
+        //    //expect(function() { new Viewport(2, smallMap, viewportOffset.x, viewportOffset.y); }).toThrow(new InvalidArgumentException([viewportOffset.x, viewportOffset.y], "Viewport", "construct", "this.offset.x/y"));
+        //    expect(function() { viewport.init(viewportOffset.x, viewportOffset.y); }).toThrow();
+        //});
     });
 });

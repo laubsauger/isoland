@@ -163,7 +163,8 @@ Renderer.prototype = {
     _drawViewport: function(viewport) {
         for (var x=0; x<viewport.edgeLength; x++) {
             for (var y=0; y<viewport.edgeLength; y++) {
-                var tile = viewport.getTileAt(new Pos(x, y));
+                var pos = new Pos(x, y);
+                var tile = viewport.getTileAt(pos);
 
                 if (tile instanceof Tile) {
                     // rotate tile slope if viewport was rotated
@@ -175,7 +176,7 @@ Renderer.prototype = {
                         }
                     }
 
-                    this._drawTile(new Pos(x, y), tile);
+                    this._drawTile(pos, tile);
                 }
             }
         }
@@ -273,11 +274,11 @@ Renderer.prototype = {
             bufferBaseOffset = new Pos((this.tileWidth * tile.level), bufferViewportDim.height * (bufferMapIndex + 1));
 
         // adjust baseOffset according to tile state
-        if (tile.isSelected()&& tile.isHovered()) {
+        if (tile.selected && tile.hovered) {
             bufferBaseOffset.x += (this.tileWidth * this.config.maxLevel) * 3;
-        } else if (tile.isSelected()) {
+        } else if (tile.selected) {
             bufferBaseOffset.x += (this.tileWidth * this.config.maxLevel) * 2;
-        } else if (tile.isHovered()) {
+        } else if (tile.hovered) {
             bufferBaseOffset.x += (this.tileWidth * this.config.maxLevel);
         }
 

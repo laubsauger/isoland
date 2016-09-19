@@ -14,7 +14,6 @@ var Viewport = function(edgeLength, map) {
     }
 
     this.hoveredTile = {};
-    this.hoveredTile = {};
     this.selectedTiles = [];
     this.edgeLength = edgeLength;
     this.orientation = 0;
@@ -93,8 +92,15 @@ Viewport.prototype = {
     /**
      *
      * @param inputHandler
+     * @param isMapViewport
      */
-    update: function(inputHandler) {
+    update: function(inputHandler, isMapViewport) {
+        // do not render hover on map viewport - find out why selection is not effected
+        if (isMapViewport) {
+            //this._updateWithInputHandlerChanges(inputHandler);
+            return;
+        }
+
         this._updateWithInputHandlerChanges(inputHandler);
     },
     /**
@@ -200,6 +206,17 @@ Viewport.prototype = {
         return this.orientation;
     },
     /**
+     * @param {Pos} hoveredTilePos
+     */
+    setHoveredTile: function(hoveredTilePos) {
+        var tile = this.getTileAt(hoveredTilePos);
+
+        if (tile instanceof Tile) {
+            tile.hovered = true;
+            this.hoveredTile = tile;
+        }
+    },
+    /**
      * @param {Pos} selectedTilePos
      * @param {boolean} shiftKeyActive
      */
@@ -209,17 +226,6 @@ Viewport.prototype = {
         }
 
         this.addToSelection(this.getTileAt(selectedTilePos));
-    },
-    /**
-     * @param {Pos} hoveredTilePos
-     */
-    setHoveredTile: function(hoveredTilePos) {
-        var tile = this.getTileAt(hoveredTilePos);
-
-        if (tile instanceof Tile) {
-            this.hoveredTile = tile;
-            this.hoveredTile.hovered = true;
-        }
     },
     /**
      * @param tile

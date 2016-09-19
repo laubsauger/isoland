@@ -31,5 +31,6 @@ canvas based isometric engine
     - hover has to be cleared on rotation (same behaviour as selection before fix)
 
 #### Next up
-    - move viewport across map (controls: N,E,S,W + between e.g. NE, SW, SE etc)
+    - move viewport across map (controls: NE, SW, SE etc)
     - refactor select/hover effects to be rendered after the terrain to avoid occlusion
+    - illustrate current world viewport cut out on map viewport
