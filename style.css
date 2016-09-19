@@ -80,6 +80,7 @@ button {
     font-size: 1em;
     border: 1px solid rgb(75, 75, 75);
     margin: 5px 5px 0 0;
+    height: 25px;
 }
 
 button:hover {
@@ -100,6 +101,30 @@ button:after {
 }
 .icon-counterclockwise:after {
     content: '\21BA';
+}
+.icon-move--N:after {
+    content: '\21D7';
+    font-size: 20px;
+    font-weight: bold;
+    top: 1px;
+}
+.icon-move--E:after {
+    content: '\21D8';
+    font-size: 20px;
+    font-weight: bold;
+    top: 1px;
+}
+.icon-move--S:after {
+    content: '\21D9';
+    font-size: 20px;
+    font-weight: bold;
+    top: 1px;
+}
+.icon-move--W:after {
+    content: '\21D6';
+    font-size: 20px;
+    font-weight: bold;
+    top: 1px;
 }
 
 .map-data > div > div{
@@ -144,4 +169,63 @@ button:after {
 .mapWrap span.south {
     left: 48%;
     bottom: 5px;
+}
+
+.directionWrap {
+    width: 150px;
+    height: 75px;
+    position: relative;
+}
+
+.directionWrap button {
+    width: 50px;
+    margin: 0;
+}
+
+.directionWrap .icon-move--N {
+    position: absolute;
+    top: 0;
+    left: 50px;
+}
+
+.directionWrap .icon-move--NW {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.directionWrap .icon-move--NE {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.directionWrap .icon-move--E {
+    position: absolute;
+    top: 25px;
+    right: 0;
+}
+
+.directionWrap .icon-move--S {
+    position: absolute;
+    bottom: 0;
+    left: 50px;
+}
+
+.directionWrap .icon-move--SE {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.directionWrap .icon-move--SW {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.directionWrap .icon-move--W {
+    position: absolute;
+    top: 25px;
+    left: 0;
 }

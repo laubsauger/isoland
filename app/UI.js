@@ -62,7 +62,7 @@ UI.prototype = {
     createMoveDirectionButtons: function(parentElement) {
         var directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
         var wrapper = document.createElement('div');
-
+        wrapper.className = 'directionWrap';
         directions.forEach(function(dir) {
             var button = document.createElement('button');
 
