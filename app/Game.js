@@ -67,6 +67,7 @@ Game.prototype = {
         return this.redrawableCanvases;
     },
     _addRenderLoopCanvas: function(renderer, viewport) {
+        viewport.init(0,0);
         this.redrawableCanvases.push({'renderer': renderer, 'viewport': viewport});
     },
     /**

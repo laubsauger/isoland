@@ -2,21 +2,15 @@
  * Contains the handling of the currently visible part of the map
  * @param {Number} edgeLength
  * @param {Map} map
- * @param {Number} [offsetX] -optional
- * @param {Number} [offsetY] -optional
  * @constructor
  */
-var Viewport = function(edgeLength, map, offsetX, offsetY) {
+var Viewport = function(edgeLength, map) {
     if (edgeLength <= 0) {
         throw new InvalidArgumentException(edgeLength, 'Viewport', 'construct', 'edgeLength');
     }
 
     if (map instanceof Map === false) {
         throw new InvalidArgumentException(map, 'Viewport', 'construct', 'map');
-    }
-
-    if (offsetX && typeof offsetX !== "number" || offsetY && typeof offsetY !== "number") {
-        throw new InvalidArgumentException([offsetX, offsetY], 'Viewport', 'construct', 'offsetX/offsetY');
     }
 
     this.hoveredTile = {};
@@ -27,34 +21,54 @@ var Viewport = function(edgeLength, map, offsetX, offsetY) {
     this.orientationChangeDirection = false;
     this.orientationChanged = false;
     this.tiles = [];
-
-    this.offset = {
-        x: offsetX || 0,
-        y: offsetY || 0
-    };
-
-    if (this.offset.x + edgeLength > map.edgeLength || this.offset.y + edgeLength > map.edgeLength) {
-        throw new InvalidArgumentException([this.offset.x, this.offset.y], 'Viewport', 'construct', 'this.offset.x/y');
-    }
-
-    this._create(map);
+    this.map = map;
 };
 
 Viewport.prototype = {
     /**
      * grabs a portion of the map array
-     * @param {Object} map
-     * @private
+     * @param {Number} offsetX
+     * @param {Number} offsetY
      */
-    _create: function(map) {
+    init: function(offsetX, offsetY) {
+        this.offset = this._createNewOffsetPosition(offsetX,offsetY);
+        this.tiles = this.getTilesInViewFromMap(this.offset);
+    },
+
+    /**
+     * @param {Number} offsetX
+     * @param {Number} offsetY
+     */
+    _createNewOffsetPosition: function(offsetX, offsetY) {
+        if (offsetX && typeof offsetX !== "number" || offsetY && typeof offsetY !== "number") {
+            throw new InvalidArgumentException([offsetX, offsetY], 'Viewport', 'construct', 'offsetX/offsetY');
+        }
+
+        if (offsetX + this.edgeLength > this.map.edgeLength || offsetY + this.edgeLength > this.map.edgeLength) {
+            throw new InvalidArgumentException([offsetX, offsetY], 'Viewport', 'setOffset', 'offsetX/offsetY');
+        }
+
+        return new Pos(offsetX, offsetY);
+    },
+
+    /**
+     * @param {Pos} offsetPos
+     * @returns {Array}
+     */
+    getTilesInViewFromMap: function(offsetPos) {
+        var tiles = [];
+
         for (var x=0; x<this.edgeLength; x++) {
-            this.tiles[x] = [];
+            tiles[x] = [];
 
             for (var y=0; y<this.edgeLength; y++) {
-                this.tiles[x][y] = map.getTileAt(new Pos(x + this.offset.x, y + this.offset.y));
+                tiles[x][y] = this.map.getTileAt(new Pos(x + offsetPos.x, y + offsetPos.y));
             }
         }
+
+        return tiles;
     },
+
     /**
      *
      * @param inputHandler

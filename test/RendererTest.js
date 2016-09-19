@@ -63,7 +63,7 @@ describe('Renderer', function() {
         ]];
         map = new Map(10, presetMap);
         viewport = new Viewport(5, map);
-
+        viewport.init(0, 0);
         spyOn(colorLuminanceStub, 'calculate');
         // spies
         spyOn(canvasStub, 'getContext')

@@ -23,3 +23,9 @@ canvas based isometric engine
 
 ### Run tests
     karma start
+
+#### Bugs
+    - hover has to be cleared on rotation (same behaviour as selection before fix)
+
+#### Next up
+    - move viewport across map (controls: N,E,S,W + between e.g. NE, SW, SE etc)
