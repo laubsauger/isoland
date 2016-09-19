@@ -16,6 +16,11 @@ UI.prototype = {
         //@todo: there is a weird confusion between cw and ccw somewhere, that's why it's inverted here
         this.createButton(controlsContainer, 'Rotate CW', 'rotate--ccw icon-clockwise', 'ccw');
         this.createButton(controlsContainer, 'Rotate CCW', 'rotate--cw icon-counterclockwise', 'cw');
+        //this.buttons = {
+        //    rotateCW: this.createButton(controlsContainer, 'Rotate CW', 'rotate--ccw icon-clockwise', 'ccw'),
+        //    rotateCCW: this.createButton(controlsContainer, 'Rotate CCW', 'rotate--cw icon-counterclockwise', 'cw')
+        //};
+        this.createMoveDirectionButtons(controlsContainer);
 
         var mapStatsContainer =  document.querySelector('.map-data');
         this.createMapStatsText(mapStatsContainer, this.config.worldSize, this.config.metersPerTile);
@@ -29,8 +34,6 @@ UI.prototype = {
         button.value = value;
 
         parentElement.appendChild(button);
-
-        this.buttons.push(button);
     },
 
     createMapStatsText: function(parentElement, worldSize, metersPerTile) {
@@ -54,5 +57,22 @@ UI.prototype = {
 
         parentElement.appendChild(title);
         parentElement.appendChild(paragraph);
+    },
+
+    createMoveDirectionButtons: function(parentElement) {
+        var directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+        var wrapper = document.createElement('div');
+
+        directions.forEach(function(dir) {
+            var button = document.createElement('button');
+
+            button.setAttribute('class', 'moveToDirection icon-move--' + dir);
+            button.textContent = dir;
+            button.value = dir;
+
+            wrapper.appendChild(button);
+        });
+
+        parentElement.appendChild(wrapper);
     }
 };

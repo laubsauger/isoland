@@ -27,7 +27,9 @@ canvas based isometric engine
     karma start
 
 #### Bugs
+    - hover works on tiles that are not in the viewport
     - hover has to be cleared on rotation (same behaviour as selection before fix)
 
 #### Next up
     - move viewport across map (controls: N,E,S,W + between e.g. NE, SW, SE etc)
+    - refactor select/hover effects to be rendered after the terrain to avoid occlusion

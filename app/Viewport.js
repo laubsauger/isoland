@@ -41,12 +41,33 @@ Viewport.prototype = {
      */
     _createNewOffsetPosition: function(offsetX, offsetY) {
         if (offsetX && typeof offsetX !== "number" || offsetY && typeof offsetY !== "number") {
-            throw new InvalidArgumentException([offsetX, offsetY], 'Viewport', 'construct', 'offsetX/offsetY');
+            throw new InvalidArgumentException([offsetX, offsetY], 'Viewport', '_createNewOffsetPosition', 'offsetX/offsetY not a number');
         }
 
-        if (offsetX + this.edgeLength > this.map.edgeLength || offsetY + this.edgeLength > this.map.edgeLength) {
-            throw new InvalidArgumentException([offsetX, offsetY], 'Viewport', 'setOffset', 'offsetX/offsetY');
+        if (offsetX + this.edgeLength > this.map.edgeLength) {
+            console.log('reached map boundary X > mapLength');
+            offsetX = this.edgeLength;
         }
+
+        if (offsetY + this.edgeLength > this.map.edgeLength) {
+            console.log('reached map boundary Y > mapLength');
+            offsetY = this.edgeLength;
+        }
+
+        if (offsetX < 1) {
+            console.log('reached map boundary X < 1');
+            offsetX = 0;
+        }
+
+        if (offsetY < 1) {
+            console.log('reached map boundary Y < 1');
+            offsetY = 0;
+        }
+
+        //if (offsetX + this.edgeLength > this.map.edgeLength || offsetY + this.edgeLength > this.map.edgeLength) {
+        //    throw new InvalidArgumentException([offsetX, offsetY], 'Viewport', '_createNewOffsetPosition', 'new offset larger than map');
+        //}
+        console.log(offsetX, offsetY);
 
         return new Pos(offsetX, offsetY);
     },
@@ -84,16 +105,18 @@ Viewport.prototype = {
     _updateWithInputHandlerChanges: function(inputHandler) {
         if (inputHandler.viewportOrientationChangeDirection) {
             this.rotate(inputHandler.viewportOrientationChangeDirection);
-            inputHandler.viewportOrientationChangeDirection = false;
         }
 
-        if (inputHandler.selectedTilePos) {
-            this.setSelectedTile(inputHandler.selectedTilePos, inputHandler.activeKeys.shift);
-            inputHandler.selectedTilePos = false;
+        if (inputHandler.viewportMoveDirection) {
+            this.moveInDirection(inputHandler.viewportMoveDirection);
         }
 
         if (inputHandler.hoveredTilePos) {
             this.setHoveredTile(inputHandler.hoveredTilePos);
+        }
+
+        if (inputHandler.selectedTilePos) {
+            this.setSelectedTile(inputHandler.selectedTilePos, inputHandler.activeKeys.shift);
         }
 
         inputHandler.cleanup();
@@ -145,6 +168,30 @@ Viewport.prototype = {
 
         this.tiles = arrayRotate('l', this.tiles);
     },
+
+    moveInDirection: function(direction) {
+        console.log(direction);
+
+        var pos;
+        // translate direction to new offset
+        switch(direction) {
+            case 'N': pos = new Pos(0,-1);
+                break;
+            //case 'NW': pos = new Pos(0,-1);
+            //    break;
+            case 'E': pos = new Pos(1, 0);
+                break;
+            case 'S': pos = new Pos(0, 1);
+                break;
+            case 'W': pos = new Pos(-1, 0);
+                break;
+        }
+
+        var newOffsetPos = this._createNewOffsetPosition(this.offset.x + pos.x, this.offset.y + pos.y);
+
+        this.init(newOffsetPos.x, newOffsetPos.y);
+    },
+
     /**
      * Return current Viewport orientation
      * @returns {number}

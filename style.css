@@ -117,3 +117,31 @@ button:after {
 .stats canvas {
     /*float: left;*/
 }
+
+.mapWrap {
+    position: relative;
+}
+
+.mapWrap span {
+    position: absolute;
+}
+
+.mapWrap span.north {
+    left: 48%;
+    top: 5px;
+}
+
+.mapWrap span.east {
+    top: 47%;
+    right: 8px;
+}
+
+.mapWrap span.west {
+    top: 47%;
+    left: 5px;
+}
+
+.mapWrap span.south {
+    left: 48%;
+    bottom: 5px;
+}

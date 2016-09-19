@@ -1,9 +1,10 @@
 var InputHandler = function(config, UI) {
     this.selectedTilePos = false;
+    this.hoveredTilePos = false;
     this.activeKeys = {
         shift: false
     };
-
+    this.viewportMoveDirection = false;
     this.viewportOrientationChangeDirection = false;
     this.config = config;
 
@@ -44,7 +45,16 @@ InputHandler.prototype = {
             'click',
             (function() {
                 var params = self.getDefaultParameters();
-                return function(evt) { $.throttle(16, function(evt) {return params._this.handleRotateButtonClickEvent(evt, params)})(evt)};
+                return function(evt) { $.throttle(1, function(evt) {return params._this.handleRotateButtonClickEvent(evt, params)})(evt)};
+            })()
+        );
+
+        this.register(
+            document.querySelectorAll('.moveToDirection'),
+            'click',
+            (function() {
+                var params = self.getDefaultParameters();
+                return function(evt) { $.throttle(1, function(evt) {return params._this.handleMoveDirectionButtonClickEvent(evt, params)})(evt)};
             })()
         );
     },
@@ -75,6 +85,14 @@ InputHandler.prototype = {
      */
     handleRotateButtonClickEvent: function(evt, params) {
         params._this.viewportOrientationChangeDirection = evt.target.value;
+    },
+    /**
+     * Handles mouse down event; sets currently selected tile
+     * @param evt
+     * @param params
+     */
+    handleMoveDirectionButtonClickEvent: function(evt, params) {
+        params._this.viewportMoveDirection = evt.target.value;
     },
     /**
      * Creates event listeners, optional data object is passed through
@@ -135,6 +153,9 @@ InputHandler.prototype = {
     },
 
     cleanup: function() {
+        this.selectedTilePos = false;
+        this.viewportOrientationChangeDirection = false;
+        this.viewportMoveDirection = false;
         this.activeKeys.shift = false;
     }
 };
